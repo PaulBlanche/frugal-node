@@ -1,0 +1,48 @@
+{
+	"name": "frugal",
+	"version": "1.0.0",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./index.d.ts",
+			"import": "./index.js",
+			"deno": "./mod.ts"
+		},
+		"./plugins/css": {
+			"types": "./plugins/css/index.d.ts",
+			"import": "./plugins/css/index.js",
+			"deno": "./plugins/css/mod.ts"
+		},
+		"./plugins/script": {
+			"types": "./plugins/script/index.d.ts",
+			"import": "./plugins/script/index.js",
+			"deno": "./plugins/script/mod.ts"
+		},
+		"./exporters/staticSite": {
+			"types": "./exporters/staticSite/index.d.ts",
+			"import": "./exporters/staticSite/index.js",
+			"deno": "./exporters/staticSite/mod.ts"
+		}
+	},
+	"scripts": {
+		"test": "node scripts/test.js",
+		"lint": "npx biome check ."
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.5.3",
+		"@types/cookie": "^0.6.0",
+		"@types/node": "^20.11.4",
+		"c8": "^9.1.0",
+		"typescript": "^5.3.3"
+	},
+	"dependencies": {
+		"@node-rs/xxhash": "^1.6.0",
+		"chalk": "^5.3.0",
+		"common-path-prefix": "^3.0.0",
+		"cookie": "^0.6.0",
+		"esbuild": "^0.19.11",
+		"lightningcss": "^1.22.1",
+		"path-to-regexp": "^6.2.1",
+		"zod": "^3.22.4"
+	}
+}

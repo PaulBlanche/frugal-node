@@ -1,0 +1,8 @@
+.base-dep {
+    composes: local-dep;
+    color: yellow;
+}
+
+.local-dep {
+    color: orange;
+}

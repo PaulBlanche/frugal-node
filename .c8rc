@@ -1,0 +1,8 @@
+{
+    "reporter": "lcov",
+    "all": true,
+    "src": ["./src"],
+    "report-dir": "./coverage",
+    "include": ["src"],
+    "exclude": ["**/_type/**"]
+}

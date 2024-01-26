@@ -1,0 +1,58 @@
+{
+	"integration/build/plugin/css: page css order:1": {
+		"name": "integration/build/plugin/css: page css order",
+		"value": "/* dist/.temp/build/cssOrder/page-S52M6GHQ.css */\n.before {\n  color: red;\n}\n.dep {\n  color: orange;\n}\n.main {\n  color: yellow;\n}\n.after {\n  color: blue;\n}\n"
+	},
+	"integration/build/plugin/css: one css bundle per page, one bundle per global css:1": {
+		"name": "integration/build/plugin/css: one css bundle per page, one bundle per global css",
+		"value": "/* dist/.temp/build/global1-17GHH2TWJEF6K.css */\n.global1 {\n  color: purple;\n}\n"
+	},
+	"integration/build/plugin/css: one css bundle per page, one bundle per global css:2": {
+		"name": "integration/build/plugin/css: one css bundle per page, one bundle per global css",
+		"value": "/* dist/.temp/build/global2-YNSK1N6ZJUWQ.css */\n.global2 {\n  color: yellow;\n}\n"
+	},
+	"integration/build/plugin/css: one css bundle per page, one bundle per global css:3": {
+		"name": "integration/build/plugin/css: one css bundle per page, one bundle per global css",
+		"value": "/* dist/.temp/build/oneBundlePerPage/page1-UHGD5NED.css */\n.common {\n  color: orange;\n}\n.page1 {\n  color: blue;\n}\n"
+	},
+	"integration/build/plugin/css: one css bundle per page, one bundle per global css:4": {
+		"name": "integration/build/plugin/css: one css bundle per page, one bundle per global css",
+		"value": "/* dist/.temp/build/oneBundlePerPage/page2-6W2ZRVJ6.css */\n.common {\n  color: orange;\n}\n.page2 {\n  color: green;\n}\n"
+	},
+	"integration/build/plugin/css: one css bundle per page, one bundle per global css:5": {
+		"name": "integration/build/plugin/css: one css bundle per page, one bundle per global css",
+		"value": "/* dist/.temp/build/global2-YNSK1N6ZJUWQ.css */\n.global2 {\n  color: yellow;\n}\n"
+	},
+	"integration/build/plugin/css: one css bundle per page, one bundle per global css:6": {
+		"name": "integration/build/plugin/css: one css bundle per page, one bundle per global css",
+		"value": "/* dist/.temp/build/oneBundlePerPage/page2-6W2ZRVJ6.css */\n.common {\n  color: orange;\n}\n.page2 {\n  color: green;\n}\n"
+	},
+	"integration/build/plugin/css: one single bundle in site mode:1": {
+		"name": "integration/build/plugin/css: one single bundle in site mode",
+		"value": "/* dist/.temp/build/global1-17GHH2TWJEF6K.css */\n.global1 {\n  color: purple;\n}\n\n/* dist/.temp/build/global2-YNSK1N6ZJUWQ.css */\n.global2 {\n  color: yellow;\n}\n\n/* dist/.temp/build/oneBundlePerPage/page1-UHGD5NED.css */\n.common {\n  color: orange;\n}\n.page1 {\n  color: blue;\n}\n\n/* dist/.temp/build/oneBundlePerPage/page2-6W2ZRVJ6.css */\n.common {\n  color: orange;\n}\n.page2 {\n  color: green;\n}\n\n/* global-facade.css */\n"
+	},
+	"integration/build/plugin/css: esbuild options (minify):1": {
+		"name": "integration/build/plugin/css: esbuild options (minify)",
+		"value": ".global1{color:purple}.global2{color:#ff0}.page1{color:#00f}.common{color:orange}.page2{color:green}\n"
+	},
+	"integration/build/plugin/css: css modules:1": {
+		"name": "integration/build/plugin/css: css modules",
+		"value": "/* dist/.temp/build/cssModules/page-VGYJ3SN3.css */\n.base-dep {\n  color: #ff0;\n}\n.local-dep {\n  color: orange;\n}\n.page {\n  color: #00f;\n}\n.foo-bar {\n  color: green;\n}\n.global-selector {\n  color: violet;\n}\n"
+	},
+	"integration/build/plugin/css: css modules:2": {
+		"name": "integration/build/plugin/css: css modules",
+		"value": [
+			1,
+			[
+				["age", "new"],
+				[
+					"body",
+					"{\"fooBar\":\"foo-bar base-dep local-dep\",\"page\":\"page foo-bar base-dep local-dep global-selector\"}"
+				],
+				["headers", [0, []]],
+				["path", "/page"],
+				["status", 200]
+			]
+		]
+	}
+}
