@@ -1,8 +1,8 @@
 import * as path from "node:path";
-import { FrugalConfig } from "frugal/config";
-import * as exporter from "frugal/exporter";
-import * as fs from "frugal/utils/fs";
-import { log } from "frugal/utils/log";
+import { FrugalConfig } from "frugal-node/config";
+import * as exporter from "frugal-node/exporter";
+import * as fs from "frugal-node/utils/fs";
+import { log } from "frugal-node/utils/log";
 import * as _type from "./_type/staticSite.js";
 
 /**

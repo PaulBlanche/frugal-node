@@ -1,5 +1,5 @@
 import { kv } from "@vercel/kv";
-import * as exporter from "frugal/exporter";
+import * as exporter from "frugal-node/exporter";
 
 /**
  * @implements {exporter.CacheStorage}

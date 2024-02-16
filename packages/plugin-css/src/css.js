@@ -1,11 +1,11 @@
 import * as path from "node:path";
 import * as url from "node:url";
 import * as esbuild from "esbuild";
-import { FrugalConfig } from "frugal/config";
-import * as plugin from "frugal/plugin";
-import * as fs from "frugal/utils/fs";
-import * as hash from "frugal/utils/hash";
-import { log } from "frugal/utils/log";
+import { FrugalConfig } from "frugal-node/config";
+import * as plugin from "frugal-node/plugin";
+import * as fs from "frugal-node/utils/fs";
+import * as hash from "frugal-node/utils/hash";
+import { log } from "frugal-node/utils/log";
 import { Bundler } from "./Bundler.js";
 import * as _type from "./_type/css.js";
 import { cssModules } from "./cssModules.js";

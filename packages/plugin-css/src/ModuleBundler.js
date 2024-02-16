@@ -1,4 +1,4 @@
-import { log } from "frugal/utils/log";
+import { log } from "frugal-node/utils/log";
 import * as lightningcss from "lightningcss";
 import { ModuleCompiler } from "./ModuleCompiler.js";
 import * as _type from "./_type/ModuleBundler.js";

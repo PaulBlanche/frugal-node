@@ -1,9 +1,9 @@
 import * as path from "node:path";
 import * as url from "node:url";
 import * as esbuild from "esbuild";
-import * as config from "frugal/config";
-import * as exporter from "frugal/exporter";
-import * as fs from "frugal/utils/fs";
+import * as config from "frugal-node/config";
+import * as exporter from "frugal-node/exporter";
+import * as fs from "frugal-node/utils/fs";
 
 /**
  * @returns {exporter.Exporter}
@@ -88,8 +88,8 @@ async function bundleFunction(functionDir, config) {
 					import.meta.resolve("./KvStorage.js"),
 				)}";
 				import { Server, Cache } from 'frugal/server';
-				import config from "frugal:config";
-				import * as manifest from "frugal:manifest";
+				import config from "frugal-node:config";
+				import * as manifest from "frugal-node:manifest";
 
 				const server = new Server({
 					config,

@@ -1,5 +1,5 @@
 import type * as esbuild from "esbuild";
-import type { BasePageAsset } from "frugal/plugin";
+import type { BasePageAsset } from "frugal-node/plugin";
 
 export type ScriptOptions = {
 	outdir: string;

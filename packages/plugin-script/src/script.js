@@ -1,6 +1,6 @@
 import * as path from "node:path";
 import * as esbuild from "esbuild";
-import * as plugin from "frugal/plugin";
+import * as plugin from "frugal-node/plugin";
 import { Bundler } from "./Bundler.js";
 import * as _type from "./_type/script.js";
 

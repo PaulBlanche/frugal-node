@@ -1,9 +1,9 @@
 import * as path from "node:path";
 import * as esbuild from "esbuild";
-import { FrugalConfig } from "frugal/config";
-import { Compiler } from "frugal/plugin";
-import { commonPath } from "frugal/utils/commonPath";
-import * as hash from "frugal/utils/hash";
+import { FrugalConfig } from "frugal-node/config";
+import { Compiler } from "frugal-node/plugin";
+import { commonPath } from "frugal-node/utils/commonPath";
+import * as hash from "frugal-node/utils/hash";
 import * as _type from "./_type/css.js";
 
 export class Bundler {
