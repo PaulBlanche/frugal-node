@@ -1,5 +1,5 @@
 {
-	"name": "@frugal/workspace",
+	"name": "@frugal-node/workspace",
 	"workspaces": ["packages/*"],
 	"type": "module",
 	"scripts": {

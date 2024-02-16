@@ -11,6 +11,6 @@ const result = await esbuild.build({
 });
 
 await fs.writeTextFile(
-	url.fileURLToPath(import.meta.resolve("./livereload.min.js")),
+	url.fileURLToPath(new URL("./livereload.min.js", import.meta.url)),
 	`export default ${JSON.stringify(result.outputFiles[0].text)}`,
 );
