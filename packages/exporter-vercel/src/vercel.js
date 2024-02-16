@@ -88,8 +88,8 @@ async function bundleFunction(functionDir, config) {
 					new URL("./KvStorage.js", import.meta.url),
 				)}";
 				import { Server, Cache } from 'frugal/server';
-				import config from "frugal-node:config";
-				import * as manifest from "frugal-node:manifest";
+				import config from "frugal:config";
+				import * as manifest from "frugal:manifest";
 
 				const server = new Server({
 					config,
