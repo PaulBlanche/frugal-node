@@ -35,7 +35,7 @@ export function css({
 			}
 
 			build.onResolve({ filter: /^[^\.\/].*\.css$/ }, (args) => {
-				return { path: url.fileURLToPath(new URL(import.meta.url, args.path)) };
+				return { path: url.fileURLToPath(new URL(args.path, import.meta.url)) };
 			});
 
 			build.onEnd(async (result) => {

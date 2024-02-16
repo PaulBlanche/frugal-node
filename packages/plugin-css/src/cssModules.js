@@ -53,7 +53,7 @@ export function cssModules(cssModule) {
 				return {
 					loader: "js",
 					contents: await fs.readFile(
-						url.fileURLToPath(new URL(import.meta.url, "./format.js")),
+						url.fileURLToPath(new URL("./format.js", import.meta.url)),
 					),
 				};
 			});
