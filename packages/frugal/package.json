@@ -1,6 +1,6 @@
 {
 	"name": "frugal-node",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"type": "module",
 	"scripts": {
 		"postinstall": "node src/watcher/livereload/compileLiveReload.js"
@@ -93,17 +93,17 @@
 		}
 	},
 	"devDependencies": {
-		"@types/cookie": "~0.6.0",
+		"@types/cookie": "^0.6.0",
 		"@types/imurmurhash": "^0.1.4"
 	},
 	"dependencies": {
 		"chalk": "^5.3.0",
 		"chokidar": "^3.6.0",
 		"common-path-prefix": "^3.0.0",
-		"cookie": "~0.6.0",
+		"cookie": "^0.6.0",
 		"es-module-lexer": "^1.4.1",
-		"esbuild": "~0.20.0",
-		"imurmurhash": "~0.1.4",
+		"esbuild": "^0.20.0",
+		"imurmurhash": "^0.1.4",
 		"mime": "^4.0.1",
 		"path-to-regexp": "^6.2.1",
 		"zod": "^3.22.4"

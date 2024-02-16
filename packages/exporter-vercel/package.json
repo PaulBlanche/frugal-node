@@ -1,6 +1,6 @@
 {
 	"name": "@frugal-node/exporter-vercel",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"type": "module",
 	"exports": {
 		".": {
@@ -10,10 +10,10 @@
 		}
 	},
 	"peerDependencies": {
-		"frugal-node": "~0.1.0"
+		"frugal-node": "^1.x"
 	},
 	"dependencies": {
 		"@vercel/kv": "^1.0.1",
-		"esbuild": "~0.20.0"
+		"esbuild": "^0.20.0"
 	}
 }
