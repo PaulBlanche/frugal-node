@@ -1,0 +1,18 @@
+{
+  "integration/build/plugin/script: page script order:1": {
+    "name": "integration/build/plugin/script: page script order",
+    "value": "import \"./chunk-2Y3QE7SW.mjs\";\n\n// scriptOrder/0-before.script.ts\nif (true) {\n  console.log(\"before.script.ts\");\n}\n\n// scriptOrder/2-after.script.ts\nif (true) {\n  console.log(\"after.script.ts\");\n}\n"
+  },
+  "integration/build/plugin/script: page script order:2": {
+    "name": "integration/build/plugin/script: page script order",
+    "value": "import \"./chunk-2Y3QE7SW.mjs\";\n"
+  },
+  "integration/build/plugin/script: interaction with css modules:1": {
+    "name": "integration/build/plugin/script: interaction with css modules",
+    "value": "// cssModuleHelper:format.js\nfunction format(...classNames) {\n  const list = classNames.flatMap((name) => name.split(\" \"));\n  return [...new Set(list)].join(\" \");\n}\n\n// cssModules/main.module.css\nvar foo = format(\"CBGdRa_foo\");\n\n// cssModules/main.script.ts\nconsole.log(foo);\n"
+  },
+  "integration/build/plugin/script: interaction with css modules:2": {
+    "name": "integration/build/plugin/script: interaction with css modules",
+    "value": "/* dist/.temp/build/cssModules/page-CTUBHP46.css */\n.CBGdRa_foo {\n  color: red;\n}\n"
+  }
+}

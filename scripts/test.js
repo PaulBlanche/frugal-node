@@ -9,6 +9,7 @@ const CHILD_TEST_PROCESS_ENV = "CHILD_TEST_PROCESS";
 const TEST_ONLY_ENV = "TEST_ONLY";
 export const UPDATE_TEST_SNAPSHOT_ENV = "UPDATE_TEST_SNAPSHOT";
 const TEST_FILES_FILTER_ENV = "TEST_FILES_FILTER";
+const TEST_NAME_FILTER_ENV = "TEST_NAME_FILTER";
 
 if (process.env[CHILD_TEST_PROCESS_ENV]) {
 	testProcessBody();
@@ -39,10 +40,25 @@ function spawnTestProcess() {
 		config.args.unshift("c8", "node");
 	}
 
-	if (argv.includes("--filter")) {
-		const index = argv.indexOf("--filter");
+	if (argv.includes("--file-filter")) {
+		const index = argv.indexOf("--file-filter");
 		const filter = argv[index + 1];
 		config.env[TEST_FILES_FILTER_ENV] = filter;
+	}
+	if (argv.includes("-ff")) {
+		const index = argv.indexOf("-ff");
+		const filter = argv[index + 1];
+		config.env[TEST_FILES_FILTER_ENV] = filter;
+	}
+	if (argv.includes("--name-filter")) {
+		const index = argv.indexOf("--name-filter");
+		const filter = argv[index + 1];
+		config.env[TEST_NAME_FILTER_ENV] = filter;
+	}
+	if (argv.includes("-nf")) {
+		const index = argv.indexOf("-nf");
+		const filter = argv[index + 1];
+		config.env[TEST_NAME_FILTER_ENV] = filter;
 	}
 
 	childProcess.spawn(config.command, config.args, {
@@ -57,22 +73,26 @@ async function testProcessBody() {
 		recursive: true,
 	});
 
-	const filter = process.env[TEST_FILES_FILTER_ENV];
-	const filterRegexp = new RegExp(filter ?? ".*");
+	const fileFilter = process.env[TEST_FILES_FILTER_ENV];
+	const fileFilterRegexp = new RegExp(fileFilter ?? ".*");
 
 	for await (const entry of dir) {
 		if (entry.name.match(/\.test\.[tj]sx?$/)) {
 			const filePath = path.resolve(entry.path, entry.name);
-			if (filePath.match(filterRegexp)) {
+			if (filePath.match(fileFilterRegexp)) {
 				testFiles.push(filePath);
 			}
 		}
 	}
 
+	const nameFilter = process.env[TEST_NAME_FILTER_ENV];
+	const nameFilterRegexp = new RegExp(nameFilter ?? ".*");
+
 	test.run({
 		files: testFiles,
 		concurrency: true,
 		only: process.env[TEST_ONLY_ENV] !== undefined,
+		testNamePatterns: nameFilterRegexp,
 	})
 		.compose(new spec())
 		.pipe(process.stdout);

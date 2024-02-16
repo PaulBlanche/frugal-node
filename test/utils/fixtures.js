@@ -1,7 +1,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-import * as frugal from "../../index.js";
+import * as frugal from "../../packages/frugal/exports/index.js";
 
 /** @param {string} dirname */
 export async function setupFixtures(dirname) {

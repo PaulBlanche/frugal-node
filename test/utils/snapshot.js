@@ -1,10 +1,9 @@
-import * as assert from "node:assert";
+import * as assert from "node:assert/strict";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as test from "node:test";
 import * as url from "node:url";
 import { UPDATE_TEST_SNAPSHOT_ENV } from "../../scripts/test.js";
-import * as jsonValue from "../../src/utils/jsonValue.js";
 
 /** @typedef {Parameters<Exclude<Parameters<typeof test.test>[0], undefined>>[0]} TestContext */
 
@@ -36,7 +35,7 @@ export async function init(moduleUrl) {
 class Snapshot {
 	/** @type {string} */
 	#path;
-	/** @type {Map<string, { name: string; value: jsonValue.HashableJsonValue }>} */
+	/** @type {Map<string, { name: string; value: any }>} */
 	#entries;
 	/** @type {Map<string, { count: number; context: TestContext }>} */
 	#states;
@@ -45,7 +44,7 @@ class Snapshot {
 
 	/**
 	 * @param {string} path
-	 * @param {Map<string, { name: string; value: jsonValue.HashableJsonValue }>} [entries]
+	 * @param {Map<string, { name: string; value: any }>} [entries]
 	 */
 	constructor(path, entries = new Map()) {
 		this.#path = path;
@@ -82,7 +81,7 @@ class Snapshot {
 
 	/**
 	 * @param {TestContext} context
-	 * @param {jsonValue.JsonValue} actual
+	 * @param {any} actual
 	 * @param {string | Error} [message]
 	 */
 	assert(context, actual, message) {
@@ -99,11 +98,10 @@ class Snapshot {
 
 		this.#states.set(name, { count: count + 1, context });
 
-		const hashableActual = jsonValue.hashableJsonValue(actual);
 		const entryName = `${name}:${count}`;
 
 		if (isUpdating()) {
-			this.#entries.set(entryName, { name, value: hashableActual });
+			this.#entries.set(entryName, { name, value: actual });
 		}
 
 		const expected = this.#entries.get(entryName);
@@ -114,13 +112,13 @@ class Snapshot {
 			);
 		}
 
-		assert.deepEqual(hashableActual, expected.value, message);
+		assert.deepEqual(actual, expected.value, message);
 	}
 }
 
 /**
  * @param {string} path
- * @returns {Promise<Map<string, { name: string; value: jsonValue.HashableJsonValue }>>}
+ * @returns {Promise<Map<string, { name: string; value: any }>>}
  */
 async function load(path) {
 	try {

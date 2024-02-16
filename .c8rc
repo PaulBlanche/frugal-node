@@ -1,8 +1,8 @@
 {
-    "reporter": "lcov",
-    "all": true,
-    "src": ["./src"],
-    "report-dir": "./coverage",
-    "include": ["src"],
-    "exclude": ["**/_type/**"]
+	"reporter": "lcov",
+	"all": true,
+	"src": ["./packages"],
+	"report-dir": "./coverage",
+	"include": ["packages"],
+	"exclude": ["**/_type/**", "**/packages/*/exports/**"]
 }

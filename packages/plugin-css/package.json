@@ -1,0 +1,18 @@
+{
+	"name": "@frugal/plugin-css",
+	"version": "1.0.0",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./exports/index.d.ts",
+			"import": "./exports/index.js",
+			"deno": "./exports/mod.ts"
+		}
+	},
+	"peerDependencies": {
+		"frugal": "^1.0.0"
+	},
+	"dependencies": {
+		"lightningcss": "^1.22.1"
+	}
+}

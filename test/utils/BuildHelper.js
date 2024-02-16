@@ -1,32 +1,54 @@
-import * as assert from "node:assert";
+import * as assert from "node:assert/strict";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import * as frugal from "../../index.js";
-import { FrugalConfig } from "../../src/Config.js";
-import * as cache from "../../src/builder/Cache.js";
-import { loadManifest } from "../../src/builder/Manifest.js";
-import * as assets from "../../src/page/Assets.js";
+import * as frugal from "../../packages/frugal/exports/index.js";
+import { FrugalConfig } from "../../packages/frugal/src/Config.js";
+import * as buildCache from "../../packages/frugal/src/builder/Cache.js";
+import { loadManifest } from "../../packages/frugal/src/builder/Manifest.js";
+import * as assets from "../../packages/frugal/src/page/Assets.js";
+import { Server } from "../../packages/frugal/src/server/Server.js";
+import * as serverCache from "../../packages/frugal/src/server/cache/Cache.js";
+import { loadFixtureConfig, setupFixtures } from "./fixtures.js";
 
 export class BuildHelper {
-	/** @type {FrugalConfig} */
+	/** @type {frugal.Config} */
 	#config;
+	/** @type {FrugalConfig} */
+	#frugalConfig;
 
-	/** @param {frugal.Config} config */
-	constructor(config) {
-		this.#config = new FrugalConfig(config);
+	/**
+	 * @param {string} dirname
+	 */
+	static async setup(dirname) {
+		await setupFixtures(dirname);
+		const config = await loadFixtureConfig(dirname);
+		return new BuildHelper(config);
 	}
 
-	/** @param {Partial<frugal.Config>} [config] */
-	async build(config) {
-		return frugal.build({ ...this.#config._config, ...config });
+	/** @param {frugal.Config} conf */
+	constructor(conf) {
+		this.#config = conf;
+		this.#frugalConfig = new FrugalConfig(conf);
+	}
+
+	async build() {
+		return frugal.build(this.#config);
+	}
+
+	/** @param {Partial<frugal.Config> | ((config:frugal.Config) => frugal.Config)} [config] */
+	extends(config) {
+		if (typeof config === "function") {
+			return new BuildHelper({ ...this.#config, ...config(this.#config) });
+		}
+		return new BuildHelper({ ...this.#config, ...config });
 	}
 
 	get config() {
-		return this.#config;
+		return this.#frugalConfig;
 	}
 
 	getCache() {
-		return CacheExplorer.load(this.#config);
+		return CacheExplorer.load(this.#frugalConfig);
 	}
 
 	/**
@@ -34,20 +56,78 @@ export class BuildHelper {
 	 * @returns {Promise<assets.PageAssets>}
 	 */
 	async getAssets(entrypoint) {
-		const manifest = await loadManifest(this.#config);
+		const manifest = await loadManifest(this.#frugalConfig);
 		return new assets.PageAssets(manifest.assets, entrypoint);
+	}
+
+	/**
+	 * @param {() => Promise<void>|void} callback
+	 */
+	async withServer(callback) {
+		const buildSnapshot = await buildCache.snapshot({ dir: this.#frugalConfig.buildCacheDir });
+
+		const memory = await buildSnapshot.current.reduce(
+			async (memoryPromise, entry) => {
+				const memory = await memoryPromise;
+				memory[entry.path] = JSON.stringify({
+					path: entry.path,
+					body: await buildSnapshot.read(entry),
+					hash: entry.hash,
+					headers: entry.headers,
+					status: entry.status,
+				});
+				return memory;
+			},
+			Promise.resolve(/** @type {Record<string, string>} */ ({})),
+		);
+
+		/** @type {serverCache.CacheStorage} */
+		const cacheStorage = {
+			get: (path) => {
+				return memory[path];
+			},
+			set: (path, content) => {
+				memory[path] = content;
+			},
+			delete: (path) => {
+				delete memory[path];
+			},
+		};
+
+		const manifest = await loadManifest(this.#frugalConfig);
+		const server = new Server({
+			config: this.#frugalConfig,
+			watch: false,
+			manifest,
+			cache: new serverCache.Cache(cacheStorage),
+		});
+
+		const controller = new AbortController();
+		try {
+			await /** @type {Promise<void>} */ (
+				new Promise((res) => {
+					server.serve({
+						signal: controller.signal,
+						onListen: () => res(),
+					});
+				})
+			);
+			await callback();
+		} finally {
+			controller.abort();
+		}
 	}
 }
 
 class CacheExplorer {
 	/** @type {FrugalConfig} */
 	#config;
-	/** @type {cache.Data} */
+	/** @type {buildCache.Data} */
 	#data;
 
 	/** @param {FrugalConfig} config */
 	static async load(config) {
-		const data = await cache.loadCacheData({ dir: config.buildCacheDir });
+		const data = await buildCache.loadCacheData({ dir: config.buildCacheDir });
 		if (data === undefined) {
 			throw Error("error while loading cache data");
 		}
@@ -56,7 +136,7 @@ class CacheExplorer {
 
 	/**
 	 * @param {FrugalConfig} config
-	 * @param {cache.Data} data
+	 * @param {buildCache.Data} data
 	 */
 	constructor(config, data) {
 		this.#config = config;
@@ -79,7 +159,7 @@ class CacheExplorer {
 
 	/**
 	 * @returns {Promise<
-	 *     [string, Omit<cache.Data[string] & { body?: string }, "doc" | "hash">][]
+	 *     [string, Omit<buildCache.Data[string] & { body?: string }, "doc" | "hash">][]
 	 * >}
 	 */
 	async #entries() {
@@ -102,7 +182,7 @@ class CacheExplorer {
 	}
 
 	/**
-	 * @param {Record<string, Omit<cache.Data[string] & { body?: string }, "doc" | "hash">>} expected
+	 * @param {Record<string, Omit<buildCache.Data[string] & { body?: string }, "doc" | "hash">>} expected
 	 * @param {string | Error} [message]
 	 */
 	async assertContent(expected, message) {
@@ -121,7 +201,7 @@ class CacheExplorer {
 
 	/**
 	 * @param {string} path
-	 * @returns {Promise<Omit<cache.Data[string] & { body?: string }, "doc" | "hash">>}
+	 * @returns {Promise<Omit<buildCache.Data[string] & { body?: string }, "doc" | "hash">>}
 	 */
 	async get(path) {
 		return Object.fromEntries(await this.#entries())[path];

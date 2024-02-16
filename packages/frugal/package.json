@@ -1,0 +1,111 @@
+{
+	"name": "frugal",
+	"version": "1.0.0",
+	"type": "module",
+	"scripts": {
+		"postinstall": "node src/watcher/livereload/compileLiveReload.js"
+	},
+	"exports": {
+		".": {
+			"types": "./exports/index.d.ts",
+			"import": "./exports/index.js",
+			"deno": "./exports/mod.ts"
+		},
+		"./page": {
+			"types": "./exports/page/index.d.ts",
+			"import": "./exports/page/index.js",
+			"deno": "./exports/page/mod.ts"
+		},
+		"./plugin": {
+			"types": "./exports/plugin/index.d.ts",
+			"import": "./exports/plugin/index.js",
+			"deno": "./exports/plugin/mod.ts"
+		},
+		"./exporter": {
+			"types": "./exports/exporter/index.d.ts",
+			"import": "./exports/exporter/index.js",
+			"deno": "./exports/exporter/mod.ts"
+		},
+		"./config": {
+			"types": "./exports/config/index.d.ts",
+			"import": "./exports/config/index.js",
+			"deno": "./exports/config/mod.ts"
+		},
+		"./server": {
+			"types": "./exports/server/index.d.ts",
+			"import": "./exports/server/index.js",
+			"deno": "./exports/server/mod.ts"
+		},
+		"./utils/asyncIterator": {
+			"import": "./exports/utils/asyncIterator/index.js",
+			"types": "./exports/utils/asyncIterator/index.d.ts",
+			"deno": "./exports/utils/asyncIterator/mod.ts"
+		},
+		"./utils/commonPath": {
+			"import": "./exports/utils/commonPath/index.js",
+			"types": "./exports/utils/commonPath/index.d.ts",
+			"deno": "./exports/utils/commonPath/mod.ts"
+		},
+		"./utils/crypto": {
+			"import": "./exports/utils/crypto/index.js",
+			"types": "./exports/utils/crypto/index.d.ts",
+			"deno": "./exports/utils/crypto/mod.ts"
+		},
+		"./utils/deferred": {
+			"import": "./exports/utils/deferred/index.js",
+			"types": "./exports/utils/deferred/index.d.ts",
+			"deno": "./exports/utils/deferred/mod.ts"
+		},
+		"./utils/fs": {
+			"import": "./exports/utils/fs/index.js",
+			"types": "./exports/utils/fs/index.d.ts",
+			"deno": "./exports/utils/fs/mod.ts"
+		},
+		"./utils/hash": {
+			"import": "./exports/utils/hash/index.js",
+			"types": "./exports/utils/hash/index.d.ts",
+			"deno": "./exports/utils/hash/mod.ts"
+		},
+		"./utils/http": {
+			"import": "./exports/utils/http/index.js",
+			"types": "./exports/utils/http/index.d.ts",
+			"deno": "./exports/utils/http/mod.ts"
+		},
+		"./utils/jsonValue": {
+			"import": "./exports/utils/jsonValue/index.js",
+			"types": "./exports/utils/jsonValue/index.d.ts",
+			"deno": "./exports/utils/jsonValue/mod.ts"
+		},
+		"./utils/log": {
+			"import": "./exports/utils/log/index.js",
+			"types": "./exports/utils/log/index.d.ts",
+			"deno": "./exports/utils/log/mod.ts"
+		},
+		"./utils/readableStream": {
+			"import": "./exports/utils/readableStream/index.js",
+			"types": "./exports/utils/readableStream/index.d.ts",
+			"deno": "./exports/utils/readableStream/mod.ts"
+		},
+		"./utils/spawn": {
+			"import": "./exports/utils/spawn/index.js",
+			"types": "./exports/utils/spawn/index.d.ts",
+			"deno": "./exports/utils/spawn/mod.ts"
+		}
+	},
+	"devDependencies": {
+		"@types/cookie": "~0.6.0",
+		"@types/imurmurhash": "^0.1.4"
+	},
+	"dependencies": {
+		"chalk": "^5.3.0",
+		"chokidar": "^3.6.0",
+		"common-path-prefix": "^3.0.0",
+		"cookie": "~0.6.0",
+		"es-module-lexer": "^1.4.1",
+		"esbuild": "~0.20.0",
+		"imurmurhash": "~0.1.4",
+		"mime": "^4.0.1",
+		"path-to-regexp": "^6.2.1",
+		"zod": "^3.22.4"
+	}
+}

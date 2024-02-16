@@ -1,5 +1,6 @@
 node_modules
 .vscode
 coverage
-playground
 test/**/project
+TODO.md
+test/**/data

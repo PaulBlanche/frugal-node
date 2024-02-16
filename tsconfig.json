@@ -1,12 +1,16 @@
 {
-    "compilerOptions": {
-        "noEmit": true,
-        "checkJs": true,
-        "strict": true,
-        "allowJs": true,
-        "target": "ESNext",
-        "moduleResolution": "NodeNext",
-        "module": "NodeNext",
-        "lib": ["DOM", "DOM.Iterable", "ESNext"]
-    }
+	"compilerOptions": {
+		"noEmit": true,
+		"checkJs": true,
+		"strict": true,
+		"allowJs": true,
+		"target": "ESNext",
+		"moduleResolution": "NodeNext",
+		"module": "NodeNext",
+		"lib": ["DOM", "DOM.Iterable", "ESNext"],
+		"allowImportingTsExtensions": true,
+		"forceConsistentCasingInFileNames": false
+	},
+	"include": ["packages", "test"],
+	"exclude": ["test/**/project"]
 }
