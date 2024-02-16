@@ -69,7 +69,7 @@ function spawnTestProcess() {
 
 async function testProcessBody() {
 	const testFiles = [];
-	const dir = await fs.promises.opendir(url.fileURLToPath(import.meta.resolve("../test")), {
+	const dir = await fs.promises.opendir(url.fileURLToPath(new URL(import.meta.url, "../test")), {
 		recursive: true,
 	});
 

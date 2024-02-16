@@ -10,7 +10,7 @@ export type ScriptOptions = {
 	>;
 };
 
-declare module "frugal/plugin" {
+declare module "frugal-node/plugin" {
 	interface AssetTypes {
 		js: BasePageAsset<"js"> & { path: string };
 	}

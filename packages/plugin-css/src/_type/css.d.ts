@@ -28,7 +28,7 @@ export type Bundle =
 			type: "global";
 	  };
 
-declare module "frugal/plugin" {
+declare module "frugal-node/plugin" {
 	interface AssetTypes {
 		css:
 			| (BaseGlobalAsset<"css"> & { path: string })

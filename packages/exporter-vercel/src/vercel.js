@@ -85,7 +85,7 @@ async function bundleFunction(functionDir, config) {
 		stdin: {
 			contents: `
 				import { KvStorage } from "${url.fileURLToPath(
-					import.meta.resolve("./KvStorage.js"),
+					new URL(import.meta.url, "./KvStorage.js"),
 				)}";
 				import { Server, Cache } from 'frugal/server';
 				import config from "frugal-node:config";
