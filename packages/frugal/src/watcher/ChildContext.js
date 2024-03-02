@@ -6,13 +6,13 @@ import { WatchCache } from "./WatchCache.js";
 
 const WATCH_MESSAGE_SYMBOL = Symbol("WATCH_MESSAGE_SYMBOL");
 
-/** @type {import('./ChildContext.ts').Maker} */
+/** @type {import('./ChildContext.ts').ChildContextMaker} */
 export const ChildContext = {
 	create,
 };
 
-/** @type {import('./ChildContext.ts').Maker['create']} */
-export function create(config) {
+/** @type {import('./ChildContext.ts').ChildContextMaker['create']} */
+export function create(config, buildConfig) {
 	const watchCache = WatchCache.create();
 
 	const state = {
@@ -36,8 +36,8 @@ export function create(config) {
 					context.reset();
 
 					const instance = await Server.create({
-						config: config.global,
-						manifest: await manifest.loadManifest(config.global),
+						config: config,
+						manifest: await manifest.loadManifest(config),
 						watch: true,
 						cache: watchCache,
 					});
@@ -63,7 +63,7 @@ export function create(config) {
 		},
 	};
 
-	const context = bundler.context(config, [buildPlugin(watchCache), watchPlugin]);
+	const context = bundler.context(config, buildConfig, [buildPlugin(watchCache), watchPlugin]);
 
 	return {
 		async watch({ port } = {}) {

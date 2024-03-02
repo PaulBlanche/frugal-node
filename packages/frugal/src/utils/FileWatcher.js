@@ -2,12 +2,12 @@ import events from "node:events";
 import * as chokidar from "chokidar";
 import { debounce } from "./asyncIterator.js";
 
-/** @type {import('./FileWatcher.ts').Maker}*/
+/** @type {import('./FileWatcher.ts').FileWatcherMaker}*/
 export const FileWatcher = {
 	watch,
 };
 
-/** @type {import('./FileWatcher.ts').Maker['watch']}*/
+/** @type {import('./FileWatcher.ts').FileWatcherMaker['watch']}*/
 export function watch(paths, { interval = 300 } = {}) {
 	const watcher = chokidar.watch(paths, { ignoreInitial: true });
 	/**@type {Promise<void>} */

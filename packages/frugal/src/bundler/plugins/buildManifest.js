@@ -15,7 +15,7 @@ export function buildManifest(context) {
 						return;
 					}
 
-					const analyser = MetafileAnalyser.create(metafile, context.config.global);
+					const analyser = MetafileAnalyser.create(metafile, context.config);
 					const analysisResults = await Promise.all(
 						Object.entries(metafile.outputs).map(([outputPath, output]) => {
 							return analyser.analyse(outputPath, output);

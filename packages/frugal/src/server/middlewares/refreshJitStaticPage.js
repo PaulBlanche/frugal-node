@@ -7,9 +7,7 @@ export async function refreshJitStaticPage(context, next) {
 	}
 
 	if (context.page.strictPaths) {
-		const pathList = await context.page.getBuildPaths({
-			resolve: (path) => context.config.global.resolve(path),
-		});
+		const pathList = await context.page.getBuildPaths();
 		const hasMatchingPath = pathList.some((path) => {
 			return context.page.compile(path) === context.url.pathname;
 		});

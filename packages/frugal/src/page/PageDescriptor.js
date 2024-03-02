@@ -52,13 +52,9 @@ const staticDescriptorSchema = /* @__PURE__ */ baseDescriptorSchema.extend({
 		}),
 	),
 	getBuildPaths: /* @__PURE__ */ zod.optional(
-		/* @__PURE__ */ zod.function(
-			/* @__PURE__ */ zod.tuple([/* @__PURE__ */ zod.any()]),
-			/* @__PURE__ */ zod.any(),
-			{
-				invalid_type_error: 'A static page descriptor "getBuildPaths" must be a function',
-			},
-		),
+		/* @__PURE__ */ zod.function(/* @__PURE__ */ zod.tuple([]), /* @__PURE__ */ zod.any(), {
+			invalid_type_error: 'A static page descriptor "getBuildPaths" must be a function',
+		}),
 	),
 	build: /* @__PURE__ */ zod.optional(
 		/* @__PURE__ */ zod.function(

@@ -1,12 +1,12 @@
 import * as child_process from "node:child_process";
 import * as streamWeb from "node:stream/web";
 
-/** @type {import('./ChildProcess.ts').Maker} */
+/** @type {import('./ChildProcess.ts').ChildProcessMaker} */
 export const ChildProcess = {
 	spawn,
 };
 
-/** @type {import('./ChildProcess.ts').Maker['spawn']} */
+/** @type {import('./ChildProcess.ts').ChildProcessMaker['spawn']} */
 export function spawn(command, options) {
 	/** @type {import('./ChildProcess.ts').StdioStream} */
 	const stderr = {};

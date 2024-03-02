@@ -1,7 +1,6 @@
 import * as path from "node:path";
 import * as url from "node:url";
 import * as esbuild from "esbuild";
-import * as config from "frugal-node/config";
 import { Snapshot, getManifestPath } from "frugal-node/exporter";
 import * as fs from "frugal-node/utils/fs";
 
@@ -53,7 +52,7 @@ function globalConfigContent() {
 }
 
 /**
- * @param {config.FrugalConfig} config
+ * @param {import("frugal-node/config").FrugalConfig} config
  */
 async function populate(config) {
 	const { kv } = await import("@vercel/kv");
@@ -77,7 +76,7 @@ async function populate(config) {
 /**
  * @param {string} functionDir
  * @param {string} outputDir
- * @param {config.FrugalConfig} config
+ * @param {import("frugal-node/config").FrugalConfig} config
  */
 async function bundleFunction(functionDir, outputDir, config) {
 	const manifestPath = await getManifestPath(config);

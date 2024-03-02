@@ -1,12 +1,13 @@
+import { BuildConfig } from "./BuildConfig.js";
 import { Config } from "./Config.js";
 import { WatchContext } from "./watcher/WatchContext.js";
 
-export function build(conf: Config): Promise<void>;
+export function build(config: Config, buildConfig: BuildConfig): Promise<void>;
 
-export function context(conf: Config): Promise<WatchContext>;
+export function context(config: Config, buildConfig: BuildConfig): Promise<WatchContext>;
 
 declare global {
-	export interface importMeta {
+	interface ImportMeta {
 		environment: "server" | "client";
 	}
 }

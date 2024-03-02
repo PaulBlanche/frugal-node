@@ -3,12 +3,12 @@ import { serve } from "../../utils/serve.js";
 
 const ENCODER = new TextEncoder();
 
-/** @type {import('./LiveReloadServer.ts').Maker} */
+/** @type {import('./LiveReloadServer.ts').LiveReloadServerMaker} */
 export const LiveReloadServer = {
 	create,
 };
 
-/** @type {import('./LiveReloadServer.ts').Maker['create']} */
+/** @type {import('./LiveReloadServer.ts').LiveReloadServerMaker['create']} */
 export function create() {
 	/** @type {Map<number, ReadableStreamController<Uint8Array>>} */
 	const controllers = new Map();

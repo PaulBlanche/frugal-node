@@ -1,15 +1,15 @@
 import { ChildContext } from "./ChildContext.js";
 import { ParentContext } from "./ParentContext.js";
 
-/** @type {import('./WatchContext.ts').Maker} */
+/** @type {import('./WatchContext.ts').WatchContextMaker} */
 export const WatchContext = {
 	create,
 };
 
-/** @type {import('./WatchContext.ts').Maker['create']} */
-export function create(config) {
+/** @type {import('./WatchContext.ts').WatchContextMaker['create']} */
+export function create(config, buildConfig) {
 	if (isInChildWatchProcess()) {
-		return createWrapper(ChildContext.create(config));
+		return createWrapper(ChildContext.create(config, buildConfig));
 	}
 	return createWrapper(ParentContext.create());
 }

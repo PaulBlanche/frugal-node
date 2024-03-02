@@ -1,8 +1,8 @@
 import { CookieConfig } from "../../utils/cookies.ts";
 import { SessionStorage } from "./SessionStorage.ts";
 
-interface CookieStorageMaker {
+interface CookieSessionStorageMaker {
 	create(cookieConfig?: CookieConfig): SessionStorage;
 }
 
-export const CookieStorage: CookieStorageMaker;
+export const CookieStorage: CookieSessionStorageMaker;

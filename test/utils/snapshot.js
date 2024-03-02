@@ -1,11 +1,10 @@
 import * as assert from "node:assert/strict";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import * as test from "node:test";
 import * as url from "node:url";
 import { UPDATE_TEST_SNAPSHOT_ENV } from "../../scripts/test.js";
 
-/** @typedef {Parameters<Exclude<Parameters<typeof test.test>[0], undefined>>[0]} TestContext */
+/** @typedef {Parameters<Exclude<Parameters<typeof import('node:test').test>[0], undefined>>[0]} TestContext */
 
 /**
  * @param {string} moduleUrl

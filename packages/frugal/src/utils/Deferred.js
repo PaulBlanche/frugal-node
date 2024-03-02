@@ -1,9 +1,9 @@
-/** @type {import('./Deferred.ts').Maker} */
+/** @type {import('./Deferred.ts').DeferredMaker} */
 export const Deferred = {
 	create,
 };
 
-/** @type {import('./Deferred.ts').Maker['create']} */
+/** @type {import('./Deferred.ts').DeferredMaker['create']} */
 export function create() {
 	let methods;
 	let state = "pending";

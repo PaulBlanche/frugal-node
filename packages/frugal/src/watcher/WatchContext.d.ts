@@ -1,4 +1,5 @@
-import { FrugalBuildConfig } from "../Config.ts";
+import { FrugalBuildConfig } from "../BuildConfig.js";
+import { FrugalConfig } from "../Config.ts";
 import { Listener } from "./WatchProcess.ts";
 import { WatchOptions } from "./types.ts";
 
@@ -15,7 +16,7 @@ export interface WatchContext {
 export function isInChildWatchProcess(): boolean;
 
 interface WatchContextMaker {
-	create(config: FrugalBuildConfig): WatchContext;
+	create(config: FrugalConfig, buildConfig: FrugalBuildConfig): WatchContext;
 }
 
 export const WatchContext: WatchContextMaker;

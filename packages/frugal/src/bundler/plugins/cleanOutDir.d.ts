@@ -1,7 +1,9 @@
 import * as esbuild from "esbuild";
-import { FrugalBuildConfig } from "../../Config.ts";
+import { FrugalBuildConfig } from "../../BuildConfig.js";
+import { FrugalConfig } from "../../Config.ts";
 
 export function cleanOutDir(
-	config: FrugalBuildConfig,
+	config: FrugalConfig,
+	buildConfig: FrugalBuildConfig,
 	overrideCleanAllOutDir?: boolean,
 ): esbuild.Plugin;

@@ -1,15 +1,13 @@
 import * as pathToRegexp from "path-to-regexp";
-import * as jsonValue from "../utils/jsonValue.js";
 import { log } from "../utils/log.js";
 import * as descriptor from "./PageDescriptor.js";
-import * as pageResponse from "./PageResponse.js";
 
-/** @type {import('./Page.ts').Maker} */
+/** @type {import('./Page.ts').PageMaker} */
 export const Page = {
 	create,
 };
 
-/** @type {import('./Page.ts').Maker['create']} */
+/** @type {import('./Page.ts').PageMaker['create']} */
 export function create({ entrypoint, moduleHash, pageDescriptor }) {
 	log(`compile page "${entrypoint}" (${moduleHash})`, {
 		scope: "Router",
@@ -63,7 +61,7 @@ export function create({ entrypoint, moduleHash, pageDescriptor }) {
 
 /**
  * @template {string} [PATH=string]
- * @template {jsonValue.JsonValue} [DATA=jsonValue.JsonValue]
+ * @template {import("../utils/jsonValue.js").JsonValue} [DATA=import("../utils/jsonValue.js").JsonValue]
  * @param {import('./PageDescriptor.ts').DynamicPageDescriptor<PATH, DATA>} descriptor
  * @param {string} moduleHash
  * @param {string} entrypoint
@@ -83,7 +81,7 @@ function dynamicPage(descriptor, moduleHash, entrypoint) {
 
 /**
  * @template {string} [PATH=string]
- * @template {jsonValue.JsonValue} [DATA=jsonValue.JsonValue]
+ * @template {import("../utils/jsonValue.js").JsonValue} [DATA=import("../utils/jsonValue.js").JsonValue]
  * @param {import('./PageDescriptor.ts').StaticPageDescriptor<PATH, DATA>} descriptor
  * @param {string} moduleHash
  * @param {string} entrypoint
@@ -141,7 +139,7 @@ function staticPage(descriptor, moduleHash, entrypoint) {
 			}
 		},
 
-		getBuildPaths(context) {
+		getBuildPaths() {
 			if (descriptor.getBuildPaths === undefined) {
 				log(
 					`building default path list for page "${this.entrypoint}" (${this.moduleHash}) with route "${this.route}" with no "getBuildPaths" function`,
@@ -163,7 +161,7 @@ function staticPage(descriptor, moduleHash, entrypoint) {
 			);
 
 			try {
-				return descriptor.getBuildPaths(context);
+				return descriptor.getBuildPaths();
 			} catch (/** @type {any} */ error) {
 				throw new PageError(`Error while building path list for route "${this.route}"`, {
 					cause: error,
@@ -175,7 +173,7 @@ function staticPage(descriptor, moduleHash, entrypoint) {
 
 /**
  * @template {string} [PATH=string]
- * @template {jsonValue.JsonValue} [DATA=jsonValue.JsonValue]
+ * @template {import("../utils/jsonValue.js").JsonValue} [DATA=import("../utils/jsonValue.js").JsonValue]
  * @param {import('./PageDescriptor.ts').PageDescriptor<PATH, DATA>} descriptor
  * @param {string} moduleHash
  * @param {string} entrypoint

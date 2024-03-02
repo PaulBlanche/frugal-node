@@ -1,11 +1,11 @@
 import { toResponse } from "../page/GenerationResponse.js";
 
-/** @type {import('./ServerCache.ts').Maker} */
+/** @type {import('./ServerCache.ts').ServerCacheMaker} */
 export const ServerCache = {
 	create,
 };
 
-/** @type {import('./ServerCache.ts').Maker['create']} */
+/** @type {import('./ServerCache.ts').ServerCacheMaker['create']} */
 function create(storage) {
 	return {
 		async add(response) {

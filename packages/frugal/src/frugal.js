@@ -1,27 +1,28 @@
+import { FrugalBuildConfig } from "./BuildConfig.js";
 import { FrugalConfig } from "./Config.js";
 import * as builder from "./builder/builder.js";
 import { WatchContext } from "./watcher/WatchContext.js";
 
 /** @type {import('./frugal.ts').build} */
-export async function build(conf) {
-	const frugalConfig = FrugalConfig.create(conf);
+export async function build(config, buildConfig) {
+	const frugalConfig = FrugalConfig.create(config);
 	await frugalConfig.validate();
 
-	const buildConfig = await frugalConfig.build;
+	const frugalBuildConfig = FrugalBuildConfig.create(buildConfig);
 
-	await builder.build(buildConfig);
+	await builder.build(frugalConfig, frugalBuildConfig);
 
-	if (buildConfig.exporter) {
-		await buildConfig.exporter.export({ config: frugalConfig });
+	if (frugalBuildConfig.exporter) {
+		await frugalBuildConfig.exporter.export({ config: frugalConfig });
 	}
 }
 
 /** @type {import('./frugal.ts').context} */
-export async function context(conf) {
-	const frugalConfig = FrugalConfig.create(conf);
+export async function context(config, buildConfig) {
+	const frugalConfig = FrugalConfig.create(config);
 	await frugalConfig.validate();
 
-	const buildConfig = await frugalConfig.build;
+	const frugalBuildConfig = FrugalBuildConfig.create(buildConfig);
 
-	return WatchContext.create(buildConfig);
+	return WatchContext.create(frugalConfig, frugalBuildConfig);
 }

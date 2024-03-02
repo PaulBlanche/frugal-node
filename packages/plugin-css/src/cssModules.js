@@ -29,7 +29,7 @@ export function cssModules(cssModule) {
 			const compiledCssModuleCache = new Map();
 
 			build.onResolve({ filter: /\.frugal-compiled-css-module\.css$/ }, (args) => {
-				const relativePath = path.relative(context.config.global.rootDir, args.path);
+				const relativePath = path.relative(context.config.rootDir, args.path);
 				if (compiledCssModuleCache.has(relativePath)) {
 					return {
 						path: relativePath,
@@ -78,7 +78,7 @@ export function cssModules(cssModule) {
 				const module = await bundler.bundle(args.path, cssPath, contents);
 
 				compiledCssModuleCache.set(
-					path.relative(context.config.global.rootDir, cssPath),
+					path.relative(context.config.rootDir, cssPath),
 					module.css,
 				);
 

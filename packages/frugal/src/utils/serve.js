@@ -1,6 +1,5 @@
 import * as http from "node:http";
 import * as https from "node:https";
-import * as net from "node:net";
 import * as path from "node:path";
 import * as stream from "node:stream";
 import { Hash } from "./Hash.js";
@@ -36,7 +35,9 @@ export function nativeHandler(handler) {
 		const host = req.headers.host ?? "localhost";
 
 		/** Socket might come from an https connection and have the `encrypted` property  */
-		const protocol = /** @type {net.Socket & { encrypted?: boolean }} */ (req.socket).encrypted
+		const protocol = /** @type {import('node:net').Socket & { encrypted?: boolean }} */ (
+			req.socket
+		).encrypted
 			? "https:"
 			: "http:";
 

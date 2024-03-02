@@ -1,4 +1,4 @@
 import * as esbuild from "esbuild";
-import { FrugalBuildConfig } from "../../../Config.js";
+import { FrugalConfig } from "../../../Config.js";
 
-export function importMetaAssets(config: FrugalBuildConfig): esbuild.Plugin;
+export function importMetaAssets(config: FrugalConfig): esbuild.Plugin;

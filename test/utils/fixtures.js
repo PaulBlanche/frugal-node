@@ -1,8 +1,6 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-import * as frugal from "../../packages/frugal/exports/index.js";
-
 /** @param {string} dirname */
 export async function setupFixtures(dirname) {
 	const base = path.join(dirname, "project/");
@@ -23,7 +21,7 @@ export async function setupFixtures(dirname) {
 
 /**
  * @param {string} dirname
- * @returns {Promise<frugal.Config>}
+ * @returns {Promise<import('../../packages/frugal/exports/config/index.ts').Config>}
  */
 export async function loadFixtureConfig(dirname) {
 	const hash = String(Date.now());

@@ -1,10 +1,7 @@
 import * as path from "node:path";
-import * as url from "node:url";
-import * as esbuild from "esbuild";
 import fastGlob from "fast-glob";
 import { Hash } from "../../../utils/Hash.js";
 import * as fs from "../../../utils/fs.js";
-import { externalDependency } from "../externalDependency.js";
 import { ModuleWalker } from "./ModuleWalker.js";
 import { UrlMetaTransformer } from "./UrlMetaTransformer.js";
 import { dynamicUrlMetaToGlob } from "./dynamicUrlMetaToGlob.js";
@@ -89,67 +86,14 @@ export function importMetaAssets(config) {
 			});
 
 			build.onEnd(async () => {
-				const configs = [];
 				for (const asset of assets) {
 					const from = path.resolve(path.dirname(asset.importer), asset.path);
 
-					if (
-						(config.global.buildConfigUrl &&
-							from === url.fileURLToPath(config.global.buildConfigUrl)) ||
-						(config.global.serverConfigUrl &&
-							from === url.fileURLToPath(config.global.serverConfigUrl))
-					) {
-						configs.push({ ...asset, from });
-					} else {
-						const to = path.resolve(config.global.buildDir, asset.out);
-						await fs.copy(from, to, {
-							overwrite: true,
-							recursive: false,
-						});
-					}
-				}
-
-				if (configs.length > 0) {
-					console.log(configs);
-
-					const result = await esbuild.build({
-						...build.initialOptions,
-						plugins: [
-							...(build.initialOptions.plugins ?? []).filter(
-								(plugin) => !plugin.name.startsWith("frugal-internal:"),
-							),
-							externalDependency(),
-						],
-						metafile: true,
-						entryPoints: configs.map((config) => config.from),
-						outdir: path.resolve(config.global.buildDir, "assets"),
+					const to = path.resolve(config.buildDir, asset.out);
+					await fs.copy(from, to, {
+						overwrite: true,
+						recursive: false,
 					});
-
-					for (const outputFile of result.outputFiles ?? []) {
-						const outputPath = path.relative(config.global.rootDir, outputFile.path);
-						const output = result.metafile.outputs[outputPath];
-
-						const entryPoint = output.entryPoint;
-						const configAsset =
-							entryPoint === undefined
-								? undefined
-								: configs.find(
-										(conf) =>
-											conf.from ===
-											path.resolve(config.global.rootDir, entryPoint),
-								  );
-						if (configAsset) {
-							await fs.writeFile(
-								path.resolve(config.global.buildDir, configAsset.out),
-								outputFile.contents,
-							);
-						} else {
-							await fs.writeFile(
-								path.resolve(config.global.buildDir, outputFile.path),
-								outputFile.contents,
-							);
-						}
-					}
 				}
 			});
 		},

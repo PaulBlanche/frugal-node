@@ -39,18 +39,11 @@ export type Render<PATH extends string, DATA extends JsonValue = JsonValue> = (
 	context: RenderContext<PATH, DATA>,
 ) => string | webStream.ReadableStream<string>;
 
-export type GetBuildPathsContext = {
-	resolve: (path: string) => string;
-};
-
 export type PathList<PATH extends string = string> = PathObject<PATH>[];
 
-export type GetBuildPaths<PATH extends string> = (
-	context: GetBuildPathsContext,
-) => Promise<PathList<PATH>> | PathList<PATH>;
+export type GetBuildPaths<PATH extends string> = () => Promise<PathList<PATH>> | PathList<PATH>;
 
 export type GenerateContext<PATH extends string> = BaseContext<PATH> & {
-	resolve: (path: string) => string;
 	data: <DATA extends JsonValue>(data: DATA, init?: ResponseInit) => DataResponse<DATA>;
 	empty: (init?: ResponseInit) => EmptyResponse;
 	state: State;
@@ -63,7 +56,6 @@ export type Generate<PATH extends string, DATA extends JsonValue> = (
 ) => Promise<PageResponse<DATA> | undefined> | PageResponse<DATA> | undefined;
 
 export type BuildContext<PATH extends string> = BaseContext<PATH> & {
-	resolve: (path: string) => string;
 	data: <DATA extends JsonValue>(data: DATA, init?: ResponseInit) => DataResponse<DATA>;
 	empty: (init?: ResponseInit) => EmptyResponse;
 } & (

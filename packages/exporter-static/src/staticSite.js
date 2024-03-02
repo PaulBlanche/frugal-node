@@ -1,19 +1,16 @@
 import * as path from "node:path";
-import { FrugalConfig } from "frugal-node/config";
-import * as exporter from "frugal-node/exporter";
+import { Snapshot } from "frugal-node/exporter";
 import * as fs from "frugal-node/utils/fs";
 import { log } from "frugal-node/utils/log";
-import * as _type from "./_type/staticSite.js";
 
-/**
- * @param {_type.StaticSiteConfig} [config]
- * @returns {exporter.Exporter}
- */
-export function staticSite({ mode = "index.html" } = {}) {
+/** @type {import('./staticSite.ts').staticSite} */
+export function staticSite(config = {}) {
+	const mode = config.mode ?? "index.html";
+
 	return {
 		name: "static-site",
 		async export(context) {
-			const cacheSnapshot = await exporter.snapshot({ dir: context.config.buildCacheDir });
+			const cacheSnapshot = await Snapshot.load({ dir: context.config.buildCacheDir });
 
 			await Promise.all(
 				cacheSnapshot.added.map(
@@ -37,8 +34,8 @@ export function staticSite({ mode = "index.html" } = {}) {
 }
 
 /**
- * @param {FrugalConfig} config
- * @param {exporter.CacheEntry} entry
+ * @param {import("frugal-node/config").FrugalConfig} config
+ * @param {import("frugal-node/exporter").CacheEntry} entry
  */
 async function deleteEntry(config, entry) {
 	const filePath = path.join(config.publicDir, entry.path, "index.html");
@@ -53,9 +50,9 @@ async function deleteEntry(config, entry) {
 }
 
 /**
- * @param {_type.StaticSiteMode} mode
- * @param {FrugalConfig} config
- * @param {exporter.CacheEntry} entry
+ * @param {import("./staticSite.ts").StaticSiteMode} mode
+ * @param {import("frugal-node/config").FrugalConfig} config
+ * @param {import("frugal-node/exporter").CacheEntry} entry
  * @param {string | undefined} doc
  */
 async function writeEntry(mode, config, entry, doc) {
@@ -71,8 +68,8 @@ async function writeEntry(mode, config, entry, doc) {
 }
 
 /**
- * @param {_type.StaticSiteMode} mode
- * @param {exporter.CacheEntry} entry
+ * @param {import("./staticSite.ts").StaticSiteMode} mode
+ * @param {import("frugal-node/exporter").CacheEntry} entry
  */
 async function warnEntry(mode, entry) {
 	if (mode === "index.html" && entry.headers.length !== 0) {

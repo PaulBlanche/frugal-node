@@ -2,7 +2,6 @@ import * as assert from "node:assert/strict";
 import { mock, test } from "node:test";
 
 import * as page from "../../../packages/frugal/src/page/Page.js";
-import * as pageDescriptor from "../../../packages/frugal/src/page/PageDescriptor.js";
 import * as pageResponse from "../../../packages/frugal/src/page/PageResponse.js";
 import * as jsonValue from "../../../packages/frugal/src/utils/jsonValue.js";
 
@@ -312,7 +311,7 @@ test("unit/frugal/page/Page.js: complete StaticPage", () => {
 	const spyBuild = mock.fn(() => new pageResponse.EmptyResponse({}));
 	const spyGetBuildPaths = mock.fn(() => [{ id: "1" }]);
 	const descriptor =
-		/** @type {pageDescriptor.StaticPageDescriptor<"/foo/:id", jsonValue.JsonValue>} */ ({
+		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").StaticPageDescriptor<"/foo/:id", jsonValue.JsonValue>} */ ({
 			route: "/foo/:id",
 			render: spyRender,
 			strictPaths: false,
@@ -333,18 +332,20 @@ test("unit/frugal/page/Page.js: complete StaticPage", () => {
 		"Page should hold its own route",
 	);
 
-	const getBuildPathsContext = /** @type {pageDescriptor.GetBuildPathsContext} */ ({});
+	const getBuildPathsContext =
+		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").GetBuildPathsContext} */ ({});
 	compiledPage.getBuildPaths(getBuildPathsContext);
 	assert.strictEqual(spyGetBuildPaths.mock.calls.length, 1);
 	assert.deepEqual(spyGetBuildPaths.mock.calls[0].arguments, [getBuildPathsContext]);
 
-	const buildContext = /** @type {pageDescriptor.BuildContext<"/foo/:id">} */ ({});
+	const buildContext =
+		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").BuildContext<"/foo/:id">} */ ({});
 	compiledPage.build(buildContext);
 	assert.strictEqual(spyBuild.mock.calls.length, 1);
 	assert.deepEqual(spyBuild.mock.calls[0].arguments, [buildContext]);
 
 	const renderContext =
-		/** @type {pageDescriptor.RenderContext<"/foo/:id", jsonValue.JsonValue>} */ ({});
+		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").RenderContext<"/foo/:id", jsonValue.JsonValue>} */ ({});
 	compiledPage.render(renderContext);
 	assert.strictEqual(spyRender.mock.calls.length, 1);
 	assert.deepEqual(spyRender.mock.calls[0].arguments, [renderContext]);
@@ -390,7 +391,7 @@ test("unit/frugal/page/Page.js: StaticPage with descriptor that throws", async (
 	const getBuildPathsError = new Error("getBuildPaths");
 	const buildError = new Error("build");
 	const descriptor =
-		/** @type {pageDescriptor.StaticPageDescriptor<"/foo/:id", jsonValue.JsonValue>} */ (
+		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").StaticPageDescriptor<"/foo/:id", jsonValue.JsonValue>} */ (
 			/** @type {unknown} */ ({
 				route: "/foo/:id",
 				render: () => {
@@ -410,7 +411,8 @@ test("unit/frugal/page/Page.js: StaticPage with descriptor that throws", async (
 
 	assert.deepEqual(compiledPage.type, "static", "Page should be a static page");
 
-	const getBuildPathsContext = /** @type {pageDescriptor.GetBuildPathsContext} */ ({});
+	const getBuildPathsContext =
+		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").GetBuildPathsContext} */ ({});
 	assert.throws(
 		() => compiledPage.getBuildPaths(getBuildPathsContext),
 		/**
@@ -428,9 +430,10 @@ test("unit/frugal/page/Page.js: StaticPage with descriptor that throws", async (
 		"getBuildPaths should throw an error wrapping the underlying error",
 	);
 
-	const buildContext = /** @type {pageDescriptor.BuildContext<"/foo/:id">} */ ({
-		params: { id: "3" },
-	});
+	const buildContext =
+		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").BuildContext<"/foo/:id">} */ ({
+			params: { id: "3" },
+		});
 	await assert.rejects(
 		() => compiledPage.build(buildContext),
 		/**
@@ -449,7 +452,7 @@ test("unit/frugal/page/Page.js: StaticPage with descriptor that throws", async (
 	);
 
 	const renderContext =
-		/** @type {pageDescriptor.RenderContext<"/foo/:id", jsonValue.JsonValue>} */ ({
+		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").RenderContext<"/foo/:id", jsonValue.JsonValue>} */ ({
 			params: { id: "3" },
 		});
 	assert.throws(
@@ -472,7 +475,7 @@ test("unit/frugal/page/Page.js: StaticPage with descriptor that throws", async (
 
 test("unit/frugal/page/Page.js: StaticPage with build that returns nothing", async () => {
 	const descriptor =
-		/** @type {pageDescriptor.StaticPageDescriptor<"/foo/:id", jsonValue.JsonValue>} */ ({
+		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").StaticPageDescriptor<"/foo/:id", jsonValue.JsonValue>} */ ({
 			route: "/foo/:id",
 			render: () => "foo",
 			build: () => {
@@ -485,9 +488,10 @@ test("unit/frugal/page/Page.js: StaticPage with build that returns nothing", asy
 
 	assert.deepEqual(compiledPage.type, "static", "Page should be a static page");
 
-	const buildContext = /** @type {pageDescriptor.BuildContext<"/foo/:id">} */ ({
-		params: { id: "3" },
-	});
+	const buildContext =
+		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").BuildContext<"/foo/:id">} */ ({
+			params: { id: "3" },
+		});
 	assert.deepStrictEqual(
 		await compiledPage.build(buildContext),
 		undefined,
@@ -498,7 +502,7 @@ test("unit/frugal/page/Page.js: StaticPage with build that returns nothing", asy
 test("unit/frugal/page/Page.js: minimal StaticPage", async () => {
 	const spyRender = mock.fn(() => "foo");
 	const descriptor =
-		/** @type {pageDescriptor.StaticPageDescriptor<"/foo/:id", jsonValue.JsonValue>} */ ({
+		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").StaticPageDescriptor<"/foo/:id", jsonValue.JsonValue>} */ ({
 			route: "/foo/:id",
 			render: spyRender,
 		});
@@ -512,14 +516,16 @@ test("unit/frugal/page/Page.js: minimal StaticPage", async () => {
 	assert.deepEqual(compiledPage.route, descriptor.route, "Page should hold its own route");
 	assert.deepEqual(compiledPage.strictPaths, true, "Page should default to true");
 
-	const getBuildPathsContext = /** @type {pageDescriptor.GetBuildPathsContext} */ ({});
+	const getBuildPathsContext =
+		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").GetBuildPathsContext} */ ({});
 	assert.deepEqual(
 		compiledPage.getBuildPaths(getBuildPathsContext),
 		[{}],
 		"defaul getBuildPaths should default to returning an array of one empty object",
 	);
 
-	const buildContext = /** @type {pageDescriptor.BuildContext<"/foo/:id">} */ ({});
+	const buildContext =
+		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").BuildContext<"/foo/:id">} */ ({});
 	const response = await compiledPage.build(buildContext);
 	assert.deepEqual(
 		response?.data,
@@ -540,7 +546,7 @@ test("unit/frugal/page/Page.js: minimal StaticPage", async () => {
 	assert.deepEqual(response.type, "data", "default build should return a data response");
 
 	const renderContext =
-		/** @type {pageDescriptor.RenderContext<"/foo/:id", jsonValue.JsonValue>} */ ({});
+		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").RenderContext<"/foo/:id", jsonValue.JsonValue>} */ ({});
 	compiledPage.render(renderContext);
 	assert.strictEqual(spyRender.mock.calls.length, 1);
 	assert.deepEqual(spyRender.mock.calls[0].arguments, [renderContext]);
@@ -571,7 +577,7 @@ test("unit/frugal/page/Page.js: complete DynamicPage", () => {
 	const spyRender = mock.fn(() => "foo");
 	const spyGenerate = mock.fn(() => new pageResponse.EmptyResponse({}));
 	const descriptor =
-		/** @type {pageDescriptor.DynamicPageDescriptor<"/foo/:id", jsonValue.JsonValue>} */ ({
+		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").DynamicPageDescriptor<"/foo/:id", jsonValue.JsonValue>} */ ({
 			type: "dynamic",
 			route: "/foo/:id",
 			render: spyRender,
@@ -586,13 +592,14 @@ test("unit/frugal/page/Page.js: complete DynamicPage", () => {
 	assert.deepEqual(compiledPage.entrypoint, entrypoint, "Page should hold its own entrypoint");
 	assert.deepEqual(compiledPage.route, descriptor.route, "Page should hold its own route");
 
-	const generateContext = /** @type {pageDescriptor.GenerateContext<"/foo/:id">} */ ({});
+	const generateContext =
+		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").GenerateContext<"/foo/:id">} */ ({});
 	compiledPage.generate(generateContext);
 	assert.strictEqual(spyGenerate.mock.calls.length, 1);
 	assert.deepEqual(spyGenerate.mock.calls[0].arguments, [generateContext]);
 
 	const renderContext =
-		/** @type {pageDescriptor.RenderContext<"/foo/:id", jsonValue.JsonValue>} */ ({});
+		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").RenderContext<"/foo/:id", jsonValue.JsonValue>} */ ({});
 	compiledPage.render(renderContext);
 	assert.strictEqual(spyRender.mock.calls.length, 1);
 	assert.deepEqual(spyRender.mock.calls[0].arguments, [renderContext]);
@@ -637,7 +644,7 @@ test("unit/frugal/page/Page.js: DynamicPage with descriptor that throws", async 
 	const renderError = new Error("render");
 	const generateError = new Error("generate");
 	const descriptor =
-		/** @type {pageDescriptor.DynamicPageDescriptor<"/foo/:id", jsonValue.JsonValue>} */ ({
+		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").DynamicPageDescriptor<"/foo/:id", jsonValue.JsonValue>} */ ({
 			type: "dynamic",
 			route: "/foo/:id",
 			render: () => {
@@ -653,9 +660,10 @@ test("unit/frugal/page/Page.js: DynamicPage with descriptor that throws", async 
 
 	assert.deepEqual(compiledPage.type, "dynamic", "Page should be a dynamic page");
 
-	const generateContext = /** @type {pageDescriptor.GenerateContext<"/foo/:id">} */ ({
-		params: { id: "3" },
-	});
+	const generateContext =
+		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").GenerateContext<"/foo/:id">} */ ({
+			params: { id: "3" },
+		});
 	await assert.rejects(
 		() => compiledPage.generate(generateContext),
 		/**
@@ -674,7 +682,7 @@ test("unit/frugal/page/Page.js: DynamicPage with descriptor that throws", async 
 	);
 
 	const renderContext =
-		/** @type {pageDescriptor.RenderContext<"/foo/:id", jsonValue.JsonValue>} */ ({
+		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").RenderContext<"/foo/:id", jsonValue.JsonValue>} */ ({
 			params: { id: "3" },
 		});
 	assert.throws(
@@ -697,7 +705,7 @@ test("unit/frugal/page/Page.js: DynamicPage with descriptor that throws", async 
 
 test("unit/frugal/page/Page.js: DynamicPage with generate that returns nothing", async () => {
 	const descriptor =
-		/** @type {pageDescriptor.DynamicPageDescriptor<"/foo/:id", jsonValue.JsonValue>} */ ({
+		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").DynamicPageDescriptor<"/foo/:id", jsonValue.JsonValue>} */ ({
 			type: "dynamic",
 			route: "/foo/:id",
 			render: () => "foo",
@@ -711,9 +719,10 @@ test("unit/frugal/page/Page.js: DynamicPage with generate that returns nothing",
 
 	assert.deepEqual(compiledPage.type, "dynamic", "Page should be a dynamic page");
 
-	const generateContext = /** @type {pageDescriptor.GenerateContext<"/foo/:id">} */ ({
-		params: { id: "3" },
-	});
+	const generateContext =
+		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").GenerateContext<"/foo/:id">} */ ({
+			params: { id: "3" },
+		});
 
 	assert.deepStrictEqual(
 		await compiledPage.generate(generateContext),

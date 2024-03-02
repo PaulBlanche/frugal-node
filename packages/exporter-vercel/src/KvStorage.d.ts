@@ -1,39 +1,9 @@
-import { kv } from "@vercel/kv";
-import { } from "frugal-node/exporter";
+import { CacheStorage } from "frugal-node/server";
 
-export interface KvStorage extends CacheSto
+export interface KvStorage extends CacheStorage {}
 
-/**
- * @implements {exporter.CacheStorage}
- */
-export class KvStorage {
-	/**
-	 * @param {string} path
-	 * @param {exporter.SerializedGenerationResponse} response
-	 * @returns {Promise<void>}
-	 */
-	async set(path, response) {
-		await kv.set(path, response);
-	}
-
-	/**
-	 * @param {string} path
-	 * @returns {Promise<exporter.SerializedGenerationResponse|undefined>}
-	 */
-	async get(path) {
-		/** @type {exporter.SerializedGenerationResponse|null} */
-		const data = await kv.get(path);
-		if (data === null) {
-			return undefined;
-		}
-		return data;
-	}
-
-	/**
-	 * @param {string} path
-	 * @returns {Promise<void>}
-	 */
-	async delete(path) {
-		await kv.del(path);
-	}
+interface KvStorageMaker {
+	create(): KvStorage;
 }
+
+export const KvStorage: KvStorageMaker;

@@ -6,7 +6,7 @@ export const PluginContext = {
 };
 
 /** @type {import('./PluginContext.ts').PluginContextMaker['create']} */
-function create(config, watch = false) {
+function create(config, buildConfig, watch = false) {
 	const state = {
 		/** @type {import("../page/Assets.js").CollectedAssets} */
 		assets: [],
@@ -30,6 +30,10 @@ function create(config, watch = false) {
 			return config;
 		},
 
+		get buildConfig() {
+			return buildConfig;
+		},
+
 		get watch() {
 			return watch;
 		},
@@ -39,7 +43,7 @@ function create(config, watch = false) {
 		},
 
 		collect(filter, metafile) {
-			return AssetCollector.create(config.global, metafile).collect(filter);
+			return AssetCollector.create(config, metafile).collect(filter);
 		},
 
 		updateManifest({ hash, config, pages }) {

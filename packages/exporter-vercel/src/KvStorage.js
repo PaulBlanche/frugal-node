@@ -1,37 +1,26 @@
 import { kv } from "@vercel/kv";
-import * as exporter from "frugal-node/exporter";
 
-/**
- * @implements {exporter.CacheStorage}
- */
-export class KvStorage {
-	/**
-	 * @param {string} path
-	 * @param {exporter.SerializedGenerationResponse} response
-	 * @returns {Promise<void>}
-	 */
-	async set(path, response) {
-		await kv.set(path, response);
-	}
+/** @type {import('./KvStorage.ts').KvStorageMaker} */
+export const KvStorage = {
+	create,
+};
 
-	/**
-	 * @param {string} path
-	 * @returns {Promise<exporter.SerializedGenerationResponse|undefined>}
-	 */
-	async get(path) {
-		/** @type {exporter.SerializedGenerationResponse|null} */
-		const data = await kv.get(path);
-		if (data === null) {
-			return undefined;
-		}
-		return data;
-	}
-
-	/**
-	 * @param {string} path
-	 * @returns {Promise<void>}
-	 */
-	async delete(path) {
-		await kv.del(path);
-	}
+/** @type {import('./KvStorage.ts').KvStorageMaker['create']} */
+function create() {
+	return {
+		async set(path, response) {
+			await kv.set(path, response);
+		},
+		async get(path) {
+			/** @type {import("frugal-node/exporter").SerializedGenerationResponse|null} */
+			const data = await kv.get(path);
+			if (data === null) {
+				return undefined;
+			}
+			return data;
+		},
+		async delete(path) {
+			await kv.del(path);
+		},
+	};
 }

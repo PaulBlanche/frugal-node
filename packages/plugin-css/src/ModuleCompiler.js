@@ -1,5 +1,3 @@
-import * as lightningcss from "lightningcss";
-
 /** @type {import('./ModuleCompiler.ts').ModuleCompilerMaker} */
 export const ModuleCompiler = {
 	create,
@@ -22,7 +20,7 @@ export function create(exports) {
 					Object.values(exports).flatMap((exportData) => {
 						return exportData.composes
 							.filter(
-								/** @returns {compose is lightningcss.DependencyCSSModuleReference} */
+								/** @returns {compose is import('lightningcss').DependencyCSSModuleReference} */
 								(compose) => compose.type === "dependency",
 							)
 							.map((compose) => {

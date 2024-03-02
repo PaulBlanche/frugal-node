@@ -3,13 +3,13 @@ import * as jsonValue from "../utils/jsonValue.js";
 
 export const FORCE_GENERATE_COOKIE = "__frugal_force_generate";
 
-/** @type {import('./PageResponse.ts').Maker} */
+/** @type {import('./PageResponse.ts').PageResponseMaker} */
 export const PageResponse = {
 	data: createDataResponse,
 	empty: createEmptyResponse,
 };
 
-/** @type {import('./PageResponse.ts').Maker['empty']} */
+/** @type {import('./PageResponse.ts').PageResponseMaker['empty']} */
 function createEmptyResponse(init) {
 	const baseResponse = createBaseResponse(init);
 
@@ -27,7 +27,7 @@ function createEmptyResponse(init) {
 	};
 }
 
-/** @type {import('./PageResponse.ts').Maker['data']} */
+/** @type {import('./PageResponse.ts').PageResponseMaker['data']} */
 function createDataResponse(data, init) {
 	const baseResponse = createBaseResponse(init);
 
@@ -46,7 +46,7 @@ function createDataResponse(data, init) {
 }
 
 /**
- * @param {import("./PageResponse.ts").ResponseInit} [init]
+ * @param {import("./PageDescriptor.ts").ResponseInit} [init]
  * @returns {import("./PageResponse.ts").BaseResponse}
  */
 function createBaseResponse(init = {}) {

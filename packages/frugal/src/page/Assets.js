@@ -1,9 +1,9 @@
-/** @type {import('./Assets.ts').Maker} */
+/** @type {import('./Assets.ts').AssetsMaker} */
 export const Assets = {
 	create,
 };
 
-/** @type {import('./Assets.ts').Maker['create']} */
+/** @type {import('./Assets.ts').AssetsMaker['create']} */
 export function create(assets, entrypoint) {
 	return {
 		get(type) {

@@ -1,12 +1,12 @@
 import * as watchProcess from "./WatchProcess.js";
 import { LiveReloadServer } from "./livereload/LiveReloadServer.js";
 
-/** @type {import('./ParentContext.ts').Maker} */
+/** @type {import('./ParentContext.ts').ParentContextMaker} */
 export const ParentContext = {
 	create,
 };
 
-/** @type {import('./ParentContext.ts').Maker['create']} */
+/** @type {import('./ParentContext.ts').ParentContextMaker['create']} */
 export function create() {
 	const liveReloadController = new AbortController();
 	const process = watchProcess.create();

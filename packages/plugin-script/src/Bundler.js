@@ -1,5 +1,4 @@
 import * as path from "node:path";
-import * as esbuild from "esbuild";
 import * as fs from "frugal-node/utils/fs";
 import { Hash } from "frugal-node/utils/hash";
 
@@ -63,7 +62,7 @@ export function create(compiler, config) {
 	}
 
 	/**
-	 * @param {esbuild.Metafile} metafile
+	 * @param {import("esbuild").Metafile} metafile
 	 * @returns
 	 */
 	async function _extractBundles(metafile) {

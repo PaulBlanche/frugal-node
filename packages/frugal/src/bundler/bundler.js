@@ -10,30 +10,31 @@ import { output } from "./plugins/output.js";
 import { report } from "./plugins/report.js";
 
 /** @type {import('./bundler.ts').build} */
-export async function build(buildConfig, extraPlugins) {
-	const context = PluginContext.create(buildConfig, false);
-	const esbuildConfig = getEsbuildConfig(buildConfig, context, extraPlugins);
+export async function build(config, buildConfig, extraPlugins) {
+	const context = PluginContext.create(config, buildConfig, false);
+	const esbuildConfig = getEsbuildConfig(config, buildConfig, context, extraPlugins);
 	log(`Esbuild config:\n${JSON.stringify(esbuildConfig)}`, { scope: "Bundler", level: "debug" });
 	return await esbuild.build(esbuildConfig);
 }
 
 /** @type {import('./bundler.ts').context} */
-export async function context(config, extraPlugins) {
-	const context = PluginContext.create(config, true);
-	return await esbuild.context(getEsbuildConfig(config, context, extraPlugins));
+export async function context(config, buildConfig, extraPlugins) {
+	const context = PluginContext.create(config, buildConfig, true);
+	return await esbuild.context(getEsbuildConfig(config, buildConfig, context, extraPlugins));
 }
 
 /**
- * @param {import("../Config.js").FrugalBuildConfig} config
+ * @param {import("../Config.js").FrugalConfig} config
+ * @param {import("../BuildConfig.js").FrugalBuildConfig} buildConfig
  * @param {import("./PluginContext.js").PrivatePluginContext} context
  * @param {(import("./Plugin.js").Plugin|import("./Plugin.js").PrivatePlugin)[]} [extraPlugins]
  * @returns {esbuild.BuildOptions}
  */
-function getEsbuildConfig(config, context, extraPlugins = []) {
+function getEsbuildConfig(config, buildConfig, context, extraPlugins = []) {
 	return {
-		...config.esbuildOptions,
+		...buildConfig.esbuildOptions,
 		target: ["esnext"],
-		entryPoints: [...config.global.pages, config.global.self],
+		entryPoints: [...config.pages, config.self],
 		entryNames: "[name]-[hash]",
 		chunkNames: "[name]-[hash]",
 		assetNames: "[name]-[hash]",
@@ -44,28 +45,28 @@ function getEsbuildConfig(config, context, extraPlugins = []) {
 		sourcemap: false,
 		minify: false,
 		define: {
-			...config.esbuildOptions?.define,
+			...buildConfig.esbuildOptions?.define,
 			// used to drop browser code in script assets
 			"import.meta.environment": "'server'",
 		},
 		format: "esm",
-		outdir: config.global.buildDir,
+		outdir: config.buildDir,
 		plugins: [
 			output(),
 			buildManifest(context),
 			copy([
 				{
-					from: config.global.staticDir,
-					to: config.global.publicDir,
+					from: config.staticDir,
+					to: config.publicDir,
 					recursive: true,
 					forgiveNotFound: true,
 				},
 			]),
 			report(),
-			cleanOutDir(config),
+			cleanOutDir(config, buildConfig),
 			importMetaAssets(config),
-			...(config.esbuildOptions?.plugins ?? []),
-			...[...(config.plugins ?? []), ...extraPlugins].map(
+			...(buildConfig.esbuildOptions?.plugins ?? []),
+			...[...(buildConfig.plugins ?? []), ...extraPlugins].map(
 				/** @returns {esbuild.Plugin} */ (plugin) => ({
 					name: plugin.name,
 					setup: (build) => plugin.setup(build, context),
@@ -73,7 +74,7 @@ function getEsbuildConfig(config, context, extraPlugins = []) {
 			),
 			externalDependency(),
 		],
-		absWorkingDir: config.global.rootDir,
+		absWorkingDir: config.rootDir,
 		logLevel: "silent",
 		outExtension: { ".js": ".mjs" },
 		platform: "node",

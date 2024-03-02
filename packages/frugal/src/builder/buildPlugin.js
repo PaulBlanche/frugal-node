@@ -9,13 +9,13 @@ export function buildPlugin(buildCache) {
 		setup(build, context) {
 			build.onEnd(async () => {
 				try {
-					await manifest.writeManifest(context.config.global, context.manifest);
+					await manifest.writeManifest(context.config, context.manifest);
 
 					const {
 						pages,
 						hash: configHash,
 						assets,
-					} = await manifest.loadManifest(context.config.global);
+					} = await manifest.loadManifest(context.config);
 
 					await Promise.all(
 						pages.map(async ({ descriptor, moduleHash, entrypoint }) => {
@@ -33,7 +33,7 @@ export function buildPlugin(buildCache) {
 								assets,
 								page,
 								configHash,
-								context.config.global,
+								context.config,
 							);
 
 							const responses = await pageProducer.buildAll();

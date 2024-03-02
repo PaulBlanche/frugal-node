@@ -1,7 +1,6 @@
-import * as frugal from "../../../packages/frugal/exports/index.js";
 import { css } from "../../../packages/plugin-css/exports/index.js";
 
-/** @type {frugal.Config} */
+/** @type {import("../../../packages/frugal/exports/index.ts").Config} */
 export const config = {
 	self: import.meta.url,
 	pages: [],

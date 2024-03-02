@@ -1,12 +1,12 @@
 import * as esbuild from "esbuild";
 import { log } from "../utils/log.js";
 
-/** @type {import('./EsbuildCompiler.ts').Maker} */
+/** @type {import('./EsbuildCompiler.ts').EsbuildCompilerMaker} */
 export const EsbuildCompiler = {
 	create,
 };
 
-/** @type {import('./EsbuildCompiler.ts').Maker['create']} */
+/** @type {import('./EsbuildCompiler.ts').EsbuildCompilerMaker['create']} */
 function create(name) {
 	const state = {
 		/** @type {import('./EsbuildCompiler.ts').ContextCache | undefined} */

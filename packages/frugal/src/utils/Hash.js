@@ -2,12 +2,12 @@ import murmur from "imurmurhash";
 
 const DECODER = new TextDecoder();
 
-/** @type {import('./Hash.ts').Maker} */
+/** @type {import('./Hash.ts').HashMaker} */
 export const Hash = {
 	create,
 };
 
-/** @type {import('./Hash.ts').Maker['create']} */
+/** @type {import('./Hash.ts').HashMaker['create']} */
 export function create() {
 	const hasher = new murmur();
 

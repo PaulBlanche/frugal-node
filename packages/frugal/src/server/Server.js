@@ -17,8 +17,8 @@ export const Server = {
 
 /** @type {import('./Server.ts').ServerMaker['create']} */
 export async function create({ config, manifest, watch, cache }) {
-	const frugalConfig = "resolve" in config ? config : await FrugalConfig.create(config);
-	const serverConfig = await frugalConfig.server;
+	const frugalConfig = "validate" in config ? config : FrugalConfig.create(config);
+	const serverConfig = frugalConfig.server;
 	const manager = serverConfig.session ? SessionManager.create(serverConfig.session) : undefined;
 
 	const routes = manifest.pages.map(({ moduleHash, entrypoint, descriptor }) => {

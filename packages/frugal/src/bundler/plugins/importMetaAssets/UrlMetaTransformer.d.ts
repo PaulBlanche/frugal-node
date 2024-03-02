@@ -1,5 +1,3 @@
-import MagicString from "magic-string";
-
 export type ServerAsset = {
 	path: string;
 	out: string;

@@ -1,5 +1,4 @@
 import * as path from "node:path";
-import * as esbuild from "esbuild";
 import { EsbuildCompiler, cleanOutDir, output } from "frugal-node/plugin";
 import { Bundler } from "./Bundler.js";
 
@@ -21,9 +20,9 @@ export function script(options = {}) {
 					return;
 				}
 
-				const jsBundler = Bundler.create(compiler, context.config.global);
+				const jsBundler = Bundler.create(compiler, context.config);
 
-				/** @type {esbuild.BuildOptions} */
+				/** @type {import("esbuild").BuildOptions} */
 				const userOptions = { ...build.initialOptions, ...options?.esbuildOptions };
 
 				const bundleResult = await jsBundler.bundle(context.collect(filter, metafile), {
@@ -40,14 +39,14 @@ export function script(options = {}) {
 						...userOptions?.define,
 						"import.meta.environment": "'client'",
 					},
-					outdir: path.resolve(context.config.global.publicDir, outdir),
+					outdir: path.resolve(context.config.publicDir, outdir),
 					plugins: [
 						...(userOptions.plugins?.filter(
 							(plugin) =>
 								!plugin.name.startsWith("frugal-internal:") &&
 								!plugin.name.startsWith("frugal:script"),
 						) ?? []),
-						cleanOutDir(context.config, false),
+						cleanOutDir(context.config, context.buildConfig, false),
 						output(),
 					],
 					loader: { ...userOptions.loader, ".css": "empty" },
@@ -55,7 +54,7 @@ export function script(options = {}) {
 					platform: "browser",
 					bundle: true,
 					metafile: true,
-					absWorkingDir: context.config.global.rootDir,
+					absWorkingDir: context.config.rootDir,
 				});
 
 				for (const [entrypoint, scriptPath] of Object.entries(bundleResult)) {

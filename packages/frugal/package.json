@@ -16,8 +16,7 @@
 		},
 		"./plugin": {
 			"types": "./exports/plugin/index.d.ts",
-			"import": "./exports/plugin/index.js",
-			"deno": "./exports/plugin/mod.ts"
+			"import": "./exports/plugin/index.js"
 		},
 		"./exporter": {
 			"types": "./exports/exporter/index.d.ts",

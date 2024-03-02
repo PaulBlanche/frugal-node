@@ -6,7 +6,7 @@
 		"useIgnoreFile": true
 	},
 	"files": {
-		"ignore": ["test/**/__snapshot__/*"]
+		"ignore": ["test/**/__snapshot__/*", "**/*.min.js"]
 	},
 	"organizeImports": {
 		"enabled": true
@@ -17,6 +17,9 @@
 			"recommended": true,
 			"complexity": {
 				"useLiteralKeys": "off"
+			},
+			"nursery": {
+				"noUnusedImports": "error"
 			}
 		}
 	},

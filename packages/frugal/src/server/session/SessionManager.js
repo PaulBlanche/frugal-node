@@ -3,12 +3,12 @@ import { Session } from "./Session.js";
 
 const DEFAULT_SESSION_COOKIE_NAME = "__frugal_session";
 
-/** @type {import('./SessionManager.ts').Maker} */
+/** @type {import('./SessionManager.ts').SessionManagerMaker} */
 export const SessionManager = {
 	create,
 };
 
-/** @type {import('./SessionManager.ts').Maker['create']} */
+/** @type {import('./SessionManager.ts').SessionManagerMaker['create']} */
 function create(config) {
 	const cookie = config.cookie ?? {};
 

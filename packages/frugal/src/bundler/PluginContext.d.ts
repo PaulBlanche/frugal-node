@@ -1,11 +1,13 @@
 import * as esbuild from "esbuild";
-import { FrugalBuildConfig } from "../Config.js";
+import { FrugalBuildConfig } from "../BuildConfig.js";
+import { FrugalConfig } from "../Config.js";
 import { WritableManifest } from "../builder/manifest.js";
 import { AssetTypes } from "../page/Assets.ts";
 import { Asset } from "./AssetCollector.ts";
 
 export interface PluginContext {
-	readonly config: FrugalBuildConfig;
+	readonly config: FrugalConfig;
+	readonly buildConfig: FrugalBuildConfig;
 	readonly watch: boolean;
 
 	output<TYPE extends keyof AssetTypes>(type: TYPE, asset: AssetTypes[TYPE]): void;
@@ -22,7 +24,11 @@ export interface PrivatePluginContext extends PluginContext {
 }
 
 interface PluginContextMaker {
-	create(config: FrugalBuildConfig, watch?: boolean): PrivatePluginContext;
+	create(
+		config: FrugalConfig,
+		buildConfig: FrugalBuildConfig,
+		watch?: boolean,
+	): PrivatePluginContext;
 }
 
 export const PluginContext: PluginContextMaker;

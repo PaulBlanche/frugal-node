@@ -2,13 +2,13 @@ import * as path from "node:path";
 import * as fs from "../utils/fs.js";
 import { loadCacheData } from "./loadCacheData.js";
 
-/** @type {import('./Snapshot.ts').Maker} */
+/** @type {import('./Snapshot.ts').SnapshotMaker} */
 export const Snapshot = {
 	create,
 	load,
 };
 
-/** @type {import('./Snapshot.ts').Maker["create"]} */
+/** @type {import('./Snapshot.ts').SnapshotMaker["create"]} */
 function create(config, { current, previous }) {
 	const state = {
 		/** @type {import("./loadCacheData.ts").CacheEntry[]} */
@@ -56,7 +56,7 @@ function create(config, { current, previous }) {
 	};
 }
 
-/** @type {import('./Snapshot.ts').Maker["load"]} */
+/** @type {import('./Snapshot.ts').SnapshotMaker["load"]} */
 async function load(config) {
 	const data = await loadCacheData(config);
 	if (data === undefined) {

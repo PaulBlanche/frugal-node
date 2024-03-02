@@ -2,12 +2,12 @@ import { getCookies, setCookie } from "../../utils/cookies.js";
 
 const DEFAULT_COOKIE_NAME = "__frugal_session_storage";
 
-/** @type {import('./CookieStorage.ts').Maker} */
+/** @type {import('./CookieSessionStorage.ts').CookieSessionStorageMaker} */
 export const CookieStorage = {
 	create,
 };
 
-/** @type {import('./CookieStorage.ts').Maker['create']} */
+/** @type {import('./CookieSessionStorage.ts').CookieSessionStorageMaker['create']} */
 function create(cookie = {}) {
 	return {
 		create(headers, data, expires) {

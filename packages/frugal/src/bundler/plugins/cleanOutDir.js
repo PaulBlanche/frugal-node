@@ -3,8 +3,8 @@ import * as fs from "../../utils/fs.js";
 import { log } from "../../utils/log.js";
 
 /** @type {import('./cleanOutDir.ts').cleanOutDir} */
-export function cleanOutDir(config, overrideCleanAllOutDir) {
-	const cleanAllOutDir = overrideCleanAllOutDir ?? config.cleanAllOutDir;
+export function cleanOutDir(config, buildConfig, overrideCleanAllOutDir) {
+	const cleanAllOutDir = overrideCleanAllOutDir ?? buildConfig.cleanAllOutDir;
 
 	return {
 		name: "frugal-internal:cleanOutdir",
@@ -22,18 +22,15 @@ export function cleanOutDir(config, overrideCleanAllOutDir) {
 
 				try {
 					if (cleanAllOutDir) {
-						log(`clean directory ${config.global.outDir}`, {
+						log(`clean directory ${config.outDir}`, {
 							level: "debug",
 							scope: "cleanOutdir",
 						});
 
-						const directory = await fs.readDir(config.global.outDir);
+						const directory = await fs.readDir(config.outDir);
 						for await (const entry of directory) {
-							const entryPath = path.resolve(config.global.outDir, entry.name);
-							if (
-								!entry.isDirectory() ||
-								`${entryPath}/` !== config.global.cacheDir
-							) {
+							const entryPath = path.resolve(config.outDir, entry.name);
+							if (!entry.isDirectory() || `${entryPath}/` !== config.cacheDir) {
 								await fs.remove(entryPath, {
 									recursive: true,
 								});

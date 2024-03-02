@@ -18,9 +18,7 @@ export function create(manifestAssets, page, configHash, config) {
 				throw new ProducerError("Can't build dynamic page");
 			}
 
-			const pathList = await page.getBuildPaths({
-				resolve: config.resolve,
-			});
+			const pathList = await page.getBuildPaths();
 
 			const responses = await Promise.all(pathList.map((params) => this.build(params)));
 
@@ -45,7 +43,6 @@ export function create(manifestAssets, page, configHash, config) {
 			const response = await page.build({
 				path,
 				params,
-				resolve: config.resolve,
 				data: PageResponse.data,
 				empty: PageResponse.empty,
 			});
@@ -82,7 +79,6 @@ export function create(manifestAssets, page, configHash, config) {
 					? await page.build({
 							params,
 							path,
-							resolve: config.resolve,
 							data: PageResponse.data,
 							empty: PageResponse.empty,
 							state: state,
@@ -92,7 +88,6 @@ export function create(manifestAssets, page, configHash, config) {
 					: await page.generate({
 							params,
 							path,
-							resolve: config.resolve,
 							data: PageResponse.data,
 							empty: PageResponse.empty,
 							state: state,
@@ -136,7 +131,6 @@ export function create(manifestAssets, page, configHash, config) {
 			const response = await page.build({
 				path,
 				params,
-				resolve: config.resolve,
 				data: PageResponse.data,
 				empty: PageResponse.empty,
 			});

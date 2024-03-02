@@ -1,9 +1,9 @@
-/** @type {import('./Session.ts').Maker} */
+/** @type {import('./Session.ts').SessionMaker} */
 export const Session = {
 	create,
 };
 
-/** @type {import('./Session.ts').Maker['create']} */
+/** @type {import('./Session.ts').SessionMaker['create']} */
 function create(data = {}, id = undefined) {
 	const state = {
 		/** @type {Map<string, any>} */

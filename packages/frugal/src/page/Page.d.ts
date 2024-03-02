@@ -35,9 +35,7 @@ export type StaticPage<PATH extends string = string, DATA extends JsonValue = Js
 	readonly strictPaths: boolean;
 	readonly type: "static";
 
-	getBuildPaths(
-		context: descriptor.GetBuildPathsContext,
-	): descriptor.PathList<PATH> | Promise<descriptor.PathList<PATH>>;
+	getBuildPaths(): descriptor.PathList<PATH> | Promise<descriptor.PathList<PATH>>;
 
 	build(context: descriptor.BuildContext<PATH>): Promise<PageResponse<DATA> | undefined>;
 };

@@ -1,5 +1,5 @@
-export * from "../src/frugal.js";
-export * from "./page/index.js";
-export { importKey, exportKey } from "../src/utils/crypto.js";
-export * from "../src/server/session/MemoryStorage.js";
-export * from "../src/server/session/CookieStorage.js";
+export * from "../src/frugal.ts";
+export * from "./page/index.ts";
+export { importKey, exportKey } from "../src/utils/crypto.ts";
+export * from "../src/server/session/MemorySessionStorage.ts";
+export * from "../src/server/session/CookieSessionStorage.ts";

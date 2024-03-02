@@ -1,11 +1,11 @@
 import * as generationResponse from "../page/GenerationResponse.js";
 
-/** @type {import('./WatchCache.ts').Maker} */
+/** @type {import('./WatchCache.ts').WatchCacheMaker} */
 export const WatchCache = {
 	create,
 };
 
-/** @type {import('./WatchCache.ts').Maker['create']} */
+/** @type {import('./WatchCache.ts').WatchCacheMaker['create']} */
 export function create() {
 	/** @type {Record<string, import("../page/GenerationResponse.ts").SerializedGenerationResponse>} */
 	const data = {};

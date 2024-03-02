@@ -1,6 +1,5 @@
 import * as path from "node:path";
 import * as url from "node:url";
-import * as esbuild from "esbuild";
 import { EsbuildCompiler, cleanOutDir, output } from "frugal-node/plugin";
 import * as fs from "frugal-node/utils/fs";
 import { Hash } from "frugal-node/utils/hash";
@@ -48,7 +47,7 @@ export function css(options = {}) {
 						if (cssBundle) {
 							log(
 								`Found css bundle "${path.relative(
-									context.config.global.rootDir,
+									context.config.rootDir,
 									cssBundle,
 								)}" for entrypoint "${entrypoint}"`,
 								{ scope: "plugin:css", level: "verbose" },
@@ -59,17 +58,15 @@ export function css(options = {}) {
 				}
 
 				const globalBundles = await Promise.all(
-					getGlobalCss(context.config.global, options.globalCss).map(
-						async (globalCss) => {
-							const ext = path.extname(globalCss);
-							const name = `${path.basename(globalCss, ext)}-${Hash.create()
-								.update(globalCss)
-								.digest()}${ext}`;
-							const cssBundle = path.resolve(context.config.global.buildDir, name);
-							await fs.copy(globalCss, cssBundle);
-							return path.relative(context.config.global.rootDir, cssBundle);
-						},
-					),
+					getGlobalCss(context.config, options.globalCss).map(async (globalCss) => {
+						const ext = path.extname(globalCss);
+						const name = `${path.basename(globalCss, ext)}-${Hash.create()
+							.update(globalCss)
+							.digest()}${ext}`;
+						const cssBundle = path.resolve(context.config.buildDir, name);
+						await fs.copy(globalCss, cssBundle);
+						return path.relative(context.config.rootDir, cssBundle);
+					}),
 				);
 
 				bundles.unshift(
@@ -81,9 +78,9 @@ export function css(options = {}) {
 					),
 				);
 
-				const cssBundler = Bundler.create(compiler, context.config.global, scope);
+				const cssBundler = Bundler.create(compiler, context.config, scope);
 
-				/** @type {esbuild.BuildOptions} */
+				/** @type {import('esbuild').BuildOptions} */
 				const userOptions = { ...build.initialOptions, ...options.esbuildOptions };
 
 				const bundleResult = await cssBundler.bundle(bundles, {
@@ -100,7 +97,7 @@ export function css(options = {}) {
 						...userOptions?.define,
 						"import.meta.environment": "'client'",
 					},
-					outdir: path.resolve(context.config.global.publicDir, outdir),
+					outdir: path.resolve(context.config.publicDir, outdir),
 					plugins: [
 						...(userOptions.plugins?.filter(
 							(plugin) =>
@@ -108,11 +105,11 @@ export function css(options = {}) {
 								!plugin.name.startsWith("frugal:css") &&
 								!plugin.name.startsWith("frugal:script"),
 						) ?? []),
-						cleanOutDir(context.config, false),
+						cleanOutDir(context.config, context.buildConfig, false),
 						output(),
 					],
 					bundle: true,
-					absWorkingDir: context.config.global.rootDir,
+					absWorkingDir: context.config.rootDir,
 					metafile: true,
 				});
 

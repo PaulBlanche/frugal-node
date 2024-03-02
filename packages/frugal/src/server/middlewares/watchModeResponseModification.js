@@ -1,4 +1,3 @@
-import * as webStream from "node:stream/web";
 import * as readableStream from "../../utils/readableStream.js";
 import livereloadScript from "../../watcher/livereload/livereload.min.js";
 
@@ -37,7 +36,7 @@ export async function watchModeResponseModification(context, next) {
 const DECODER = new TextDecoder();
 
 /**
- * @param {webStream.ReadableStream<Uint8Array>} responseBody
+ * @param {import('node:stream/web').ReadableStream<Uint8Array>} responseBody
  * @param {import("../context.ts").BaseContext} context
  */
 async function injectLivereloadScript(responseBody, context) {

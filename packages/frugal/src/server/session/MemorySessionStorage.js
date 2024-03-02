@@ -1,9 +1,9 @@
-/** @type {import('./MemoryStorage.ts').Maker} */
+/** @type {import('./MemorySessionStorage.ts').MemorySessionStorageMaker} */
 export const MemoryStorage = {
 	create,
 };
 
-/** @type {import('./MemoryStorage.ts').Maker['create']} */
+/** @type {import('./MemorySessionStorage.ts').MemorySessionStorageMaker['create']} */
 export function create() {
 	const store = new Map();
 
