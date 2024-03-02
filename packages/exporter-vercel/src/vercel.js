@@ -94,7 +94,7 @@ async function bundleFunction(functionDir, outputDir, config) {
 					config: manifest.config,
 					watch: false,
 					manifest,
-					cache: ServerCache.create(new KvStorage()),
+					cache: ServerCache.create(KvStorage.create()),
 				}).then(server => server.nativeHandler(true))
 
 				module.exports = async (req, res) => {
