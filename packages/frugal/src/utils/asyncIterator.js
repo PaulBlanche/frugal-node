@@ -1,16 +1,14 @@
-import * as deferred from "./deferred.js";
+import { Deferred } from "./Deferred.js";
 
 /**
- * @template T
- * @param {AsyncIterable<T>} stream
- * @param {number} interval
+ * @type {import('./asyncIterator.ts').debounce}
  */
 export function* debounce(stream, interval) {
 	/** @type {boolean | undefined} */
 	let first; // is this first event?  will pass
-	/** @type {T[]} */
+	/** @type {unknown[]} */
 	const buffer = []; // the last event raised
-	/** @type {deferred.Deferred<T[]>} */
+	/** @type {import('./Deferred.ts').Deferred<unknown[]>} */
 	let awaiter; // deferred promise instance
 	let continueWaiting = true;
 
@@ -18,7 +16,7 @@ export function* debounce(stream, interval) {
 	function reset(isFirst) {
 		first = isFirst;
 		buffer.length = 0;
-		awaiter = deferred.create();
+		awaiter = Deferred.create();
 	}
 
 	function passEvent() {

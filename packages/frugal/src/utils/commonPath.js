@@ -2,8 +2,7 @@ import * as path from "node:path";
 import commonPathPrefix from "common-path-prefix";
 
 /**
- * @param {string[]} paths
- * @returns {string}
+ * @type {import('./commonPath.ts').commonPath}
  */
 export function commonPath(paths) {
 	if (paths.length === 1) {

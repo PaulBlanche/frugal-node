@@ -1,11 +1,4 @@
-import * as context from "../context.js";
-import * as middleware from "../middleware.js";
-
-/**
- * @param {context.RouteContext<"static">} context
- * @param {middleware.Next<context.RouteContext<"static">>} next
- * @returns {Promise<Response>}
- */
+/** @type {import('./serveFromCacheStaticPage.ts').serveFromCacheStaticPage} */
 export async function serveFromCacheStaticPage(context, next) {
 	if (context.request.method !== "GET") {
 		return next(context);

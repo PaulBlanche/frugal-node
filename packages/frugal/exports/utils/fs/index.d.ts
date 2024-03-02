@@ -1,1 +1,1 @@
-export * from "../../../src/utils/fs.js";
+export * from "../../../src/utils/fs.ts";

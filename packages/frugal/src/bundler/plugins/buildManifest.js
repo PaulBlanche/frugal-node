@@ -1,13 +1,7 @@
-import * as esbuild from "esbuild";
-import * as manifest from "../../builder/Manifest.js";
-import * as hash from "../../utils/hash.js";
+import { Hash } from "../../utils/Hash.js";
 import { MetafileAnalyser } from "../MetafileAnalyser.js";
-import * as pluginContext from "../PluginContext.js";
 
-/**
- * @param {pluginContext.PluginContext} context
- * @returns {esbuild.Plugin}
- */
+/** @type {import('./buildManifest.ts').buildManifest} */
 export function buildManifest(context) {
 	return {
 		name: "frugal-internal:buildManifest",
@@ -21,22 +15,21 @@ export function buildManifest(context) {
 						return;
 					}
 
-					const analyser = new MetafileAnalyser(metafile, context.config);
+					const analyser = MetafileAnalyser.create(metafile, context.config.global);
 					const analysisResults = await Promise.all(
 						Object.entries(metafile.outputs).map(([outputPath, output]) => {
 							return analyser.analyse(outputPath, output);
 						}),
 					);
 
-					/** @type {manifest.WritableManifest} */
+					/** @type {Omit<import("../../builder/manifest.js").WritableManifest, 'assets'>} */
 					const writableManifest = {
 						pages: [],
-						id: "",
+						hash: "",
 						config: "",
-						assets: context.assets,
 					};
 
-					const idHasher = hash.create();
+					const idHasher = Hash.create();
 
 					for (const analysis of analysisResults) {
 						if (analysis === undefined) {
@@ -44,10 +37,11 @@ export function buildManifest(context) {
 						}
 
 						if (analysis.type === "config") {
-							writableManifest.config = context.watch
+							const configHash = context.watch
 								? `${analysis.moduleHash}-watch`
 								: analysis.moduleHash;
-							idHasher.update(writableManifest.config);
+							idHasher.update(configHash);
+							writableManifest.config = analysis.output;
 						}
 
 						if (analysis.type === "css") {
@@ -64,7 +58,7 @@ export function buildManifest(context) {
 						}
 					}
 
-					writableManifest.id = idHasher.digest();
+					writableManifest.hash = idHasher.digest();
 
 					context.updateManifest(writableManifest);
 				} catch (error) {

@@ -1,8 +1,6 @@
 import chalk from "chalk";
-import * as _type from "./_type/log.js";
 
-/** @typedef {_type.LogConfig} LogConfig */
-
+/** @satisfies {Record<import('./log.js').Level, number>} */
 export const LEVELS = /** @type {const} */ ({
 	verbose: 0,
 	debug: 10,
@@ -12,7 +10,7 @@ export const LEVELS = /** @type {const} */ ({
 	silent: Infinity,
 });
 
-export const GLOBAL_CONFIG = /** @type {_type.LogConfig} */ ({
+const GLOBAL_CONFIG = /** @type {import('./log.js').LogConfig} */ ({
 	level: "info",
 	scopes: {},
 	timeFormatter: new Intl.DateTimeFormat("en-US", {
@@ -27,19 +25,16 @@ export const GLOBAL_CONFIG = /** @type {_type.LogConfig} */ ({
 	dateFormatter: new Intl.DateTimeFormat("fr-FR", { dateStyle: "short" }),
 });
 
-/** @param {Partial<_type.LogConfig>} [config] */
+/** @type {import('./log.js').config} */
 export function config(config = {}) {
 	Object.assign(GLOBAL_CONFIG, config);
 }
 
-/**
- * @param {_type.MessageOrError} messageOrError
- * @param {_type.LogOptions} options
- */
-export function log(
-	messageOrError,
-	{ scope = "???", level = messageOrError instanceof Error ? "error" : "info" } = {},
-) {
+/** @type {import('./log.js').log} */
+export function log(messageOrError, options = {}) {
+	const scope = options?.scope ?? "???";
+	const level = options?.level ?? (messageOrError instanceof Error ? "error" : "info");
+
 	if (!(level in LEVELS) || /** @type {any} */ (level) === "silent") {
 		return;
 	}
@@ -63,8 +58,8 @@ export function log(
 }
 
 /**
- * @param {_type.MessageOrError} messageOrError
- * @param {_type.Level} level
+ * @param {import('./log.js').MessageOrError} messageOrError
+ * @param {import('./log.js').Level} level
  * @returns {string}
  */
 function formatMessage(messageOrError, level) {
@@ -85,7 +80,7 @@ function formatMessage(messageOrError, level) {
 }
 
 /**
- * @param {_type.MessageOrError} messageOrError
+ * @param {import('./log.js').MessageOrError} messageOrError
  * @returns
  */
 function formatMessageContent(messageOrError) {
@@ -129,7 +124,7 @@ function formatCause(cause) {
 
 /**
  * @param {string} scope
- * @param {_type.Level} level
+ * @param {import('./log.js').Level} level
  * @returns {string}
  */
 function formatScope(scope, level) {
@@ -150,7 +145,7 @@ function formatScope(scope, level) {
 }
 
 /**
- * @param {Exclude<_type.Level, "silent">} level
+ * @param {Exclude<import('./log.js').Level, "silent">} level
  * @returns {string}
  */
 function formatLevel(level) {

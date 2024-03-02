@@ -1,61 +1,4 @@
 import * as zod from "zod";
-import * as jsonValue from "../utils/jsonValue.js";
-import * as _type from "./_type/PageDescriptor.js";
-
-/** @typedef {_type.State} State */
-/** @typedef {_type.Session} Session */
-/**
- * @template {string} PATH
- * @template {jsonValue.JsonValue} [DATA=jsonValue.JsonValue]
- * @typedef {_type.RenderContext<PATH, DATA>} RenderContext
- */
-/**
- * @template {string} PATH
- * @template {jsonValue.JsonValue} [DATA=jsonValue.JsonValue]
- * @typedef {_type.Render<PATH, DATA>} Render
- */
-/** @typedef {_type.GetBuildPathsContext} GetBuildPathsContext */
-/**
- * @template {string} PATH
- * @typedef {_type.PathList<PATH>} PathList
- */
-/**
- * @template {string} PATH
- * @typedef {_type.GetBuildPaths<PATH>} GetBuildPaths
- */
-/**
- * @template {string} PATH
- * @typedef {_type.GenerateContext<PATH>} GenerateContext
- */
-/**
- * @template {string} PATH
- * @template {jsonValue.JsonValue} [DATA=jsonValue.JsonValue]
- * @typedef {_type.Generate<PATH, DATA>} Generate
- */
-/**
- * @template {string} PATH
- * @typedef {_type.BuildContext<PATH>} BuildContext
- */
-/**
- * @template {string} PATH
- * @template {jsonValue.JsonValue} [DATA=jsonValue.JsonValue]
- * @typedef {_type.Build<PATH, DATA>} Build
- */
-/**
- * @template {string} PATH
- * @template {jsonValue.JsonValue} [DATA=jsonValue.JsonValue]
- * @typedef {_type.DynamicPageDescriptor<PATH, DATA>} DynamicPageDescriptor
- */
-/**
- * @template {string} PATH
- * @template {jsonValue.JsonValue} [DATA=jsonValue.JsonValue]
- * @typedef {_type.StaticPageDescriptor<PATH, DATA>} StaticPageDescriptor
- */
-/**
- * @template {string} [PATH=string]
- * @template {jsonValue.JsonValue} [DATA=jsonValue.JsonValue]
- * @typedef {_type.PageDescriptor<PATH, DATA>} PageDescriptor
- */
 
 const baseDescriptorSchema = /* @__PURE__ */ zod.object(
 	{
@@ -88,16 +31,16 @@ const baseDescriptorSchema = /* @__PURE__ */ zod.object(
 	},
 );
 
-/** @type {zod.Schema<_type.DynamicPageDescriptor>} */
-export const dynamicDescriptorSchema = /* @__PURE__ */ baseDescriptorSchema.extend({
+/** @type {zod.Schema<import('./PageDescriptor.ts').DynamicPageDescriptor>} */
+const dynamicDescriptorSchema = /* @__PURE__ */ baseDescriptorSchema.extend({
 	type: /* @__PURE__ */ zod.literal("dynamic", {
 		required_error: 'A dynamic page descriptor must have a "type"',
 		invalid_type_error: 'A dynamic page descriptor "type" must be "dynamic"',
 	}),
 });
 
-/** @type {zod.Schema<_type.StaticPageDescriptor>} */
-export const staticDescriptorSchema = /* @__PURE__ */ baseDescriptorSchema.extend({
+/** @type {zod.Schema<import('./PageDescriptor.ts').StaticPageDescriptor>} */
+const staticDescriptorSchema = /* @__PURE__ */ baseDescriptorSchema.extend({
 	type: /* @__PURE__ */ zod.optional(
 		/* @__PURE__ */ zod.literal("static", {
 			invalid_type_error: 'A dynamic page descriptor "type" must be "dynamic"',
@@ -128,16 +71,10 @@ export const staticDescriptorSchema = /* @__PURE__ */ baseDescriptorSchema.exten
 	),
 });
 
-/**
- * @template {string} PATH
- * @template {jsonValue.JsonValue} DATA
- * @param {_type.PageDescriptor<PATH, DATA>} descriptor
- * @returns {descriptor is _type.StaticPageDescriptor<PATH, DATA>}
- */
-export function parseStaticDescriptor(descriptor) {
+/** @type {import('./PageDescriptor.ts').assertStaticDescriptor} */
+export function assertStaticDescriptor(descriptor) {
 	try {
 		staticDescriptorSchema.parse(descriptor);
-		return true;
 	} catch (error) {
 		if (error instanceof zod.ZodError) {
 			throw new Error(error.errors[0].message);
@@ -146,16 +83,10 @@ export function parseStaticDescriptor(descriptor) {
 	}
 }
 
-/**
- * @template {string} PATH
- * @template {jsonValue.JsonValue} DATA
- * @param {_type.DynamicPageDescriptor<PATH, DATA>} descriptor
- * @returns {descriptor is _type.DynamicPageDescriptor<PATH, DATA>}
- */
-export function parseDynamicDescriptor(descriptor) {
+/** @type {import('./PageDescriptor.js').assertDynamicDescriptor} */
+export function assertDynamicDescriptor(descriptor) {
 	try {
 		dynamicDescriptorSchema.parse(descriptor);
-		return true;
 	} catch (error) {
 		if (error instanceof zod.ZodError) {
 			throw new Error(error.errors[0].message);

@@ -1,8 +1,7 @@
 import * as path from "node:path";
-import * as esbuild from "esbuild";
 import * as fs from "../../utils/fs.js";
 
-/** @returns {esbuild.Plugin} */
+/** @type {import('./output.ts').output} */
 export function output() {
 	return {
 		name: "frugal-internal:output",

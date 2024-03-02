@@ -1,8 +1,8 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 import * as url from "node:url";
-import { send } from "../../../../packages/frugal/src/utils/http/send.js";
-import { serve } from "../../../../packages/frugal/src/utils/http/serve.js";
+import { send } from "../../../../packages/frugal/src/utils/send.js";
+import { serve } from "../../../../packages/frugal/src/utils/serve.js";
 
 test("unit/frugal/utils/http/send.js: send static file from a directory", async () => {
 	const abortController = new AbortController();

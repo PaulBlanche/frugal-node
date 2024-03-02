@@ -1,13 +1,4 @@
-import * as _type from "./_type/jsonValue.js";
-
-/** @typedef {_type.JsonValue} JsonValue */
-/** @typedef {_type.HashableJsonValue} HashableJsonValue */
-
-/**
- * @param {_type.JsonValue} value
- * @param {unknown[]} [visited]
- * @returns {_type.HashableJsonValue}
- */
+/** @type {import('./jsonValue.js').hashableJsonValue} */
 export function hashableJsonValue(value, visited = []) {
 	if (
 		value === undefined ||
@@ -47,7 +38,7 @@ export function hashableJsonValue(value, visited = []) {
 		Object.keys(value)
 			.sort()
 			.map((key) => {
-				return /** @type {[string, _type.HashableJsonValue]} */ ([
+				return /** @type {[string, import('./jsonValue.js').HashableJsonValue]} */ ([
 					key,
 					hashableJsonValue(value[key], visited),
 				]);

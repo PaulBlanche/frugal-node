@@ -1,34 +1,25 @@
 import * as path from "node:path";
 import * as url from "node:url";
 import * as esbuild from "esbuild";
-import { FrugalConfig } from "frugal-node/config";
-import * as plugin from "frugal-node/plugin";
+import { EsbuildCompiler, cleanOutDir, output } from "frugal-node/plugin";
 import * as fs from "frugal-node/utils/fs";
-import * as hash from "frugal-node/utils/hash";
+import { Hash } from "frugal-node/utils/hash";
 import { log } from "frugal-node/utils/log";
 import { Bundler } from "./Bundler.js";
-import * as _type from "./_type/css.js";
 import { cssModules } from "./cssModules.js";
 
-/** @typedef {_type.CssOptions} CssOptions */
+/** @type {import('./css.ts').css} */
+export function css(options = {}) {
+	const outdir = options?.outdir ?? "css/";
+	const scope = options?.scope ?? "page";
+	const cssModule = options?.cssModule ?? false;
 
-/**
- * @param {_type.CssOptions} options
- * @returns {plugin.Plugin}
- */
-export function css({
-	outdir = "css/",
-	scope = "page",
-	esbuildOptions,
-	globalCss,
-	cssModule = false,
-} = {}) {
 	const cssModulesPlugin = cssModules(cssModule);
 
 	return {
 		name: "frugal:css",
 		setup(build, context) {
-			const compiler = new plugin.Compiler("css");
+			const compiler = EsbuildCompiler.create("css");
 
 			if (cssModule) {
 				cssModulesPlugin.setup(build, context);
@@ -46,7 +37,7 @@ export function css({
 					return;
 				}
 
-				/** @type {_type.Bundle[]} */
+				/** @type {import("./Bundler.js").Bundle[]} */
 				const bundles = [];
 
 				for (const outputPath of Object.keys(metafile.outputs)) {
@@ -57,7 +48,7 @@ export function css({
 						if (cssBundle) {
 							log(
 								`Found css bundle "${path.relative(
-									context.config.rootDir,
+									context.config.global.rootDir,
 									cssBundle,
 								)}" for entrypoint "${entrypoint}"`,
 								{ scope: "plugin:css", level: "verbose" },
@@ -68,33 +59,34 @@ export function css({
 				}
 
 				const globalBundles = await Promise.all(
-					getGlobalCss(context.config, globalCss).map(async (globalCss) => {
-						const ext = path.extname(globalCss);
-						const name = `${path.basename(globalCss, ext)}-${hash
-							.create()
-							.update(globalCss)
-							.digest()}${ext}`;
-						const cssBundle = path.resolve(context.config.buildDir, name);
-						await fs.copy(globalCss, cssBundle);
-						return path.relative(context.config.rootDir, cssBundle);
-					}),
+					getGlobalCss(context.config.global, options.globalCss).map(
+						async (globalCss) => {
+							const ext = path.extname(globalCss);
+							const name = `${path.basename(globalCss, ext)}-${Hash.create()
+								.update(globalCss)
+								.digest()}${ext}`;
+							const cssBundle = path.resolve(context.config.global.buildDir, name);
+							await fs.copy(globalCss, cssBundle);
+							return path.relative(context.config.global.rootDir, cssBundle);
+						},
+					),
 				);
 
 				bundles.unshift(
 					...globalBundles.map(
-						/** @returns {_type.Bundle} */ (cssBundle) => ({
+						/** @returns {import("./Bundler.js").Bundle} */ (cssBundle) => ({
 							cssBundle,
 							type: "global",
 						}),
 					),
 				);
 
-				const bundler = new Bundler(compiler, context.config, scope);
+				const cssBundler = Bundler.create(compiler, context.config.global, scope);
 
 				/** @type {esbuild.BuildOptions} */
-				const userOptions = { ...build.initialOptions, ...esbuildOptions };
+				const userOptions = { ...build.initialOptions, ...options.esbuildOptions };
 
-				const bundleResult = await bundler.bundle(bundles, {
+				const bundleResult = await cssBundler.bundle(bundles, {
 					entryNames: "[dir]/[name]-[hash]",
 					chunkNames: "[dir]/[name]-[hash]",
 					assetNames: "[dir]/[name]-[hash]",
@@ -108,7 +100,7 @@ export function css({
 						...userOptions?.define,
 						"import.meta.environment": "'client'",
 					},
-					outdir: path.resolve(context.config.publicDir, outdir),
+					outdir: path.resolve(context.config.global.publicDir, outdir),
 					plugins: [
 						...(userOptions.plugins?.filter(
 							(plugin) =>
@@ -116,11 +108,11 @@ export function css({
 								!plugin.name.startsWith("frugal:css") &&
 								!plugin.name.startsWith("frugal:script"),
 						) ?? []),
-						plugin.cleanOutdir(context.config, false),
-						plugin.output(),
+						cleanOutDir(context.config, false),
+						output(),
 					],
 					bundle: true,
-					absWorkingDir: context.config.rootDir,
+					absWorkingDir: context.config.global.rootDir,
 					metafile: true,
 				});
 
@@ -149,7 +141,7 @@ export function css({
 }
 
 /**
- * @param {FrugalConfig} config
+ * @param {import("frugal-node/plugin").FrugalConfig} config
  * @param {string[] | string | undefined} globalCss
  * @returns
  */

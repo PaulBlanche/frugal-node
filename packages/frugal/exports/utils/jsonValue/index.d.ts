@@ -1,1 +1,1 @@
-export * from "../../../src/utils/jsonValue.js";
+export * from "../../../src/utils/jsonValue.ts";

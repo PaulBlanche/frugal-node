@@ -38,7 +38,7 @@ export function staticSite({ mode = "index.html" } = {}) {
 
 /**
  * @param {FrugalConfig} config
- * @param {exporter.SnapshotEntry} entry
+ * @param {exporter.CacheEntry} entry
  */
 async function deleteEntry(config, entry) {
 	const filePath = path.join(config.publicDir, entry.path, "index.html");
@@ -55,7 +55,7 @@ async function deleteEntry(config, entry) {
 /**
  * @param {_type.StaticSiteMode} mode
  * @param {FrugalConfig} config
- * @param {exporter.SnapshotEntry} entry
+ * @param {exporter.CacheEntry} entry
  * @param {string | undefined} doc
  */
 async function writeEntry(mode, config, entry, doc) {
@@ -72,7 +72,7 @@ async function writeEntry(mode, config, entry, doc) {
 
 /**
  * @param {_type.StaticSiteMode} mode
- * @param {exporter.SnapshotEntry} entry
+ * @param {exporter.CacheEntry} entry
  */
 async function warnEntry(mode, entry) {
 	if (mode === "index.html" && entry.headers.length !== 0) {

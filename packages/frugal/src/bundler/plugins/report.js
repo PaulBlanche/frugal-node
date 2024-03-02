@@ -1,7 +1,7 @@
 import * as esbuild from "esbuild";
 import { log } from "../../utils/log.js";
 
-/** @returns {esbuild.Plugin} */
+/** @type {import('./report.ts').report} */
 export function report() {
 	let firstBuild = true;
 

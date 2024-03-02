@@ -1,68 +1,62 @@
 import * as lightningcss from "lightningcss";
-import * as _type from "./_type/ModuleCompiler.js";
 
-export class ModuleCompiler {
-	/** @type {lightningcss.CSSModuleExports} */
-	#exports;
-	/** @type {number} */
-	#counter;
+/** @type {import('./ModuleCompiler.ts').ModuleCompilerMaker} */
+export const ModuleCompiler = {
+	create,
+};
+
+/** @type {import('./ModuleCompiler.ts').ModuleCompilerMaker['create']} */
+export function create(exports) {
+	const state = {
+		counter: 0,
+	};
+	/** @type {Map<string, import('./ModuleCompiler.ts').ClassName[]>} */
+	const classNameCache = new Map();
 	/** @type {Record<string, string>} */
-	#importIdentifierCache;
-	/** @type {Map<string, _type.ClassName[]>} */
-	#classNameCache;
+	const importIdentifierCache = {};
 
-	/** @param {lightningcss.CSSModuleExports} exports */
-	constructor(exports) {
-		this.#exports = exports;
-		this.#counter = 0;
-		this.#classNameCache = new Map();
-		this.#importIdentifierCache = {};
-	}
-
-	/**
-	 * @param {string} compiledCssPath
-	 * @returns {string}
-	 */
-	compile(compiledCssPath) {
-		return `${Array.from(
-			new Set(
-				Object.values(this.#exports).flatMap((exportData) => {
-					return exportData.composes
-						.filter(
-							/** @returns {compose is lightningcss.DependencyCSSModuleReference} */
-							(compose) => compose.type === "dependency",
-						)
-						.map((compose) => {
-							return compose.specifier;
-						});
-				}),
-			),
-		)
-			.map((specifier) => {
-				return `import * as ${this.#importIdentifier(specifier)} from "${specifier}";`;
-			})
-			.join("\n")}
-import "${compiledCssPath}";
-import { format } from "cssModuleHelper:format.js"
-
-${Object.entries(this.#exports)
-	.sort((a, b) => a[0].localeCompare(b[0]))
-	.map(([exportName, exportData]) => {
-		return `export const ${camelizeClassname(exportName)} = format("${
-			exportData.name
-		}", ${this.#getClassNames(exportName).map((className) => {
-			return this.#toJsCode(className);
-		})});`;
-	})
-	.join("\n")}
-`;
-	}
+	return {
+		compile(compiledCssPath) {
+			return `${Array.from(
+				new Set(
+					Object.values(exports).flatMap((exportData) => {
+						return exportData.composes
+							.filter(
+								/** @returns {compose is lightningcss.DependencyCSSModuleReference} */
+								(compose) => compose.type === "dependency",
+							)
+							.map((compose) => {
+								return compose.specifier;
+							});
+					}),
+				),
+			)
+				.map((specifier) => {
+					return `import * as ${_importIdentifier(specifier)} from "${specifier}";`;
+				})
+				.join("\n")}
+	import "${compiledCssPath}";
+	import { format } from "cssModuleHelper:format.js"
+	
+	${Object.entries(exports)
+		.sort((a, b) => a[0].localeCompare(b[0]))
+		.map(([exportName, exportData]) => {
+			return `export const ${camelizeClassname(exportName)} = format("${
+				exportData.name
+			}", ${_getClassNames(exportName).map((className) => {
+				return _toJsCode(className);
+			})});`;
+		})
+		.join("\n")}
+	`;
+		},
+	};
 
 	/**
-	 * @param {_type.ClassName} className
+	 * @param {import('./ModuleCompiler.ts').ClassName} className
 	 * @returns {string}
 	 */
-	#toJsCode(className) {
+	function _toJsCode(className) {
 		switch (className.type) {
 			case "dependency": {
 				return `${className.importIdentifier}["${camelizeClassname(className.name)}"]`;
@@ -73,44 +67,44 @@ ${Object.entries(this.#exports)
 			case "local": {
 				return [
 					`"${className.name}"`,
-					...className.names.map((className) => this.#toJsCode(className)),
+					...className.names.map((className) => _toJsCode(className)),
 				].join(", ");
 			}
 		}
 	}
 
 	/** @param {string} specifier */
-	#importIdentifier(specifier) {
-		if (!(specifier in this.#importIdentifierCache)) {
-			this.#importIdentifierCache[specifier] = `$${this.#counter++}`;
+	function _importIdentifier(specifier) {
+		if (!(specifier in importIdentifierCache)) {
+			importIdentifierCache[specifier] = `$${state.counter++}`;
 		}
 
-		return this.#importIdentifierCache[specifier];
+		return importIdentifierCache[specifier];
 	}
 
 	/**
 	 * @param {string} name
-	 * @returns {_type.ClassName[]}
+	 * @returns {import('./ModuleCompiler.ts').ClassName[]}
 	 */
-	#getClassNames(name) {
-		const cached = this.#classNameCache.get(name);
+	function _getClassNames(name) {
+		const cached = classNameCache.get(name);
 		if (cached !== undefined) {
 			return cached;
 		}
 
-		const localExport = this.#exports[name];
+		const localExport = exports[name];
 
 		if (localExport === undefined) {
 			throw new Error(`name "${name}" is not exported from css module`);
 		}
 
 		const classNames = localExport.composes.map(
-			/** @returns {_type.ClassName} */
+			/** @returns {import('./ModuleCompiler.ts').ClassName} */
 			(compose) => {
 				if (compose.type === "dependency") {
 					return {
 						type: "dependency",
-						importIdentifier: this.#importIdentifier(compose.specifier),
+						importIdentifier: _importIdentifier(compose.specifier),
 						name: compose.name,
 					};
 				}
@@ -119,7 +113,7 @@ ${Object.entries(this.#exports)
 					return {
 						type: "local",
 						name: compose.name,
-						names: this.#resolveClassNames(compose.name),
+						names: _resolveClassNames(compose.name),
 					};
 				}
 
@@ -127,24 +121,22 @@ ${Object.entries(this.#exports)
 			},
 		);
 
-		this.#classNameCache.set(name, classNames);
+		classNameCache.set(name, classNames);
 		return classNames;
 	}
 
 	/**
 	 * @param {string} name
-	 * @returns {_type.ClassName[]}
+	 * @returns {import('./ModuleCompiler.ts').ClassName[]}
 	 */
-	#resolveClassNames(name) {
-		const found = Object.entries(this.#exports).find(
-			([_, exportData]) => exportData.name === name,
-		);
+	function _resolveClassNames(name) {
+		const found = Object.entries(exports).find(([_, exportData]) => exportData.name === name);
 
 		if (found === undefined) {
 			throw new Error("");
 		}
 
-		return this.#getClassNames(found[0]);
+		return _getClassNames(found[0]);
 	}
 }
 

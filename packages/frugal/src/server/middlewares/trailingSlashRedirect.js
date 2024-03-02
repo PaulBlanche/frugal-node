@@ -1,11 +1,4 @@
-import * as context from "../context.js";
-import * as middleware from "../middleware.js";
-
-/**
- * @param {context.BaseContext} context
- * @param {middleware.Next<context.BaseContext>} next
- * @returns {Promise<Response> | Response}
- */
+/** @type {import('./trailingSlashRedirect.ts').trailingSlashRedirect} */
 export function trailingSlashRedirect(context, next) {
 	const url = new URL(context.request.url);
 	if (url.pathname.endsWith("/") && url.pathname !== "/") {

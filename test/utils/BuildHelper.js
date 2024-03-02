@@ -4,7 +4,7 @@ import * as path from "node:path";
 import * as frugal from "../../packages/frugal/exports/index.js";
 import { FrugalConfig } from "../../packages/frugal/src/Config.js";
 import * as buildCache from "../../packages/frugal/src/builder/Cache.js";
-import { loadManifest } from "../../packages/frugal/src/builder/Manifest.js";
+import { loadManifest } from "../../packages/frugal/src/builder/manifest.js";
 import * as assets from "../../packages/frugal/src/page/Assets.js";
 import { Server } from "../../packages/frugal/src/server/Server.js";
 import * as serverCache from "../../packages/frugal/src/server/cache/Cache.js";

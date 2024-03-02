@@ -1,11 +1,6 @@
 import { toResponse } from "../../page/GenerationResponse.js";
-import * as context from "../context.js";
-import * as middleware from "../middleware.js";
 
-/**
- * @param {context.RouteContext<"dynamic">} context
- * @param {middleware.Next<context.RouteContext<"dynamic">>} next
- */
+/** @type {import('./dynamicRoute.ts').dynamicRoute} */
 export async function dynamicRoute(context, next) {
 	context.log("Generation of dynamic page", { level: "debug", scope: "dynamicRoute" });
 

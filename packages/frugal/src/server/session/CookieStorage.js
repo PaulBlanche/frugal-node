@@ -1,81 +1,56 @@
-import * as http from "../../utils/http.js";
-import * as sessionStorage from "./sessionStorage.js";
+import { getCookies, setCookie } from "../../utils/cookies.js";
 
-/**
- * @implements {sessionStorage.SessionStorage}
- */
-export class CookieSessionStorage {
-	/** @type {http.CookieConfig} */
-	#cookie;
+const DEFAULT_COOKIE_NAME = "__frugal_session_storage";
 
-	/**
-	 * @param {http.CookieConfig} [cookie]
-	 */
-	constructor(cookie = {}) {
-		this.#cookie = cookie;
-	}
+/** @type {import('./CookieStorage.ts').Maker} */
+export const CookieStorage = {
+	create,
+};
 
-	/**
-	 * @param {Headers} headers
-	 * @param {sessionStorage.SessionData} data
-	 * @param {number | undefined} expires
-	 * @returns {string}
-	 */
-	create(headers, data, expires) {
-		const cookieName = this.#cookie.name ?? "__frugal_session_storage";
+/** @type {import('./CookieStorage.ts').Maker['create']} */
+function create(cookie = {}) {
+	return {
+		create(headers, data, expires) {
+			const cookieName = cookie.name ?? DEFAULT_COOKIE_NAME;
 
-		http.setCookie(headers, {
-			...this.#cookie,
-			name: cookieName,
-			value: JSON.stringify(data),
-			expires,
-		});
+			setCookie(headers, {
+				...cookie,
+				name: cookieName,
+				value: JSON.stringify(data),
+				expires,
+			});
 
-		return "";
-	}
+			return "";
+		},
 
-	/**
-	 * @param {Headers} headers
-	 * @param {string} _id
-	 * @returns {sessionStorage.SessionData | undefined}
-	 */
-	get(headers, _id) {
-		const cookies = http.getCookies(headers);
-		const cookieName = this.#cookie.name ?? "__frugal_session_storage";
-		const serializedData = cookies[cookieName];
-		return JSON.parse(serializedData);
-	}
+		get(headers, _id) {
+			const cookies = getCookies(headers);
+			const cookieName = cookie.name ?? DEFAULT_COOKIE_NAME;
+			const serializedData = cookies[cookieName];
+			return JSON.parse(serializedData);
+		},
 
-	/**
-	 * @param {Headers} headers
-	 * @param {string} _id
-	 * @param {sessionStorage.SessionData} data
-	 * @param {number|undefined} [expires]
-	 */
-	update(headers, _id, data, expires) {
-		const cookieName = this.#cookie.name ?? "__frugal_session_storage";
+		update(headers, _id, data, expires) {
+			const cookieName = cookie.name ?? DEFAULT_COOKIE_NAME;
 
-		http.setCookie(headers, {
-			...this.#cookie,
-			name: cookieName,
-			value: JSON.stringify(data),
-			expires,
-		});
-	}
+			setCookie(headers, {
+				...cookie,
+				name: cookieName,
+				value: JSON.stringify(data),
+				expires,
+			});
+		},
 
-	/**
-	 * @param {Headers} headers
-	 * @param {string} _id
-	 */
-	delete(headers, _id) {
-		const cookieName = this.#cookie.name ?? "__frugal_session_storage";
+		delete(headers, _id) {
+			const cookieName = cookie.name ?? DEFAULT_COOKIE_NAME;
 
-		http.setCookie(headers, {
-			...this.#cookie,
-			name: cookieName,
-			value: "",
-			expires: new Date(0),
-			maxAge: 0,
-		});
-	}
+			setCookie(headers, {
+				...cookie,
+				name: cookieName,
+				value: "",
+				expires: new Date(0),
+				maxAge: 0,
+			});
+		},
+	};
 }

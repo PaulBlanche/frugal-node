@@ -1,7 +1,7 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import * as cookies from "../../../../packages/frugal/src/utils/http/cookies.js";
+import * as cookies from "../../../../packages/frugal/src/utils/cookies.js";
 
 test("unit/frugal/unit/frugal/utils/http/cookies.js.js: set cookie", () => {
 	const headers = new Headers();

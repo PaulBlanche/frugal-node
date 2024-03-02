@@ -1,8 +1,4 @@
-import * as assets from "../../page/Assets.js";
-import * as page from "../../page/Page.js";
-import { Producer } from "../../page/Producer.js";
-import * as context from "../context.js";
-import * as middleware from "../middleware.js";
+import { composeMiddleware } from "../middleware.js";
 import { dynamicRoute } from "./dynamicRoute.js";
 import { etag } from "./etag.js";
 import { forceGenerateStaticPage } from "./forceGenerateStaticPage.js";
@@ -11,10 +7,7 @@ import { refreshStaticPage } from "./refreshStaticPage.js";
 import { serveFromCacheStaticPage } from "./serveFromCacheStaticPage.js";
 import { watchModeStaticPage } from "./watchModeStaticPage.js";
 
-/**
- * @param {{ producer: Producer, page: page.Page }[]} routes
- * @returns {middleware.Middleware<context.BaseContext>}
- */
+/** @type {import('./router.ts').router} */
 export function router(routes) {
 	return (context, next) => {
 		for (const { page, producer } of routes) {
@@ -46,16 +39,16 @@ export function router(routes) {
 	};
 }
 
-/** @type {middleware.Middleware<context.RouteContext>} */
-const composedMiddleware = middleware.composeMiddleware([
+/** @type {import("../middleware.ts").Middleware<import("../context.ts").RouteContext>} */
+const composedMiddleware = composeMiddleware([
 	//csrf,
 	etag,
 	staticOrDynamic,
 ]);
 
 /**
- * @param {context.RouteContext} context
- * @param {middleware.Next<context.RouteContext>} next
+ * @param {import("../context.ts").RouteContext} context
+ * @param {import("../middleware.ts").Next<import("../context.ts").RouteContext>} next
  * @returns {Promise<Response>}
  */
 function staticOrDynamic(context, next) {
@@ -80,8 +73,8 @@ function staticOrDynamic(context, next) {
 	);
 }
 
-/** @type {middleware.Middleware<context.RouteContext<'static'>>} */
-const staticRoute = middleware.composeMiddleware(
+/** @type {import("../middleware.ts").Middleware<import("../context.ts").RouteContext<'static'>>} */
+const staticRoute = composeMiddleware(
 	[
 		forceGenerateStaticPage,
 		refreshStaticPage,
@@ -89,7 +82,7 @@ const staticRoute = middleware.composeMiddleware(
 		serveFromCacheStaticPage,
 		refreshJitStaticPage,
 	].filter(
-		/** @returns {middleware is ((context: context.RouteContext<"static">, next: middleware.Next<context.RouteContext<"static">>) => Promise<Response>)} */
+		/** @returns {middleware is ((context: import("../context.ts").RouteContext<"static">, next: import("../middleware.ts").Next<import("../context.ts").RouteContext<"static">>) => Promise<Response>)} */
 		(middleware) => Boolean(middleware),
 	),
 );

@@ -1,1 +1,1 @@
-export * from "../src/css.js";
+export * from "../src/css.ts";

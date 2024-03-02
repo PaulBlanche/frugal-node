@@ -9,8 +9,8 @@
 		"module": "NodeNext",
 		"lib": ["DOM", "DOM.Iterable", "ESNext"],
 		"allowImportingTsExtensions": true,
-		"forceConsistentCasingInFileNames": false
+		"forceConsistentCasingInFileNames": false,
 	},
-	"include": ["packages", "test"],
-	"exclude": ["test/**/project"]
+	"include": ["packages"],
+	"exclude": ["node_modules"],
 }

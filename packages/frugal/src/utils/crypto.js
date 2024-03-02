@@ -6,37 +6,34 @@ const KEY_EXTRACTABLE = true;
 const KEY_USAGE = ["sign", "verify"];
 
 /**
- * @param {string} key
- * @returns {Promise<CryptoKey>}
+ * @type {import('./crypto.ts').exportKey}
+ */
+export async function exportKey() {
+	const key = await crypto.subtle.generateKey(KEY_ALGORITHM, KEY_EXTRACTABLE, KEY_USAGE);
+	const jsonWebKey = await crypto.subtle.exportKey(KEY_FORMAT, key);
+	return btoa(JSON.stringify(jsonWebKey));
+}
+
+/**
+ * @type {import('./crypto.ts').importKey}
  */
 export async function importKey(key) {
-	const importkey = JSON.parse(atob(key));
+	/** @type {JsonWebKey} */
+	const jsonWebKey = JSON.parse(atob(key));
 
 	return await crypto.subtle.importKey(
 		KEY_FORMAT,
-		importkey,
+		jsonWebKey,
 		KEY_ALGORITHM,
 		KEY_EXTRACTABLE,
 		KEY_USAGE,
 	);
 }
 
-/**
- * @returns {Promise<string>}
- */
-export async function exportKey() {
-	const key = await crypto.subtle.generateKey(KEY_ALGORITHM, KEY_EXTRACTABLE, KEY_USAGE);
-
-	const exportKey = await crypto.subtle.exportKey(KEY_FORMAT, key);
-	return btoa(JSON.stringify(exportKey));
-}
-
 const ENCODER = new TextEncoder();
 
 /**
- * @param {CryptoKey} cryptoKey
- * @param {string} data
- * @returns {Promise<string>}
+ * @type {import('./crypto.ts').sign}
  */
 export async function sign(cryptoKey, data) {
 	const signature = await crypto.subtle.sign(KEY_ALGORITHM, cryptoKey, ENCODER.encode(data));
@@ -44,11 +41,7 @@ export async function sign(cryptoKey, data) {
 }
 
 /**
- *
- * @param {CryptoKey} cryptoKey
- * @param {string} signature
- * @param {string} data
- * @returns {Promise<boolean>}
+ * @type {import('./crypto.ts').verify}
  */
 export async function verify(cryptoKey, signature, data) {
 	return await crypto.subtle.verify(

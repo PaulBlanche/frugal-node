@@ -1,62 +1,56 @@
 import * as watchProcess from "./WatchProcess.js";
 import { LiveReloadServer } from "./livereload/LiveReloadServer.js";
 
-export class ParentContext {
-	/** @type {AbortController} */
-	#liveReloadController;
-	/** @type {LiveReloadServer} */
-	#liveReloadServer;
-	/** @type {watchProcess.WatchProcess} */
-	#watchProcess;
-	/** @type {watchProcess.Listener[]} */
-	#listeners;
+/** @type {import('./ParentContext.ts').Maker} */
+export const ParentContext = {
+	create,
+};
 
-	constructor() {
-		this.#liveReloadController = new AbortController();
-		this.#liveReloadServer = new LiveReloadServer();
-		this.#watchProcess = new watchProcess.WatchProcess();
-		this.#listeners = [];
-	}
+/** @type {import('./ParentContext.ts').Maker['create']} */
+export function create() {
+	const liveReloadController = new AbortController();
+	const process = watchProcess.create();
+	const liveReload = LiveReloadServer.create();
+	/** @type {import("./WatchProcess.ts").Listener[]} */
+	const listeners = [];
 
-	/** @param {watchProcess.Listener} listener */
-	addEventListener(listener) {
-		this.#listeners.push(listener);
-	}
+	return {
+		addEventListener(listener) {
+			listeners.push(listener);
+		},
 
-	/** @param {watchProcess.Listener} listener */
-	removeEventListener(listener) {
-		const index = this.#listeners.indexOf(listener);
-		if (index !== -1) {
-			this.#listeners.splice(index, 1);
-		}
-	}
+		removeEventListener(listener) {
+			const index = listeners.indexOf(listener);
+			if (index !== -1) {
+				listeners.splice(index, 1);
+			}
+		},
+		async watch() {
+			process.addEventListener((type) => {
+				liveReload.dispatch({ type });
+				_emit(type);
+			});
+
+			await Promise.all([
+				liveReload.serve({
+					signal: liveReloadController.signal,
+				}),
+				process.spawn(),
+			]);
+		},
+
+		async dispose() {
+			liveReloadController.abort();
+			await process.kill();
+		},
+	};
 
 	/**
-	 *
 	 * @param {watchProcess.EventType} type
 	 */
-	#emit(type) {
-		for (const listener of this.#listeners) {
+	function _emit(type) {
+		for (const listener of listeners) {
 			listener(type);
 		}
-	}
-
-	async watch() {
-		this.#watchProcess.addEventListener((type) => {
-			this.#liveReloadServer.dispatch({ type });
-			this.#emit(type);
-		});
-
-		await Promise.all([
-			this.#liveReloadServer.serve({
-				signal: this.#liveReloadController.signal,
-			}),
-			this.#watchProcess.spawn(),
-		]);
-	}
-
-	async dispose() {
-		this.#liveReloadController.abort();
-		await this.#watchProcess.kill();
 	}
 }

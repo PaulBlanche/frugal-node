@@ -1,17 +1,8 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as stream from "node:stream";
-import * as webStream from "node:stream/web";
-import * as _type from "./_type/fs.js";
 
-/** @typedef {_type.FileInfo} FileInfo */
-
-/**
- * @param {string} src
- * @param {string} dest
- * @param {_type.CopyOptions} [options]
- * @returns {Promise<void>}
- */
+/** @type {import('./fs.js').copy} */
 export async function copy(src, dest, { overwrite = false, recursive = false } = {}) {
 	try {
 		return await fs.promises.cp(src, dest, { force: overwrite, recursive });
@@ -20,10 +11,7 @@ export async function copy(src, dest, { overwrite = false, recursive = false } =
 	}
 }
 
-/**
- * @param {string} path
- * @returns {Promise<webStream.ReadableStream<Uint8Array>>}
- */
+/** @type {import('./fs.js').createReadableStream} */
 export async function createReadableStream(path) {
 	try {
 		return await Promise.resolve(stream.Readable.toWeb(fs.createReadStream(path)));
@@ -32,10 +20,7 @@ export async function createReadableStream(path) {
 	}
 }
 
-/**
- * @param {string} path
- * @returns {Promise<void>}
- */
+/** @type {import('./fs.js').ensureDir} */
 export async function ensureDir(path) {
 	try {
 		await fs.promises.mkdir(path, { recursive: true });
@@ -44,10 +29,7 @@ export async function ensureDir(path) {
 	}
 }
 
-/**
- * @param {string} filePath
- * @returns {Promise<void>}
- */
+/** @type {import('./fs.js').ensureFile} */
 export async function ensureFile(filePath) {
 	try {
 		await ensureDir(path.dirname(filePath));
@@ -57,10 +39,7 @@ export async function ensureFile(filePath) {
 	}
 }
 
-/**
- * @param {string} path
- * @returns {Promise<AsyncIterable<_type.DirEntry>>}
- */
+/** @type {import('./fs.js').readDir} */
 export async function readDir(path) {
 	try {
 		return await fs.promises.opendir(path);
@@ -69,10 +48,7 @@ export async function readDir(path) {
 	}
 }
 
-/**
- * @param {string} path
- * @returns {Promise<Uint8Array>}
- */
+/** @type {import('./fs.js').readFile} */
 export async function readFile(path) {
 	try {
 		return await fs.promises.readFile(path);
@@ -81,10 +57,7 @@ export async function readFile(path) {
 	}
 }
 
-/**
- * @param {string} path
- * @returns {Promise<string>}
- */
+/** @type {import('./fs.js').readTextFile} */
 export async function readTextFile(path) {
 	try {
 		return await fs.promises.readFile(path, { encoding: "utf-8" });
@@ -93,11 +66,7 @@ export async function readTextFile(path) {
 	}
 }
 
-/**
- * @param {string} path
- * @param {_type.RemoveOptions} [options]
- * @returns {Promise<void>}
- */
+/** @type {import('./fs.js').remove} */
 export async function remove(path, { recursive = false } = {}) {
 	try {
 		return await fs.promises.rm(path, { recursive });
@@ -106,10 +75,7 @@ export async function remove(path, { recursive = false } = {}) {
 	}
 }
 
-/**
- * @param {string} path
- * @returns {Promise<_type.FileInfo>}
- */
+/** @type {import('./fs.js').stat} */
 export async function stat(path) {
 	try {
 		return await fs.promises.stat(path);
@@ -118,12 +84,7 @@ export async function stat(path) {
 	}
 }
 
-/**
- * @param {string} path
- * @param {Uint8Array | webStream.ReadableStream<Uint8Array>} data
- * @param {_type.WriteFileOptions} options
- * @returns {Promise<void>}
- */
+/** @type {import('./fs.js').writeFile} */
 export async function writeFile(path, data, { append = false, createNew = false } = {}) {
 	try {
 		return await fs.promises.writeFile(path, data, {
@@ -134,12 +95,7 @@ export async function writeFile(path, data, { append = false, createNew = false 
 	}
 }
 
-/**
- * @param {string} path
- * @param {string | webStream.ReadableStream<string>} data
- * @param {_type.WriteFileOptions} options
- * @returns {Promise<void>}
- */
+/** @type {import('./fs.js').writeTextFile} */
 export async function writeTextFile(path, data, { append = false, createNew = false } = {}) {
 	try {
 		return await fs.promises.writeFile(path, data, {
@@ -151,7 +107,7 @@ export async function writeTextFile(path, data, { append = false, createNew = fa
 	}
 }
 
-/** @param {_type.WriteFileOptions} options */
+/** @param {import('./fs.js').WriteFileOptions} options */
 export function flag(options) {
 	if (options.append) {
 		if (options.createNew) {

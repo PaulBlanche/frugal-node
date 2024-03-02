@@ -1,84 +1,66 @@
 import * as path from "node:path";
-import * as esbuild from "esbuild";
-import { FrugalConfig } from "frugal-node/config";
-import { Compiler } from "frugal-node/plugin";
 import { commonPath } from "frugal-node/utils/commonPath";
-import * as hash from "frugal-node/utils/hash";
-import * as _type from "./_type/css.js";
+import { Hash } from "frugal-node/utils/hash";
 
-export class Bundler {
-	/** @type {Compiler} */
-	#compiler;
-	/** @type {FrugalConfig} */
-	#config;
-	/** @type {"page" | "global"} */
-	#scope;
+/** @type {import('./Bundler.ts').BundlerMaker} */
+export const Bundler = {
+	create,
+};
 
-	/**
-	 * @param {Compiler} compiler
-	 * @param {FrugalConfig} config
-	 * @param {"page" | "global"} scope
-	 */
-	constructor(compiler, config, scope) {
-		this.#compiler = compiler;
-		this.#config = config;
-		this.#scope = scope;
-	}
+/** @type {import('./Bundler.ts').BundlerMaker['create']} */
+export function create(compiler, config, scope) {
+	return {
+		async bundle(bundles, options) {
+			const commonRoot = commonPath(bundles.map((bundle) => bundle.cssBundle));
 
-	/**
-	 * @param {_type.Bundle[]} bundles
-	 * @param {Omit<esbuild.BuildOptions, "entryPoints">} options
-	 */
-	async bundle(bundles, options) {
-		const commonRoot = commonPath(bundles.map((bundle) => bundle.cssBundle));
+			if (options.loader?.[".css"] === "empty") {
+				return { global: [], page: {} };
+			}
 
-		if (options.loader?.[".css"] === "empty") {
-			return { global: [], page: {} };
-		}
+			const bundleHash = bundles
+				.reduce((hash, bundle) => {
+					return hash.update(bundle.cssBundle);
+				}, Hash.create())
+				.digest();
 
-		const bundleHash = bundles
-			.reduce((hash, bundle) => {
-				return hash.update(bundle.cssBundle);
-			}, hash.create())
-			.digest();
+			const compileResult = await compiler.compile(bundleHash, {
+				...options,
+				entryPoints:
+					scope === "page"
+						? bundles.map((bundle) => {
+								const name = nameWithoutHash(
+									path.relative(commonRoot, bundle.cssBundle),
+								);
+								return {
+									in: bundle.cssBundle,
+									out: path.basename(name, path.extname(name)),
+								};
+						  })
+						: undefined,
+				stdin:
+					scope === "global"
+						? {
+								contents: bundles
+									.map((bundle) => {
+										return `@import "${bundle.cssBundle}";`;
+									})
+									.join("\n"),
+								resolveDir: config.rootDir,
+								sourcefile: "global-facade.css",
+								loader: options.loader?.[".css"] ?? "css",
+						  }
+						: undefined,
+			});
 
-		const compileResult = await this.#compiler.compile(bundleHash, {
-			...options,
-			entryPoints:
-				this.#scope === "page"
-					? bundles.map((bundle) => {
-							const name = nameWithoutHash(
-								path.relative(commonRoot, bundle.cssBundle),
-							);
-							return {
-								in: bundle.cssBundle,
-								out: path.basename(name, path.extname(name)),
-							};
-					  })
-					: undefined,
-			stdin:
-				this.#scope === "global"
-					? {
-							contents: bundles
-								.map((bundle) => {
-									return `@import "${bundle.cssBundle}";`;
-								})
-								.join("\n"),
-							resolveDir: this.#config.rootDir,
-							sourcefile: "global-facade.css",
-							loader: options.loader?.[".css"] ?? "css",
-					  }
-					: undefined,
-		});
-
-		return this.#extractBundles(bundles, compileResult.metafile);
-	}
+			return _extractBundles(bundles, compileResult.metafile);
+		},
+	};
 
 	/**
-	 * @param {_type.Bundle[]} bundles
-	 * @param {esbuild.Metafile} metafile
+	 * @param {import('./Bundler.ts').Bundle[]} bundles
+	 * @param {import('esbuild').Metafile} metafile
 	 */
-	#extractBundles(bundles, metafile) {
+	function _extractBundles(bundles, metafile) {
 		/** @type {Record<string, string>} */
 		const stylesheets = {};
 		/** @type {string[]} */
@@ -88,8 +70,8 @@ export class Bundler {
 			const bundle = bundles.find((bundle) => bundle.cssBundle === output.entryPoint);
 
 			const cssBundlePath = path.relative(
-				this.#config.publicDir,
-				path.resolve(this.#config.rootDir, outputPath),
+				config.publicDir,
+				path.resolve(config.rootDir, outputPath),
 			);
 
 			if (bundle === undefined || bundle.type === "global") {

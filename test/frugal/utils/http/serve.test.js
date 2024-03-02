@@ -1,8 +1,8 @@
 import * as assert from "node:assert/strict";
 import { ReadableStream } from "node:stream/web";
 import { test } from "node:test";
-import { serve } from "../../../../packages/frugal/src/utils/http/serve.js";
 import { fromReadableStream } from "../../../../packages/frugal/src/utils/readableStream.js";
+import { serve } from "../../../../packages/frugal/src/utils/serve.js";
 import { waitForPort } from "../../../utils/waitForPort.js";
 
 test("unit/frugal/utils/http/serve.js: input to the handler the request from the client and serve back the response", async () => {

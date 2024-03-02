@@ -1,96 +1,78 @@
 import * as webStream from "node:stream/web";
-import * as pageResponse from "../page/PageResponse.js";
-import * as hash from "../utils/hash.js";
-import * as jsonValue from "../utils/jsonValue.js";
+import { Hash } from "../utils/Hash.js";
 import * as readableStream from "../utils/readableStream.js";
-import * as _type from "./_type/GenerationResponse.js";
 
-/**  @typedef {_type.SerializedGenerationResponse} SerializedGenerationResponse */
+/** @type {import('./GenerationResponse.ts').GenerationResponseMaker} */
+export const GenerationResponse = {
+	create,
+};
 
-/** @template {jsonValue.JsonValue} [DATA=jsonValue.JsonValue] */
-export class LiveGenerationResponse {
-	/** @type {pageResponse.PageResponse<DATA>} */
-	#pageResponse;
-	/** @type {_type.Init<DATA>} */
-	#init;
-	/** @type {string | undefined} */
-	#hash;
-	/** @type {string | webStream.ReadableStream<string> | undefined} */
-	#body;
-	/** @type {_type.SerializedGenerationResponse | undefined} */
-	#serialized;
+/** @type {import('./GenerationResponse.ts').GenerationResponseMaker['create']} */
+export function create(response, init) {
+	const state = {
+		/** @type {string|undefined} */
+		hash: undefined,
+		/** @type {string | webStream.ReadableStream<string> | undefined} */
+		body: undefined,
+		/** @type {import('./GenerationResponse.ts').SerializedGenerationResponse | undefined} */
+		serialized: undefined,
+	};
 
-	/**
-	 * @param {pageResponse.PageResponse<DATA>} pageResponse
-	 * @param {_type.Init<DATA>} init
-	 */
-	constructor(pageResponse, init) {
-		this.#init = init;
-		this.#pageResponse = pageResponse;
-	}
+	return {
+		get path() {
+			return init.path;
+		},
 
-	get path() {
-		return this.#init.path;
-	}
+		get hash() {
+			if (state.hash === undefined) {
+				state.hash = Hash.create()
+					.update(response.dataHash)
+					.update(init.path)
+					.update(init.moduleHash)
+					.update(init.configHash)
+					.digest();
+			}
+			return state.hash;
+		},
 
-	get hash() {
-		if (this.#hash === undefined) {
-			this.#hash = this.#computeHash();
-		}
-		return this.#hash;
-	}
+		get body() {
+			if (state.body === undefined) {
+				state.body = response.type === "data" ? init.render(response.data) : undefined;
+			}
+			return state.body;
+		},
 
-	get body() {
-		if (this.#body === undefined) {
-			this.#body =
-				this.#pageResponse.type === "data"
-					? this.#init.render(this.#pageResponse.data)
-					: undefined;
-		}
-		return this.#body;
-	}
+		get headers() {
+			return response.headers;
+		},
 
-	get headers() {
-		return this.#pageResponse.headers;
-	}
+		get status() {
+			return response.status;
+		},
 
-	get status() {
-		return this.#pageResponse.status;
-	}
+		async serialize() {
+			if (state.serialized === undefined) {
+				const bodyString =
+					this.body instanceof webStream.ReadableStream
+						? await readableStream.readStringStream(this.body)
+						: this.body;
 
-	async serialize() {
-		if (this.#serialized === undefined) {
-			const bodyString =
-				this.body instanceof webStream.ReadableStream
-					? await readableStream.readStringStream(this.body)
-					: this.body;
+				state.serialized = {
+					path: this.path,
+					hash: this.hash,
+					body: bodyString,
+					headers: Array.from(this.headers.entries()),
+					status: this.status,
+				};
+			}
 
-			this.#serialized = {
-				path: this.#init.path,
-				hash: this.hash,
-				body: bodyString,
-				headers: Array.from(this.headers.entries()),
-				status: this.#pageResponse.status,
-			};
-		}
-
-		return this.#serialized;
-	}
-
-	#computeHash() {
-		return hash
-			.create()
-			.update(this.#pageResponse.dataHash)
-			.update(this.#init.path)
-			.update(this.#init.moduleHash)
-			.update(this.#init.configHash)
-			.digest();
-	}
+			return state.serialized;
+		},
+	};
 }
 
 /**
- * @param {LiveGenerationResponse<jsonValue.JsonValue>|_type.SerializedGenerationResponse} response
- * @returns {Response}
+ * @type {import('./GenerationResponse.ts').toResponse}
  */
 export function toResponse(response) {
 	const headers = new Headers(response.headers);
@@ -101,7 +83,7 @@ export function toResponse(response) {
 	}
 
 	if (!headers.has("etag") && typeof body === "string") {
-		headers.set("Etag", `W/"${hash.create().update(body).digest()}"`);
+		headers.set("Etag", `W/"${Hash.create().update(body).digest()}"`);
 	}
 
 	return new Response(

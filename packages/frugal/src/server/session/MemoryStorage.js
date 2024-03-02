@@ -1,65 +1,42 @@
-import * as sessionStorage from "./sessionStorage.js";
+/** @type {import('./MemoryStorage.ts').Maker} */
+export const MemoryStorage = {
+	create,
+};
 
-/**
- * @implements {sessionStorage.SessionStorage}
- */
-export class MemorySessionStorage {
-	/** @type {Map<string, { data: sessionStorage.SessionData; expires: number | undefined }>} */
-	#store;
+/** @type {import('./MemoryStorage.ts').Maker['create']} */
+export function create() {
+	const store = new Map();
 
-	constructor() {
-		this.#store = new Map();
-	}
+	return {
+		create(_headers, data, expires) {
+			const id = crypto.randomUUID();
 
-	/**
-	 * @param {Headers} _headers
-	 * @param {sessionStorage.SessionData} data
-	 * @param {number | undefined} expires
-	 * @returns {string}
-	 */
-	create(_headers, data, expires) {
-		const id = crypto.randomUUID();
+			store.set(id, { data, expires });
 
-		this.#store.set(id, { data, expires });
+			return id;
+		},
 
-		return id;
-	}
+		get(_headers, id) {
+			const stored = store.get(id);
 
-	/**
-	 * @param {Headers} _headers
-	 * @param {string} id
-	 * @returns {sessionStorage.SessionData | undefined}
-	 */
-	get(_headers, id) {
-		const stored = this.#store.get(id);
+			if (stored === undefined) {
+				return undefined;
+			}
 
-		if (stored === undefined) {
-			return undefined;
-		}
+			if (stored.expires && stored.expires < Date.now()) {
+				store.delete(id);
+				return undefined;
+			}
 
-		if (stored.expires && stored.expires < Date.now()) {
-			this.#store.delete(id);
-			return undefined;
-		}
+			return stored.data;
+		},
 
-		return stored.data;
-	}
+		update(_headers, id, data, expires) {
+			store.set(id, { data, expires });
+		},
 
-	/**
-	 * @param {Headers} _headers
-	 * @param {string} id
-	 * @param {sessionStorage.SessionData} data
-	 * @param {number|undefined} [expires]
-	 */
-	update(_headers, id, data, expires) {
-		this.#store.set(id, { data, expires });
-	}
-
-	/**
-	 * @param {Headers} _headers
-	 * @param {string} id
-	 */
-	delete(_headers, id) {
-		this.#store.delete(id);
-	}
+		delete(_headers, id) {
+			store.delete(id);
+		},
+	};
 }

@@ -1,77 +1,47 @@
-import * as pageDescriptor from "../../page/PageDescriptor.js";
-import * as sessionStorage from "./sessionStorage.js";
+/** @type {import('./Session.ts').Maker} */
+export const Session = {
+	create,
+};
 
-/**
- * @implements {pageDescriptor.Session}
- */
-export class Session {
-	/** @type {Map<string, any>} */
-	#data;
-	/** @type {string|undefined} */
-	#id;
-	/** @type {boolean} */
-	#shouldBePersisted;
+/** @type {import('./Session.ts').Maker['create']} */
+function create(data = {}, id = undefined) {
+	const state = {
+		/** @type {Map<string, any>} */
+		data: new Map(Object.entries(data)),
+		shouldBePersisted: false,
+	};
 
-	/**
-	 *
-	 * @param {sessionStorage.SessionData} [data]
-	 * @param {string} [id]
-	 */
-	constructor(data = {}, id = undefined) {
-		this.#id = id;
-		this.#data = new Map(Object.entries(data));
-		this.#shouldBePersisted = false;
-	}
+	return {
+		get id() {
+			return id;
+		},
 
-	get _id() {
-		return this.#id;
-	}
+		get data() {
+			return Object.fromEntries(state.data);
+		},
 
-	get _data() {
-		return Object.fromEntries(this.#data);
-	}
+		get shouldBePersisted() {
+			return state.shouldBePersisted;
+		},
 
-	get _shouldBePersisted() {
-		return this.#shouldBePersisted;
-	}
+		persist() {
+			state.shouldBePersisted = true;
+		},
 
-	persist() {
-		this.#shouldBePersisted = true;
-	}
+		get(key) {
+			return state.data.get(key);
+		},
 
-	/**
-	 * @template [T = unknown]
-	 * @param {string} key
-	 * @returns {T | undefined}
-	 */
-	get(key) {
-		return this.#data.get(key);
-	}
+		set(key, value) {
+			state.data.set(key, value);
+		},
 
-	/**
-	 * @template [T = unknown]
-	 * @param {string} key
-	 * @param {T} value
-	 * @returns {void}
-	 */
-	set(key, value) {
-		this.#data.set(key, value);
-	}
+		delete(key) {
+			state.data.delete(key);
+		},
 
-	/**
-	 * @param {string} key
-	 * @returns {void}
-	 */
-	delete(key) {
-		this.#data.delete(key);
-	}
-
-	/**
-	 *
-	 * @param {string} key
-	 * @returns {boolean}
-	 */
-	has(key) {
-		return this.#data.has(key);
-	}
+		has(key) {
+			return state.data.has(key);
+		},
+	};
 }

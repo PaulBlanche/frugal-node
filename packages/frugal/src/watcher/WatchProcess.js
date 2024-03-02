@@ -3,78 +3,75 @@ import * as webStream from "node:stream/web";
 import chalk from "chalk";
 import { log } from "../utils/log.js";
 import * as readableStream from "../utils/readableStream.js";
-import * as spawn from "../utils/spawn.js";
-import * as watcher from "./DependencyWatcher.js";
-import * as _type from "./_type/WatchProcess.js";
+import { spawnWatcher } from "./spawnWatcher.js";
 
-/** @typedef {_type.Listener} Listener */
-/** @typedef {_type.EventType} EventType */
+/** @type {import('./WatchProcess.ts').create} */
+export function create() {
+	const state = {
+		/** @type {import('./WatchProcess.ts').Listener[]} */
+		listeners: [],
+		/** @type {import("../utils/ChildProcess.ts").ChildProcess | undefined} */
+		process: undefined,
+	};
 
-export class WatchProcess {
-	/** @type {watcher.DependencyWatcher} */
-	#watcher;
-	/** @type {spawn.ChildProcess | undefined} */
-	#process;
-	/** @type {_type.Listener[]} */
-	#listeners;
-	/** @type {webStream.ReadableStream<string> | undefined} */
-	#processOutputLineStream;
+	log("Setup watch process", {
+		scope: "WatchProcess",
+		level: "debug",
+	});
 
-	constructor() {
-		this.#listeners = [];
+	return {
+		addEventListener(listener) {
+			state.listeners.push(listener);
+		},
 
-		log("Setup watch process process", {
-			scope: "WatchProcess",
-			level: "debug",
-		});
+		async spawn() {
+			if (state.process !== undefined) {
+				throw Error("process was already spawned");
+			}
 
-		this.#watcher = new watcher.DependencyWatcher(process.argv[1], {
-			env: {
-				FRUGAL_WATCH_PROCESS_CHILD: "1",
-				FORCE_COLOR: String(chalk.level),
-			},
-		});
-	}
+			state.process = await spawnWatcher(process.argv[1], {
+				env: {
+					FRUGAL_WATCH_PROCESS_CHILD: "1",
+					FORCE_COLOR: String(chalk.level),
+				},
+			});
 
-	/** @param {_type.Listener} listener */
-	addEventListener(listener) {
-		this.#listeners.push(listener);
-	}
+			const pid = state.process.pid;
+
+			state.process.status.then(() => {
+				if (state.process?.pid === pid) {
+					state.process = undefined;
+				}
+			});
+
+			_listenProcess(state.process);
+		},
+
+		async kill() {
+			state.process?.kill("SIGINT");
+			await state.process?.status;
+		},
+	};
 
 	/**
-	 *
-	 * @param {_type.EventType} type
+	 * @param {import('./WatchProcess.ts').EventType} type
 	 */
-	#emit(type) {
-		for (const listener of this.#listeners) {
+	function _emit(type) {
+		for (const listener of state.listeners) {
 			listener(type);
 		}
 	}
 
-	async spawn() {
-		this.#process = await this.#watcher.spawn();
-		const pid = this.#process.pid;
-		this.#process.status.then(() => {
-			if (this.#process?.pid === pid) {
-				this.#process = undefined;
-			}
-		});
-		this.#listenProcess(this.#process);
-	}
-
-	async kill() {
-		this.#process?.kill("SIGINT");
-		await this.#process?.status;
-	}
-
-	/** @param {spawn.ChildProcess} process */
-	async #listenProcess(process) {
-		this.#processOutputLineStream = readableStream
+	/**
+	 * @param {import("../utils/ChildProcess.ts").ChildProcess} process
+	 */
+	async function _listenProcess(process) {
+		const processOutputLineStream = readableStream
 			.mergeReadableStreams(process.stdout, process.stderr)
 			.pipeThrough(new webStream.TextDecoderStream())
 			.pipeThrough(new readableStream.TextLineStream());
 
-		for await (const line of this.#processOutputLineStream) {
+		for await (const line of processOutputLineStream) {
 			const trimedLine = line.trim();
 			if (trimedLine.length === 0) {
 				continue;
@@ -84,11 +81,11 @@ export class WatchProcess {
 				const data = JSON.parse(trimedLine);
 				switch (data.type) {
 					case "suspend": {
-						this.#emit("suspend");
+						_emit("suspend");
 						break;
 					}
 					case "reload": {
-						this.#emit("reload");
+						_emit("reload");
 						break;
 					}
 					default:

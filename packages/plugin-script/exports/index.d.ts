@@ -1,1 +1,1 @@
-export * from "../src/script.js";
+export * from "../src/script.ts";

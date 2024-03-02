@@ -2,11 +2,11 @@ import * as path from "node:path";
 import * as url from "node:url";
 import * as esbuild from "esbuild";
 import * as config from "frugal-node/config";
-import * as exporter from "frugal-node/exporter";
+import { Snapshot, getManifestPath } from "frugal-node/exporter";
 import * as fs from "frugal-node/utils/fs";
 
 /**
- * @returns {exporter.Exporter}
+ * @returns {import("frugal-node/exporter").Exporter}
  */
 export function vercel() {
 	return {
@@ -22,7 +22,7 @@ export function vercel() {
 
 			await populate(context.config);
 
-			await bundleFunction(functionDir, context.config);
+			await bundleFunction(functionDir, outputDir, context.config);
 		},
 	};
 }
@@ -58,7 +58,7 @@ function globalConfigContent() {
 async function populate(config) {
 	const { kv } = await import("@vercel/kv");
 
-	const cacheSnapshot = await exporter.snapshot({ dir: config.buildCacheDir });
+	const cacheSnapshot = await Snapshot.load({ dir: config.buildCacheDir });
 
 	await kv.flushall();
 	await Promise.all(
@@ -76,66 +76,60 @@ async function populate(config) {
 
 /**
  * @param {string} functionDir
+ * @param {string} outputDir
  * @param {config.FrugalConfig} config
  */
-async function bundleFunction(functionDir, config) {
-	const loadedManifest = await exporter.loadManifest(config);
+async function bundleFunction(functionDir, outputDir, config) {
+	const manifestPath = await getManifestPath(config);
 
-	await esbuild.build({
+	const result = await esbuild.build({
 		stdin: {
 			contents: `
 				import { KvStorage } from "${url.fileURLToPath(
 					new URL("./KvStorage.js", import.meta.url),
 				)}";
-				import { Server, Cache } from 'frugal-node/server';
-				import config from "frugal:config";
-				import * as manifest from "frugal:manifest";
+				import { Server, ServerCache } from 'frugal-node/server';
+				import * as manifest from "${manifestPath}";
 
-				const server = new Server({
-					config,
+				const handlerPromise = Server.create({
+					config: manifest.config,
 					watch: false,
 					manifest,
-					cache: new Cache(new KvStorage()),
-		
-				})
+					cache: ServerCache.create(new KvStorage()),
+				}).then(server => server.nativeHandler(true))
 
-				module.exports = server.nativeHandler(true)
+				module.exports = async (req, res) => {
+					const handler = await handlerPromise
+					await handler(req,res)
+				}
 				`,
 			resolveDir: functionDir,
 		},
 		bundle: true,
 		metafile: true,
-		minify: true,
+		//minify: true,
 		define: {
 			"process.env.NODE_ENV": '"production"',
 		},
 		plugins: [
 			{
-				name: "resolver",
+				name: "frugal-internal:copy",
 				setup(build) {
-					build.onResolve({ filter: /^frugal:config$/ }, async () => {
-						return { path: "config", namespace: "frugal" };
-					});
-					build.onLoad({ filter: /^config$/, namespace: "frugal" }, () => {
-						return {
-							contents: `export default ${JSON.stringify(config.runtime)}`,
-							resolveDir: functionDir,
-						};
-					});
-					build.onResolve({ filter: /^frugal:manifest$/ }, async () => {
-						return { path: "manifest", namespace: "frugal" };
-					});
-					build.onLoad({ filter: /^manifest$/, namespace: "frugal" }, () => {
-						return {
-							contents: exporter.manifestContent(
+					build.onEnd(async () => {
+						try {
+							await fs.copy(
+								path.resolve(config.buildDir, "assets"),
+								path.resolve(functionDir, "assets"),
 								{
-									rootDir: config.rootDir,
-									outDir: functionDir,
+									overwrite: true,
+									recursive: true,
 								},
-								loadedManifest,
-							),
-							resolveDir: functionDir,
-						};
+							);
+						} catch (/** @type {any} */ error) {
+							if (!(error instanceof fs.NotFound)) {
+								throw error;
+							}
+						}
 					});
 				},
 			},
@@ -143,7 +137,13 @@ async function bundleFunction(functionDir, config) {
 		loader: { ".node": "file" },
 		platform: "node",
 		format: "cjs",
+		logOverride: {
+			"empty-import-meta": "silent",
+		},
+		inject: [url.fileURLToPath(import.meta.resolve("./import-meta-shim.js"))],
 		absWorkingDir: config.rootDir,
 		outfile: path.resolve(functionDir, "index.js"),
 	});
+
+	await fs.writeTextFile(path.resolve(outputDir, "meta.json"), JSON.stringify(result.metafile));
 }

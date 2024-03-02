@@ -1,58 +1,47 @@
 import * as path from "node:path";
 import * as esbuild from "esbuild";
-import { FrugalConfig } from "frugal-node/config";
-import * as plugin from "frugal-node/plugin";
 import * as fs from "frugal-node/utils/fs";
-import * as hash from "frugal-node/utils/hash";
-import * as _type from "./_type/Bundler.js";
+import { Hash } from "frugal-node/utils/hash";
 
-export class Bundler {
-	/** @type {FrugalConfig} */
-	#config;
-	/** @type {plugin.Compiler} */
-	#compiler;
-	/** @type {_type.Facade[]} */
-	#facades;
+/** @type {import('./Bundler.ts').BundlerMaker} */
+export const Bundler = {
+	create,
+};
 
-	/**
-	 * @param {plugin.Compiler} compiler
-	 * @param {FrugalConfig} config
-	 */
-	constructor(compiler, config) {
-		this.#compiler = compiler;
-		this.#facades = [];
-		this.#config = config;
-	}
+/** @type {import('./Bundler.ts').BundlerMaker['create']} */
+export function create(compiler, config) {
+	const state = {
+		/** @type {import("./Bundler.ts").Facade[]} */
+		facades: [],
+	};
 
-	/**
-	 * @param {plugin.Asset[]} assets
-	 * @param {Omit<esbuild.BuildOptions, "entryPoints">} options
-	 */
-	async bundle(assets, options) {
-		await this.#writeFacades(assets);
+	return {
+		async bundle(assets, options) {
+			await _writeFacades(assets);
 
-		const bundleHash = this.#facades
-			.reduce((hash, facade) => {
-				return hash.update(facade.path);
-			}, hash.create())
-			.digest();
+			const bundleHash = state.facades
+				.reduce((hash, facade) => {
+					return hash.update(facade.path);
+				}, Hash.create())
+				.digest();
 
-		const buildResult = await this.#compiler.compile(bundleHash, {
-			...options,
-			entryPoints: this.#facades.map((facade) => facade.path),
-		});
+			const buildResult = await compiler.compile(bundleHash, {
+				...options,
+				entryPoints: state.facades.map((facade) => facade.path),
+			});
 
-		return this.#extractBundles(buildResult.metafile);
-	}
+			return _extractBundles(buildResult.metafile);
+		},
+	};
 
-	/** @param {plugin.Asset[]} assets */
-	async #writeFacades(assets) {
-		/** @type {Record<string, _type.Facade>} */
+	/** @param {import("frugal-node/plugin").Asset[]} assets */
+	async function _writeFacades(assets) {
+		/** @type {Record<string, import("./Bundler.ts").Facade>} */
 		const facadesMap = {};
 
 		for (const asset of assets) {
 			const entrypoint = asset.entrypoint;
-			const facadePath = path.resolve(this.#config.tempDir, `asset/script/${entrypoint}`);
+			const facadePath = path.resolve(config.tempDir, `asset/script/${entrypoint}`);
 			const facadeContent = `import "${asset.path}";`;
 			facadesMap[entrypoint] = facadesMap[entrypoint] ?? {
 				entrypoint,
@@ -63,10 +52,10 @@ export class Bundler {
 			facadesMap[entrypoint].content.push(facadeContent);
 		}
 
-		this.#facades = Object.values(facadesMap);
+		state.facades = Object.values(facadesMap);
 
 		await Promise.all(
-			this.#facades.map(async (facade) => {
+			state.facades.map(async (facade) => {
 				await fs.ensureFile(facade.path);
 				await fs.writeTextFile(facade.path, facade.content.join("\n"));
 			}),
@@ -77,7 +66,7 @@ export class Bundler {
 	 * @param {esbuild.Metafile} metafile
 	 * @returns
 	 */
-	#extractBundles(metafile) {
+	async function _extractBundles(metafile) {
 		/** @type {Record<string, string>} */
 		const generated = {};
 
@@ -88,16 +77,16 @@ export class Bundler {
 				continue;
 			}
 
-			const outputEntrypointPath = path.resolve(this.#config.rootDir, output.entryPoint);
+			const outputEntrypointPath = path.resolve(config.rootDir, output.entryPoint);
 
-			const facade = this.#facades.find((facade) => facade.path === outputEntrypointPath);
+			const facade = state.facades.find((facade) => facade.path === outputEntrypointPath);
 
 			if (facade === undefined) {
 				continue;
 			}
 
-			const jsBundlePath = path.resolve(this.#config.rootDir, outputPath);
-			const bundleName = path.relative(this.#config.publicDir, jsBundlePath);
+			const jsBundlePath = path.resolve(config.rootDir, outputPath);
+			const bundleName = path.relative(config.publicDir, jsBundlePath);
 
 			generated[facade.entrypoint] = `/${bundleName}`;
 		}

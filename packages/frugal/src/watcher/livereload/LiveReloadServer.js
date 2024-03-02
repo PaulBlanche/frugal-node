@@ -1,25 +1,44 @@
-import * as http from "../../utils/http.js";
 import { log } from "../../utils/log.js";
+import { serve } from "../../utils/serve.js";
 
 const ENCODER = new TextEncoder();
 
-export class LiveReloadServer {
+/** @type {import('./LiveReloadServer.ts').Maker} */
+export const LiveReloadServer = {
+	create,
+};
+
+/** @type {import('./LiveReloadServer.ts').Maker['create']} */
+export function create() {
 	/** @type {Map<number, ReadableStreamController<Uint8Array>>} */
-	#controllers;
+	const controllers = new Map();
 
-	constructor() {
-		this.#controllers = new Map();
-	}
+	return {
+		dispatch,
 
-	/** @param {{ type: "suspend" | "reload" | "connected" }} event */
-	dispatch(event) {
+		serve({ onListen, signal, port = 4075 } = {}) {
+			return serve(_handler(), {
+				port,
+				signal,
+				onListen(args) {
+					onListen?.(args);
+					log(`Live reload server listening at http://${args.hostname}:${args.port}`, {
+						scope: "LiveReloadServer",
+					});
+				},
+			});
+		},
+	};
+
+	/** @type {import('./LiveReloadServer.ts').LiveReloadServer['dispatch']} */
+	function dispatch(event) {
 		log(`"${event.type}" event dispatched`, {
 			scope: "LiveReloadServer",
 			level: "debug",
 		});
 
 		const payload = `data: ${JSON.stringify(event)}\n\n`;
-		for (const [id, controller] of this.#controllers.entries()) {
+		for (const [id, controller] of controllers.entries()) {
 			log(`dispatch "${event.type}" event to connection ${id}`, {
 				scope: "LiveReloadServer",
 				level: "verbose",
@@ -29,8 +48,8 @@ export class LiveReloadServer {
 		}
 	}
 
-	/** @returns {http.Handler} */
-	handler() {
+	/** @returns {import("../../utils/serve.js").Handler} */
+	function _handler() {
 		let id = 0;
 		return () => {
 			const controllerId = id++;
@@ -41,18 +60,18 @@ export class LiveReloadServer {
 						scope: "LiveReloadServer",
 						level: "verbose",
 					});
-					this.#controllers.set(controllerId, controller);
-					this.dispatch({ type: "connected" });
+					controllers.set(controllerId, controller);
+					dispatch({ type: "connected" });
 				},
 				cancel: (error) => {
 					if (!error) {
-						const controller = this.#controllers.get(controllerId);
+						const controller = controllers.get(controllerId);
 						if (controller) {
 							log(`close livereload connection (id:${controllerId})`, {
 								scope: "LiveReloadServer",
 								level: "verbose",
 							});
-							this.#controllers.delete(controllerId);
+							controllers.delete(controllerId);
 							controller.close();
 						}
 					} else {
@@ -68,7 +87,7 @@ export class LiveReloadServer {
 				},
 			};
 
-			const response = /** @type {http.EventStreamResponse} */ (
+			const response = /** @type {import("../../utils/serve.js").EventStreamResponse} */ (
 				new Response(new ReadableStream(source), {
 					headers: {
 						"Access-Control-Allow-Origin": "*",
@@ -80,29 +99,11 @@ export class LiveReloadServer {
 				})
 			);
 
-			/*response.close = () => {
-				source.cancel(new Error("connection closed"));
-			};*/
+			response.close = () => {
+				source.cancel();
+			};
 
 			return response;
 		};
-	}
-
-	/**
-	 * @param {http.ServeOptions} [param0]
-	 * @returns
-	 */
-	serve({ onListen, signal, port = 4075 } = {}) {
-		const handler = this.handler();
-		return http.serve(handler, {
-			port,
-			signal,
-			onListen(args) {
-				onListen?.(args);
-				log(`Live reload server listening at http://${args.hostname}:${args.port}`, {
-					scope: "LiveReloadServer",
-				});
-			},
-		});
 	}
 }

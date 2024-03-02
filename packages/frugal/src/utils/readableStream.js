@@ -1,11 +1,7 @@
 import * as webstream from "node:stream/web";
-import * as deferred from "./deferred.js";
+import { Deferred } from "./Deferred.js";
 
-/**
- * @template T
- * @param {webstream.ReadableStream<T>} stream
- * @returns {ReadableStream<T>}
- */
+/** @type {import('./readableStream.js').toReadableStream} */
 export function toReadableStream(stream) {
 	// handle type mismatch betwen `webstream.ReadableStream` expecting a
 	// `ReadableStream`. The latter is the standard `ReadableStream` that is
@@ -21,11 +17,7 @@ export function toReadableStream(stream) {
 	return /** @type {any} */ (stream);
 }
 
-/**
- * @template T
- * @param {ReadableStream<T>} stream
- * @returns {webstream.ReadableStream<T>}
- */
+/** @type {import('./readableStream.js').fromReadableStream} */
 export function fromReadableStream(stream) {
 	// handle type mismatch betwen `webstream.ReadableStream` expecting a
 	// `ReadableStream`. The latter is the standard `ReadableStream` that is
@@ -41,10 +33,7 @@ export function fromReadableStream(stream) {
 	return /** @type {any} */ (stream);
 }
 
-/**
- * @param {webstream.ReadableStream<string>} stream
- * @returns {Promise<string>}
- */
+/** @type {import('./readableStream.js').readStringStream} */
 export async function readStringStream(stream) {
 	const chunks = [];
 
@@ -55,10 +44,7 @@ export async function readStringStream(stream) {
 	return chunks.join("");
 }
 
-/**
- * @param {webstream.ReadableStream<Uint8Array>} stream
- * @returns {Promise<Uint8Array>}
- */
+/** @type {import('./readableStream.js').readStream} */
 export async function readStream(stream) {
 	/** @type {Uint8Array[]} */
 	const chunks = [];
@@ -77,7 +63,7 @@ export async function readStream(stream) {
 }
 
 // adapted from https://deno.land/std@0.177.0/streams/text_line_stream.ts?source=#L19
-/** @extends {webstream.TransformStream<string, string>} */
+/** @type {import('./readableStream.js').TextLineStream} */
 export class TextLineStream extends TransformStream {
 	#buf = "";
 
@@ -119,13 +105,9 @@ export class TextLineStream extends TransformStream {
 	}
 }
 
-/**
- * @template T
- * @param {webstream.ReadableStream<T>[]} streams
- * @returns {webstream.ReadableStream<T>}
- */
+/** @type {import('./readableStream.js').mergeReadableStreams} */
 export function mergeReadableStreams(...streams) {
-	const resolvePromises = streams.map(() => deferred.create());
+	const resolvePromises = streams.map(() => Deferred.create());
 
 	return new webstream.ReadableStream({
 		start(controller) {

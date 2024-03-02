@@ -1,1 +1,1 @@
-export * from "../../../src/utils/asyncIterator.js";
+export * from "../../../src/utils/asyncIterator.ts";

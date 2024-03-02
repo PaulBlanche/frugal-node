@@ -1,1 +1,1 @@
-export * from "../../../src/utils/deferred.js";
+export * from "../../../src/utils/Deferred.js";

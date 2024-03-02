@@ -1,12 +1,6 @@
-import * as context from "../context.js";
-import * as middleware from "../middleware.js";
 import { serveFromCacheStaticPage } from "./serveFromCacheStaticPage.js";
 
-/**
- * @param {context.RouteContext<"static">} context
- * @param {middleware.Next<context.RouteContext<"static">>} next
- * @returns {Promise<Response>}
- */
+/** @type {import('./refreshJitStaticPage.ts').refreshJitStaticPage} */
 export async function refreshJitStaticPage(context, next) {
 	if (context.request.method !== "GET") {
 		return next(context);
@@ -14,7 +8,7 @@ export async function refreshJitStaticPage(context, next) {
 
 	if (context.page.strictPaths) {
 		const pathList = await context.page.getBuildPaths({
-			resolve: (path) => context.config.resolve(path),
+			resolve: (path) => context.config.global.resolve(path),
 		});
 		const hasMatchingPath = pathList.some((path) => {
 			return context.page.compile(path) === context.url.pathname;

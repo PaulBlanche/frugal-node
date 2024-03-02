@@ -1,1 +1,1 @@
-export * from "../../../src/utils/commonPath.js";
+export * from "../../../src/utils/commonPath.ts";

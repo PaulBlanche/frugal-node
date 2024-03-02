@@ -1,14 +1,8 @@
 import * as webStream from "node:stream/web";
 import * as readableStream from "../../utils/readableStream.js";
 import livereloadScript from "../../watcher/livereload/livereload.min.js";
-import * as context from "../context.js";
-import * as middleware from "../middleware.js";
 
-/**
- * @param {context.BaseContext} context
- * @param {middleware.Next<context.BaseContext>} next
- * @returns {Promise<Response>}
- */
+/** @type {import('./watchModeResponseModification.ts').watchModeResponseModification} */
 export async function watchModeResponseModification(context, next) {
 	if (!context.watch) {
 		return next(context);
@@ -44,7 +38,7 @@ const DECODER = new TextDecoder();
 
 /**
  * @param {webStream.ReadableStream<Uint8Array>} responseBody
- * @param {context.BaseContext} context
+ * @param {import("../context.ts").BaseContext} context
  */
 async function injectLivereloadScript(responseBody, context) {
 	//TODO : could be optimised, passing through the stream, intercepting and modifying the final chunk

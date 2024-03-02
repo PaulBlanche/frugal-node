@@ -1,16 +1,10 @@
 import { toResponse } from "../../page/GenerationResponse.js";
 import { FORCE_GENERATE_COOKIE } from "../../page/PageResponse.js";
-import * as http from "../../utils/http.js";
-import * as context from "../context.js";
-import * as middleware from "../middleware.js";
+import { getCookies, setCookie } from "../../utils/cookies.js";
 
-/**
- * @param {context.RouteContext<"static">} context
- * @param {middleware.Next<context.RouteContext<"static">>} next
- * @returns {Promise<Response>}
- */
+/** @type {import('./forceGenerateStaticPage.ts').forceGenerateStaticPage} */
 export async function forceGenerateStaticPage(context, next) {
-	const cookies = http.getCookies(context.request.headers);
+	const cookies = getCookies(context.request.headers);
 	const forceGenerate = cookies[FORCE_GENERATE_COOKIE] === "true";
 
 	if (!forceGenerate && context.request.method === "GET") {
@@ -37,7 +31,7 @@ export async function forceGenerateStaticPage(context, next) {
 	const response = toResponse(generationResponse);
 
 	if (forceGenerate) {
-		http.setCookie(response.headers, {
+		setCookie(response.headers, {
 			httpOnly: true,
 			name: FORCE_GENERATE_COOKIE,
 			value: "false",

@@ -1,11 +1,4 @@
-import * as context from "../context.js";
-import * as middleware from "../middleware.js";
-
-/**
- * @template {context.BaseContext} CONTEXT
- * @param {CONTEXT} context
- * @param {middleware.Next<CONTEXT>} next
- */
+/** @type {import('./etag.ts').etag} */
 export async function etag(context, next) {
 	const response = await next(context);
 

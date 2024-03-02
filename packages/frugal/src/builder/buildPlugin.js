@@ -1,32 +1,25 @@
-import * as plugin from "../bundler/Plugin.js";
-import { LiveGenerationResponse } from "../page/GenerationResponse.js";
-import { compile } from "../page/Page.js";
+import { Page } from "../page/Page.js";
 import { Producer } from "../page/Producer.js";
-import * as manifest from "./Manifest.js";
+import * as manifest from "./manifest.js";
 
-/** @typedef {{ add: (response:LiveGenerationResponse) => Promise<void>, save: () => Promise<void> }} BuildCache */
-
-/**
- * @param {BuildCache} buildCache
- * @returns {plugin.Plugin}
- */
+/** @type {import('./buildPlugin.ts').buildPlugin} */
 export function buildPlugin(buildCache) {
 	return {
 		name: "frugal-internal:build",
 		setup(build, context) {
 			build.onEnd(async () => {
 				try {
-					await manifest.writeManifest(context.config, context.manifest);
+					await manifest.writeManifest(context.config.global, context.manifest);
 
 					const {
 						pages,
-						config: configHash,
+						hash: configHash,
 						assets,
-					} = await manifest.loadManifest(context.config);
+					} = await manifest.loadManifest(context.config.global);
 
 					await Promise.all(
 						pages.map(async ({ descriptor, moduleHash, entrypoint }) => {
-							const page = compile({
+							const page = Page.create({
 								entrypoint,
 								moduleHash,
 								pageDescriptor: descriptor,
@@ -36,9 +29,14 @@ export function buildPlugin(buildCache) {
 								return;
 							}
 
-							const producer = new Producer(assets, page, configHash, context.config);
+							const pageProducer = Producer.create(
+								assets,
+								page,
+								configHash,
+								context.config.global,
+							);
 
-							const responses = await producer.buildAll();
+							const responses = await pageProducer.buildAll();
 
 							await Promise.all(
 								responses.map(async (response) => {

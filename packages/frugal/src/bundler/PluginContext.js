@@ -1,72 +1,58 @@
-import * as esbuild from "esbuild";
-import { FrugalConfig } from "../Config.js";
-import * as manifest from "../builder/Manifest.js";
-import * as assets from "../page/Assets.js";
-import * as assetCollector from "./AssetCollector.js";
+import { AssetCollector } from "./AssetCollector.js";
 
-export class PluginContext {
-	/** @type {assets.Assets} */
-	#assets;
-	/** @type {FrugalConfig} */
-	#config;
-	/** @type {boolean} */
-	#watch;
-	/** @type {manifest.WritableManifest} */
-	#manifest;
+/** @type {import('./PluginContext.ts').PluginContextMaker} */
+export const PluginContext = {
+	create,
+};
 
-	/** @param {FrugalConfig} config */
-	constructor(config, watch = false) {
-		this.#config = config;
-		this.#assets = [];
-		this.#watch = watch;
-		this.#manifest = {
-			pages: [],
-			id: "",
-			config: "",
-			assets: [],
-		};
-	}
+/** @type {import('./PluginContext.ts').PluginContextMaker['create']} */
+function create(config, watch = false) {
+	const state = {
+		/** @type {import("../page/Assets.js").CollectedAssets} */
+		assets: [],
+		hash: "",
+		config: "",
+		/** @type {import("../builder/manifest.js").WritableManifest['pages']} */
+		pages: [],
+	};
 
-	/**
-	 * @template {keyof assets.AssetTypes} TYPE
-	 * @param {TYPE} type
-	 * @param {assets.AssetTypes[TYPE]} asset
-	 */
-	output(type, asset) {
-		this.#assets.push(asset);
-	}
+	return {
+		get manifest() {
+			return {
+				assets: state.assets,
+				hash: state.hash,
+				config: state.config,
+				pages: state.pages,
+			};
+		},
 
-	/**
-	 * @param {RegExp} filter
-	 * @param {esbuild.Metafile} metafile
-	 * @returns {assetCollector.Asset[]}
-	 */
-	collect(filter, metafile) {
-		return new assetCollector.AssetCollector(this.#config, metafile).collect(filter);
-	}
+		get config() {
+			return config;
+		},
 
-	/** @param {manifest.WritableManifest} manifest */
-	updateManifest(manifest) {
-		this.#manifest = manifest;
-	}
+		get watch() {
+			return watch;
+		},
 
-	get manifest() {
-		return this.#manifest;
-	}
+		output(_, asset) {
+			state.assets.push(asset);
+		},
 
-	get assets() {
-		return this.#assets;
-	}
+		collect(filter, metafile) {
+			return AssetCollector.create(config.global, metafile).collect(filter);
+		},
 
-	get config() {
-		return this.#config;
-	}
+		updateManifest({ hash, config, pages }) {
+			state.hash = hash;
+			state.config = config;
+			state.pages = pages;
+		},
 
-	get watch() {
-		return this.#watch;
-	}
-
-	reset() {
-		this.#assets = [];
-	}
+		reset() {
+			state.hash = "";
+			state.config = "";
+			state.pages = [];
+			state.assets = [];
+		},
+	};
 }

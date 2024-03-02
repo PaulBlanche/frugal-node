@@ -1,2 +1,3 @@
-export * from "../../src/builder/Cache.js";
-export * from "../../src/builder/Manifest.js";
+export * from "../../src/builder/BuildCache.js";
+export * from "../../src/builder/Snapshot.js";
+export * from "../../src/builder/manifest.js";

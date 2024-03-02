@@ -1,83 +1,72 @@
 import * as path from "node:path";
-import * as esbuild from "esbuild";
-import { FrugalConfig } from "../Config.js";
+import { Hash } from "../utils/Hash.js";
 import * as fs from "../utils/fs.js";
-import * as hash from "../utils/hash.js";
-import * as _type from "./_type/MetafileAnalyser.js";
 
-export class MetafileAnalyser {
-	/** @type {FrugalConfig} */
-	#config;
-	/** @type {esbuild.Metafile} */
-	#metafile;
+/** @type {import('./MetafileAnalyser.ts').MetafileAnalyserMaker} */
+export const MetafileAnalyser = {
+	create,
+};
+
+/** @type {import('./MetafileAnalyser.ts').MetafileAnalyserMaker['create']} */
+function create(metafile, config) {
+	return {
+		async analyse(outputPath, output) {
+			if (output.entryPoint === undefined) {
+				return undefined;
+			}
+
+			const entryPointPath = path.resolve(config.rootDir, output.entryPoint);
+			const page = config.pages.find((page) => page === entryPointPath);
+
+			if (page !== undefined) {
+				return await _analysePage(output.entryPoint, outputPath);
+			}
+
+			if (entryPointPath === config.self) {
+				return await _analyseConfig(output.entryPoint, outputPath);
+			}
+
+			if (entryPointPath.endsWith(".css")) {
+				return await _analyseCss(output.entryPoint);
+			}
+		},
+	};
 
 	/**
-	 * @param {esbuild.Metafile} metafile
-	 * @param {FrugalConfig} config
+	 * @param {string} entrypoint
+	 * @param {string} output
+	 * @returns {Promise<import('./MetafileAnalyser.ts').Analysis>}
 	 */
-	constructor(metafile, config) {
-		this.#metafile = metafile;
-		this.#config = config;
-	}
-
-	/**
-	 * @param {string} outputPath
-	 * @param {esbuild.Metafile["outputs"][string]} output
-	 */
-	async analyse(outputPath, output) {
-		if (output.entryPoint === undefined) {
-			return undefined;
-		}
-
-		const entryPointPath = path.resolve(this.#config.rootDir, output.entryPoint);
-		const page = this.#config.pages.find((page) => page === entryPointPath);
-
-		if (page !== undefined) {
-			return await this.#analysePage(output.entryPoint, outputPath);
-		}
-
-		if (entryPointPath === this.#config.self) {
-			return await this.#analyseConfig(output.entryPoint);
-		}
-
-		if (entryPointPath.endsWith(".css")) {
-			return await this.#analyseCss(output.entryPoint);
-		}
+	async function _analysePage(entrypoint, output) {
+		return {
+			type: "page",
+			entrypoint,
+			output,
+			moduleHash: await _moduleHash(entrypoint),
+		};
 	}
 
 	/**
 	 * @param {string} entrypoint
 	 * @param {string} output
-	 * @returns {Promise<_type.Analysis>}
+	 * @returns {Promise<import('./MetafileAnalyser.ts').Analysis>}
 	 */
-	async #analysePage(entrypoint, output) {
-		return {
-			type: "page",
-			entrypoint,
-			output,
-			moduleHash: await this.#moduleHash(entrypoint),
-		};
-	}
-
-	/**
-	 * @param {string} entrypoint
-	 * @returns {Promise<_type.Analysis>}
-	 */
-	async #analyseConfig(entrypoint) {
+	async function _analyseConfig(entrypoint, output) {
 		return {
 			type: "config",
-			moduleHash: await this.#moduleHash(entrypoint),
+			output,
+			moduleHash: await _moduleHash(entrypoint),
 		};
 	}
 
 	/**
 	 * @param {string} entrypoint
-	 * @returns {Promise<_type.Analysis>}
+	 * @returns {Promise<import('./MetafileAnalyser.ts').Analysis>}
 	 */
-	async #analyseCss(entrypoint) {
+	async function _analyseCss(entrypoint) {
 		return {
 			type: "css",
-			moduleHash: await this.#moduleHash(entrypoint),
+			moduleHash: await _moduleHash(entrypoint),
 		};
 	}
 
@@ -85,12 +74,12 @@ export class MetafileAnalyser {
 	 * @param {string} entrypoint
 	 * @returns {Promise<string>}
 	 */
-	async #moduleHash(entrypoint) {
+	async function _moduleHash(entrypoint) {
 		const dependencies = [];
 		dependencies.push({
 			input: entrypoint,
 			namespace: "file:",
-			path: path.resolve(this.#config.rootDir, entrypoint),
+			path: path.resolve(config.rootDir, entrypoint),
 		});
 
 		const seen = new Set();
@@ -104,7 +93,7 @@ export class MetafileAnalyser {
 			}
 			seen.add(current.input);
 
-			const input = this.#metafile.inputs[current.input];
+			const input = metafile.inputs[current.input];
 			for (const imported of input.imports) {
 				if (imported.external || !imported.original) {
 					continue;
@@ -117,7 +106,7 @@ export class MetafileAnalyser {
 					namespace: parsed.namespace,
 					path:
 						parsed.namespace === "file:"
-							? path.resolve(this.#config.rootDir, parsed.path)
+							? path.resolve(config.rootDir, parsed.path)
 							: parsed.path,
 				};
 
@@ -126,7 +115,7 @@ export class MetafileAnalyser {
 			}
 		}
 
-		const hasher = hash.create();
+		const hasher = Hash.create();
 
 		const contents = [];
 		// no "parallel" await to ensure deps are hashed in a deterministic order

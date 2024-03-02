@@ -1,48 +1,39 @@
-/** @enum {number} */
+/** @satisfies {Record<string, import("./LiveReloadClient.ts").LiveReloadStatus>} */
 const LIVE_RELOAD_STATUS = /** @type {const} */ ({
-	CONNECTED: 0,
-	PRISTINE: 1,
-	SUSPENDED: 2,
-	ERROR: 3,
+	connected: 0,
+	pristine: 1,
+	suspended: 2,
+	error: 3,
 });
 
-/** @typedef {(typeof LIVE_RELOAD_STATUS)[keyof typeof LIVE_RELOAD_STATUS]} LiveReloadStatus */
+/** @type {import('./LiveReloadClient.ts').create} */
+export function create(url) {
+	const state = {
+		retry: 0,
+	};
+	const indicator = new Indicator();
+	_connect();
 
-export class LiveReloadClient {
-	/** @type {string} */
-	#url;
-	/** @type {number} */
-	#retry;
-	/** @type {Indicator} */
-	#indicator;
-
-	/** @param {string} url */
-	constructor(url) {
-		this.#url = url;
-		this.#retry = 0;
-		this.#indicator = new Indicator();
-
-		this.#connect();
+	/**
+	 * @param {import("./LiveReloadClient.js").LiveReloadStatus} status
+	 */
+	function _setStatus(status) {
+		indicator.setStatus(status);
 	}
 
-	/** @param {LiveReloadStatus} status */
-	#setStatus(status) {
-		this.#indicator.setStatus(status);
-	}
-
-	#connect() {
-		const source = new EventSource(this.#url);
+	function _connect() {
+		const source = new EventSource(url);
 
 		source.addEventListener("error", () => {
-			this.#setStatus(LIVE_RELOAD_STATUS.ERROR);
+			_setStatus(LIVE_RELOAD_STATUS.error);
 			source.close();
 
-			const wait = Math.floor((1 - Math.exp(-this.#retry / 60)) * 2000);
+			const wait = Math.floor((1 - Math.exp(-state.retry / 60)) * 2000);
 			console.log(`Unable to connect to live reload server, retry in ${wait} ms`);
 
 			setTimeout(() => {
-				this.#retry += 1;
-				this.#connect();
+				state.retry += 1;
+				_connect();
 			}, wait);
 		});
 
@@ -55,15 +46,15 @@ export class LiveReloadClient {
 					break;
 				}
 				case "suspend": {
-					this.#setStatus(LIVE_RELOAD_STATUS.SUSPENDED);
+					_setStatus(LIVE_RELOAD_STATUS.suspended);
 				}
 			}
 		});
 
 		source.addEventListener("open", () => {
 			console.log("Connected to live reload server");
-			this.#retry = 0;
-			this.#setStatus(LIVE_RELOAD_STATUS.CONNECTED);
+			state.retry = 0;
+			_setStatus(LIVE_RELOAD_STATUS.connected);
 		});
 
 		addEventListener("beforeunload", () => {
@@ -123,22 +114,22 @@ class Indicator {
 		document.body.append(this.#element);
 	}
 
-	/** @param {LiveReloadStatus} status */
+	/** @param {import("./LiveReloadClient.ts").LiveReloadStatus} status */
 	setStatus(status) {
 		switch (status) {
-			case LIVE_RELOAD_STATUS.SUSPENDED: {
+			case LIVE_RELOAD_STATUS.suspended: {
 				this.#element?.classList.toggle("error", false);
 				this.#element?.classList.toggle("suspended", true);
 				this.#element?.setAttribute("title", "toto");
 				break;
 			}
-			case LIVE_RELOAD_STATUS.CONNECTED: {
+			case LIVE_RELOAD_STATUS.connected: {
 				this.#element?.classList.toggle("error", false);
 				this.#element?.classList.toggle("suspended", false);
 				this.#element?.removeAttribute("title");
 				break;
 			}
-			case LIVE_RELOAD_STATUS.ERROR: {
+			case LIVE_RELOAD_STATUS.error: {
 				this.#element?.classList.toggle("error", true);
 				this.#element?.classList.toggle("suspended", false);
 				this.#element?.setAttribute("title", "tata");

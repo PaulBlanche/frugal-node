@@ -1,46 +1,39 @@
 import * as esbuild from "esbuild";
-import { FrugalConfig } from "../Config.js";
 import { log } from "../utils/log.js";
-import * as plugin from "./Plugin.js";
 import { PluginContext } from "./PluginContext.js";
 import { buildManifest } from "./plugins/buildManifest.js";
-import { cleanOutdir } from "./plugins/cleanOutDir.js";
-import { copyStatic } from "./plugins/copyStatic.js";
+import { cleanOutDir } from "./plugins/cleanOutDir.js";
+import { copy } from "./plugins/copy.js";
 import { externalDependency } from "./plugins/externalDependency.js";
+import { importMetaAssets } from "./plugins/importMetaAssets/importMetaAssets.js";
 import { output } from "./plugins/output.js";
 import { report } from "./plugins/report.js";
 
-/**
- * @param {FrugalConfig} config
- * @param {plugin.Plugin[]} [extraPlugins]
- */
-export async function build(config, extraPlugins) {
-	const pluginContext = new PluginContext(config, false);
-	const esbuildConfig = getEsbuildConfig(config, pluginContext, extraPlugins);
+/** @type {import('./bundler.ts').build} */
+export async function build(buildConfig, extraPlugins) {
+	const context = PluginContext.create(buildConfig, false);
+	const esbuildConfig = getEsbuildConfig(buildConfig, context, extraPlugins);
 	log(`Esbuild config:\n${JSON.stringify(esbuildConfig)}`, { scope: "Bundler", level: "debug" });
 	return await esbuild.build(esbuildConfig);
 }
 
-/**
- * @param {FrugalConfig} config
- * @param {plugin.Plugin[]} [extraPlugins]
- */
+/** @type {import('./bundler.ts').context} */
 export async function context(config, extraPlugins) {
-	const pluginContext = new PluginContext(config, true);
-	return await esbuild.context(getEsbuildConfig(config, pluginContext, extraPlugins));
+	const context = PluginContext.create(config, true);
+	return await esbuild.context(getEsbuildConfig(config, context, extraPlugins));
 }
 
 /**
- * @param {FrugalConfig} config
- * @param {PluginContext} context
- * @param {plugin.Plugin[]} [extraPlugins]
+ * @param {import("../Config.js").FrugalBuildConfig} config
+ * @param {import("./PluginContext.js").PrivatePluginContext} context
+ * @param {(import("./Plugin.js").Plugin|import("./Plugin.js").PrivatePlugin)[]} [extraPlugins]
  * @returns {esbuild.BuildOptions}
  */
 function getEsbuildConfig(config, context, extraPlugins = []) {
 	return {
 		...config.esbuildOptions,
 		target: ["esnext"],
-		entryPoints: [...config.pages, config.self],
+		entryPoints: [...config.global.pages, config.global.self],
 		entryNames: "[dir]/[name]-[hash]",
 		chunkNames: "[dir]/[name]-[hash]",
 		assetNames: "[dir]/[name]-[hash]",
@@ -56,13 +49,21 @@ function getEsbuildConfig(config, context, extraPlugins = []) {
 			"import.meta.environment": "'server'",
 		},
 		format: "esm",
-		outdir: config.buildDir,
+		outdir: config.global.buildDir,
 		plugins: [
 			output(),
 			buildManifest(context),
-			copyStatic(context.config),
+			copy([
+				{
+					from: config.global.staticDir,
+					to: config.global.publicDir,
+					recursive: true,
+					forgiveNotFound: true,
+				},
+			]),
 			report(),
-			cleanOutdir(context.config),
+			cleanOutDir(config),
+			importMetaAssets(config),
 			...(config.esbuildOptions?.plugins ?? []),
 			...[...(config.plugins ?? []), ...extraPlugins].map(
 				/** @returns {esbuild.Plugin} */ (plugin) => ({
@@ -72,7 +73,7 @@ function getEsbuildConfig(config, context, extraPlugins = []) {
 			),
 			externalDependency(),
 		],
-		absWorkingDir: config.rootDir,
+		absWorkingDir: config.global.rootDir,
 		logLevel: "silent",
 		outExtension: { ".js": ".mjs" },
 		platform: "node",

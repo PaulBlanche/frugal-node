@@ -1,1 +1,1 @@
-export * from "../../../src/utils/readableStream.js";
+export * from "../../../src/utils/readableStream.ts";

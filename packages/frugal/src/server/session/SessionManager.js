@@ -1,88 +1,65 @@
-import * as http from "../../utils/http.js";
+import { getCookies, setCookie } from "../../utils/cookies.js";
 import { Session } from "./Session.js";
-import * as _type from "./_type/SessionManager.js";
-import * as sessionStorage from "./sessionStorage.js";
 
 const DEFAULT_SESSION_COOKIE_NAME = "__frugal_session";
 
-export class SessionManager {
-	/** @type {sessionStorage.SessionStorage} */
-	#storage;
-	/** @type {http.CookieConfig} */
-	#cookie;
+/** @type {import('./SessionManager.ts').Maker} */
+export const SessionManager = {
+	create,
+};
 
-	/**
-	 * @param {_type.SessionManagerConfig} config
-	 */
-	constructor(config) {
-		this.#storage = config.storage;
-		this.#cookie = config.cookie ?? {};
-	}
+/** @type {import('./SessionManager.ts').Maker['create']} */
+function create(config) {
+	const cookie = config.cookie ?? {};
 
-	/**
-	 *
-	 * @param {Headers} headers
-	 * @returns {Promise<Session>}
-	 */
-	async get(headers) {
-		const cookies = http.getCookies(headers);
-		const id = cookies[this.#cookie.name ?? DEFAULT_SESSION_COOKIE_NAME];
-		if (id !== undefined) {
-			const data = await this.#storage.get(headers, id);
-			if (data !== undefined) {
-				return new Session(data, id);
+	return {
+		async get(headers) {
+			const cookies = getCookies(headers);
+			const id = cookies[cookie.name ?? DEFAULT_SESSION_COOKIE_NAME];
+			if (id !== undefined) {
+				const data = await config.storage.get(headers, id);
+				if (data !== undefined) {
+					return Session.create(data, id);
+				}
 			}
-		}
-		return new Session();
-	}
+			return Session.create();
+		},
 
-	/**
-	 *
-	 * @param {Session} session
-	 * @param {Headers} headers
-	 * @returns {Promise<void>}
-	 */
-	async persist(session, headers) {
-		if (!session._shouldBePersisted) {
-			return;
-		}
+		async persist(session, headers) {
+			if (!session.shouldBePersisted) {
+				return;
+			}
 
-		const expires =
-			this.#cookie.expires !== undefined ? Number(this.#cookie.expires) : undefined;
+			const expires = cookie.expires !== undefined ? Number(cookie.expires) : undefined;
 
-		let id = session._id;
-		const data = session._data;
+			let id = session.id;
+			const data = session.data;
 
-		if (id !== undefined) {
-			await this.#storage.update(headers, id, data, expires);
-		} else {
-			id = await this.#storage.create(headers, data, expires);
-		}
+			if (id !== undefined) {
+				await config.storage.update(headers, id, data, expires);
+			} else {
+				id = await config.storage.create(headers, data, expires);
+			}
 
-		http.setCookie(headers, {
-			name: DEFAULT_SESSION_COOKIE_NAME,
-			...this.#cookie,
-			value: id,
-		});
-	}
+			setCookie(headers, {
+				name: DEFAULT_SESSION_COOKIE_NAME,
+				...cookie,
+				value: id,
+			});
+		},
 
-	/**
-	 *
-	 * @param {Session} session
-	 * @param {Headers} headers
-	 * @returns {Promise<void>}
-	 */
-	async destroy(session, headers) {
-		if (session._id !== undefined) {
-			await this.#storage.delete(headers, session._id);
-		}
+		async destroy(session, headers) {
+			if (session.id !== undefined) {
+				await config.storage.delete(headers, session.id);
+			}
 
-		http.setCookie(headers, {
-			name: DEFAULT_SESSION_COOKIE_NAME,
-			...this.#cookie,
-			value: "",
-			expires: new Date(0),
-			maxAge: 0,
-		});
-	}
+			setCookie(headers, {
+				name: DEFAULT_SESSION_COOKIE_NAME,
+				...cookie,
+				value: "",
+				expires: new Date(0),
+				maxAge: 0,
+			});
+		},
+	};
 }

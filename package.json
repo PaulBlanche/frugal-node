@@ -5,7 +5,7 @@
 	"scripts": {
 		"test": "node scripts/test.js",
 		"lint": "npx biome check .",
-		"typecheck": "node scripts/typecheck.js",
+		"typecheck": "tsc -p .",
 		"compile:livereload": "node packages/frugal/src/watcher/livereload/compileLiveReload.js",
 		"publish:frugal-node": "npm publish -w frugal-node",
 		"publish:exporter-static": "npm publish -w @frugal-node/exporter-static",

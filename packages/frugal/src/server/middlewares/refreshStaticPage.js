@@ -1,14 +1,8 @@
 import { verify } from "../../utils/crypto.js";
-import * as context from "../context.js";
-import * as middleware from "../middleware.js";
 
-/**
- * @param {context.RouteContext<"static">} context
- * @param {middleware.Next<context.RouteContext<"static">>} next
- * @returns {Promise<Response>}
- */
+/** @type {import('./refreshStaticPage.ts').refreshStaticPage} */
 export async function refreshStaticPage(context, next) {
-	const cryptoKey = context.config.server.cryptoKey;
+	const cryptoKey = await context.config.server.cryptoKey;
 	if (cryptoKey === undefined) {
 		context.log("no crypto key in config. Yield.", {
 			level: "debug",

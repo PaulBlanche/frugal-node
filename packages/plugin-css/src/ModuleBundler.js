@@ -1,56 +1,49 @@
 import { log } from "frugal-node/utils/log";
 import * as lightningcss from "lightningcss";
 import { ModuleCompiler } from "./ModuleCompiler.js";
-import * as _type from "./_type/ModuleBundler.js";
 
-export class ModuleBundler {
-	/** @type {Map<string, _type.Module>} */
-	#cache;
-	/** @type {_type.Config} */
-	#config;
+/** @type {import('./ModuleBundler.ts').ModuleBundlerMaker} */
+export const ModuleBundler = {
+	create,
+};
 
-	/** @param {_type.Config} [config] */
-	constructor(config = {}) {
-		this.#cache = new Map();
-		this.#config = config;
-	}
+/** @type {import('./ModuleBundler.ts').ModuleBundlerMaker['create']} */
+export function create(config = {}) {
+	/** @type {Map<string, import('./ModuleBundler.ts').Module>} */
+	const cache = new Map();
 
-	/**
-	 * @param {string} path
-	 * @param {string} cssPath
-	 * @param {Uint8Array} contents
-	 * @returns {Promise<_type.Module>}
-	 */
-	async bundle(path, cssPath, contents) {
-		const cached = this.#cache.get(path);
-		if (cached && isSameUint8Array(cached.contents, contents)) {
-			return cached;
-		}
+	return {
+		async bundle(path, cssPath, contents) {
+			const cached = cache.get(path);
+			if (cached && isSameUint8Array(cached.contents, contents)) {
+				return cached;
+			}
 
-		log(`compiling css module "${path}"`, { scope: "frugal:css", level: "debug" });
+			log(`compiling css module "${path}"`, { scope: "frugal:css", level: "debug" });
 
-		const { css, exports } = this.#transform(path, contents);
+			const { css, exports } = _transform(path, contents);
 
-		const js = new ModuleCompiler(exports ?? {}).compile(cssPath);
+			const js = ModuleCompiler.create(exports ?? {}).compile(cssPath);
 
-		const module = { contents, css, js };
+			const module = { contents, css, js };
 
-		this.#cache.set(path, module);
-		return module;
-	}
+			cache.set(path, module);
+			return module;
+		},
+	};
 
 	/**
 	 * @param {string} path
 	 * @param {Uint8Array} contents
 	 * @returns {{ css: Uint8Array; exports: lightningcss.CSSModuleExports | void }}
 	 */
-	#transform(path, contents) {
+	function _transform(path, contents) {
 		const { code, exports } = lightningcss.transform({
 			filename: path,
 			code: contents,
-			cssModules: this.#config.options,
-			sourceMap: this.#config.sourceMap,
-			projectRoot: this.#config.projectRoot,
+			cssModules: config.options,
+			sourceMap: config.sourceMap,
+			projectRoot: config.projectRoot,
 			targets: {
 				chrome: 95 << 16,
 			},

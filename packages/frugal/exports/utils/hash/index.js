@@ -1,1 +1,1 @@
-export * from "../../../src/utils/hash.js";
+export * from "../../../src/utils/Hash.js";

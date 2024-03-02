@@ -1,12 +1,6 @@
 import { toResponse } from "../../page/GenerationResponse.js";
-import * as context from "../context.js";
-import * as middleware from "../middleware.js";
 
-/**
- * @param {context.RouteContext<"static">} context
- * @param {middleware.Next<context.RouteContext<"static">>} next
- * @returns {Promise<Response>}
- */
+/** @type {import('./watchModeStaticPage.ts').watchModeStaticPage} */
 export async function watchModeStaticPage(context, next) {
 	if (!context.watch) {
 		return next(context);

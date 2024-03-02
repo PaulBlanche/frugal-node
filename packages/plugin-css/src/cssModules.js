@@ -1,17 +1,10 @@
 import * as path from "node:path";
 import * as url from "node:url";
-import * as plugin from "frugal-node/plugin";
 import * as fs from "frugal-node/utils/fs";
-import * as hash from "frugal-node/utils/hash";
+import { Hash } from "frugal-node/utils/hash";
 import { ModuleBundler } from "./ModuleBundler.js";
-import * as _type from "./_type/css.js";
 
-/** @typedef {_type.CssOptions["cssModule"]} CssModuleOptions */
-
-/**
- * @param {_type.CssOptions["cssModule"]} cssModule
- * @returns {plugin.Plugin}
- */
+/** @type {import('./cssModules.ts').cssModules} */
 export function cssModules(cssModule) {
 	return {
 		name: "frugal:css-module",
@@ -22,7 +15,7 @@ export function cssModules(cssModule) {
 
 			const cssLoader = build.initialOptions.loader?.[".css"] ?? "css";
 
-			const moduleBundler = new ModuleBundler({
+			const bundler = ModuleBundler.create({
 				sourceMap: Boolean(build.initialOptions.sourcemap),
 				projectRoot: build.initialOptions.absWorkingDir,
 				options: {
@@ -36,7 +29,7 @@ export function cssModules(cssModule) {
 			const compiledCssModuleCache = new Map();
 
 			build.onResolve({ filter: /\.frugal-compiled-css-module\.css$/ }, (args) => {
-				const relativePath = path.relative(context.config.rootDir, args.path);
+				const relativePath = path.relative(context.config.global.rootDir, args.path);
 				if (compiledCssModuleCache.has(relativePath)) {
 					return {
 						path: relativePath,
@@ -75,17 +68,17 @@ export function cssModules(cssModule) {
 
 			build.onLoad({ filter: /\.module.css$/ }, async (args) => {
 				const contents = await fs.readFile(args.path);
-				const contentHash = hash.create().update(contents).digest();
+				const contentHash = Hash.create().update(contents).digest();
 
 				const cssPath = path.resolve(
 					path.dirname(args.path),
 					`${path.basename(args.path)}-${contentHash}.frugal-compiled-css-module.css`,
 				);
 
-				const module = await moduleBundler.bundle(args.path, cssPath, contents);
+				const module = await bundler.bundle(args.path, cssPath, contents);
 
 				compiledCssModuleCache.set(
-					path.relative(context.config.rootDir, cssPath),
+					path.relative(context.config.global.rootDir, cssPath),
 					module.css,
 				);
 

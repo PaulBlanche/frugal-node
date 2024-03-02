@@ -1,191 +1,172 @@
-import { FrugalConfig } from "../Config.js";
-import * as page from "../page/Page.js";
-import * as pageDescriptor from "../page/PageDescriptor.js";
-import * as pathObject from "../page/PathObject.js";
 import { log } from "../utils/log.js";
-import * as assets from "./Assets.js";
-import { LiveGenerationResponse } from "./GenerationResponse.js";
+import { Assets } from "./Assets.js";
+import { GenerationResponse } from "./GenerationResponse.js";
+import { PageResponse } from "./PageResponse.js";
 
-export class Producer {
-	/** @type {assets.PageAssets} */
-	#assets;
-	/** @type {page.Page} */
-	#page;
-	/** @type {FrugalConfig} */
-	#config;
-	/** @type {string} */
-	#configHash;
+/**@type {import('./Producer.ts').ProducerMaker} */
+export const Producer = {
+	create,
+};
 
-	/**
-	 *
-	 * @param {assets.Assets} manifestAssets
-	 * @param {page.Page} page
-	 * @param {string} configHash
-	 * @param {FrugalConfig} config
-	 */
-	constructor(manifestAssets, page, configHash, config) {
-		this.#assets = new assets.PageAssets(manifestAssets, page.entrypoint);
-		this.#page = page;
-		this.#config = config;
-		this.#configHash = configHash;
-	}
+/**@type {import('./Producer.ts').ProducerMaker['create']} */
+export function create(manifestAssets, page, configHash, config) {
+	const pageAssets = Assets.create(manifestAssets, page.entrypoint);
 
-	async buildAll() {
-		if (this.#page.type === "dynamic") {
-			throw new ProducerError("Can't build dynamic page");
-		}
+	return {
+		async buildAll() {
+			if (page.type === "dynamic") {
+				throw new ProducerError("Can't build dynamic page");
+			}
 
-		const pathList = await this.#page.getBuildPaths({
-			resolve: (path) => this.#config.resolve(path),
-		});
+			const pathList = await page.getBuildPaths({
+				resolve: config.resolve,
+			});
 
-		const responses = await Promise.all(pathList.map((params) => this.build(params)));
+			const responses = await Promise.all(pathList.map((params) => this.build(params)));
 
-		if (responses.some((response) => response === undefined)) {
-			throw new ProducerError(
-				`No response returned while building route "${this.#page.route}"`,
+			if (responses.some((response) => response === undefined)) {
+				throw new ProducerError(
+					`No response returned while building route "${page.route}"`,
+				);
+			}
+
+			return /** @type {import("./GenerationResponse.ts").GenerationResponse[]} */ (
+				responses
 			);
-		}
+		},
 
-		return /** @type {LiveGenerationResponse[]} */ (responses);
-	}
+		async build(params) {
+			if (page.type === "dynamic") {
+				throw new ProducerError("Can't build dynamic page");
+			}
 
-	/**
-	 * @param {pathObject.Collapse<unknown>} params
-	 */
-	async build(params) {
-		if (this.#page.type === "dynamic") {
-			throw new ProducerError("Can't build dynamic page");
-		}
+			const path = page.compile(params);
 
-		const path = this.#page.compile(params);
+			const response = await page.build({
+				path,
+				params,
+				resolve: config.resolve,
+				data: PageResponse.data,
+				empty: PageResponse.empty,
+			});
 
-		const response = await this.#page.build({
-			path,
-			params,
-			resolve: (path) => this.#config.resolve(path),
-		});
+			if (response === undefined) {
+				log(
+					`No response returned while building route "${
+						page.route
+					}" for params "${JSON.stringify(params)}"`,
+					{ level: "warning", scope: "Builder" },
+				);
 
-		if (response === undefined) {
-			log(
-				`No response returned while building route "${
-					this.#page.route
-				}" for params "${JSON.stringify(params)}"`,
-				{ level: "warning", scope: "Builder" },
-			);
+				return undefined;
+			}
 
-			return undefined;
-		}
-
-		return new LiveGenerationResponse(response, {
-			render: (data) =>
-				this.#page.render({
-					path,
-					params,
-					assets: this.#assets,
-					data,
-					descriptor: this.#page.entrypoint,
-				}),
-			path,
-			moduleHash: this.#page.moduleHash,
-			configHash: this.#configHash,
-		});
-	}
-
-	/**
-	 * @param {Request} request
-	 * @param {string} path
-	 * @param {pathObject.Collapse<unknown>} params
-	 * @param {pageDescriptor.State} state
-	 * @param {pageDescriptor.Session | undefined} session
-	 */
-	async generate(request, path, params, state, session) {
-		const response =
-			this.#page.type === "static" && request.method === "GET"
-				? await this.#page.build({
-						params,
+			return GenerationResponse.create(response, {
+				render: (data) =>
+					page.render({
 						path,
-						resolve: (path) => this.#config.resolve(path),
-						state: state,
-						request: request,
-						session: session,
-				  })
-				: await this.#page.generate({
 						params,
+						assets: pageAssets,
+						data,
+						descriptor: page.entrypoint,
+					}),
+				path,
+				moduleHash: page.moduleHash,
+				configHash: configHash,
+			});
+		},
+
+		async generate(request, path, params, state, session) {
+			const response =
+				page.type === "static" && request.method === "GET"
+					? await page.build({
+							params,
+							path,
+							resolve: config.resolve,
+							data: PageResponse.data,
+							empty: PageResponse.empty,
+							state: state,
+							request: request,
+							session: session,
+					  })
+					: await page.generate({
+							params,
+							path,
+							resolve: config.resolve,
+							data: PageResponse.data,
+							empty: PageResponse.empty,
+							state: state,
+							request: request,
+							session: session,
+					  });
+
+			if (response === undefined) {
+				log(
+					`No response returned while generating route "${request.method} ${
+						page.route
+					}" for params "${JSON.stringify(params)}"`,
+					{ level: "warning", scope: "Builder" },
+				);
+
+				return undefined;
+			}
+
+			return GenerationResponse.create(response, {
+				render: (data) =>
+					page.render({
 						path,
-						resolve: (path) => this.#config.resolve(path),
-						state: state,
-						request: request,
-						session: session,
-				  });
+						params,
+						assets: pageAssets,
+						data,
+						descriptor: page.entrypoint,
+					}),
+				path,
+				moduleHash: page.moduleHash,
+				configHash: configHash,
+			});
+		},
 
-		if (response === undefined) {
-			log(
-				`No response returned while generating route "${request.method} ${
-					this.#page.route
-				}" for params "${JSON.stringify(params)}"`,
-				{ level: "warning", scope: "Builder" },
-			);
+		async refresh(params) {
+			if (page.type === "dynamic") {
+				throw new ProducerError("Can't refresh dynamic page");
+			}
 
-			return undefined;
-		}
+			const path = page.compile(params);
 
-		return new LiveGenerationResponse(response, {
-			render: (data) =>
-				this.#page.render({
-					path,
-					params,
-					assets: this.#assets,
-					data,
-					descriptor: this.#page.entrypoint,
-				}),
-			path,
-			moduleHash: this.#page.moduleHash,
-			configHash: this.#configHash,
-		});
-	}
+			const response = await page.build({
+				path,
+				params,
+				resolve: config.resolve,
+				data: PageResponse.data,
+				empty: PageResponse.empty,
+			});
 
-	/**
-	 * @param {pathObject.Collapse<unknown>} params
-	 */
-	async refresh(params) {
-		if (this.#page.type === "dynamic") {
-			throw new ProducerError("Can't refresh dynamic page");
-		}
+			if (response === undefined) {
+				log(
+					`No response returned while refreshing route "${
+						page.route
+					}" for params "${JSON.stringify(params)}"`,
+					{ level: "warning", scope: "Builder" },
+				);
 
-		const path = this.#page.compile(params);
+				return undefined;
+			}
 
-		const response = await this.#page.build({
-			path,
-			params,
-			resolve: (path) => this.#config.resolve(path),
-		});
-
-		if (response === undefined) {
-			log(
-				`No response returned while refreshing route "${
-					this.#page.route
-				}" for params "${JSON.stringify(params)}"`,
-				{ level: "warning", scope: "Builder" },
-			);
-
-			return undefined;
-		}
-
-		return new LiveGenerationResponse(response, {
-			render: (data) =>
-				this.#page.render({
-					path,
-					params,
-					assets: this.#assets,
-					data,
-					descriptor: this.#page.entrypoint,
-				}),
-			path,
-			moduleHash: this.#page.moduleHash,
-			configHash: this.#configHash,
-		});
-	}
+			return GenerationResponse.create(response, {
+				render: (data) =>
+					page.render({
+						path,
+						params,
+						assets: pageAssets,
+						data,
+						descriptor: page.entrypoint,
+					}),
+				path,
+				moduleHash: page.moduleHash,
+				configHash: configHash,
+			});
+		},
+	};
 }
 
 class ProducerError extends Error {}
