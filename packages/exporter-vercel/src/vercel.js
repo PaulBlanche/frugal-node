@@ -140,7 +140,7 @@ async function bundleFunction(functionDir, outputDir, config) {
 		logOverride: {
 			"empty-import-meta": "silent",
 		},
-		inject: [url.fileURLToPath(import.meta.resolve("./import-meta-shim.js"))],
+		inject: [url.fileURLToPath(new URL("./import-meta-shim.js", import.meta.url))],
 		absWorkingDir: config.rootDir,
 		outfile: path.resolve(functionDir, "index.js"),
 	});
