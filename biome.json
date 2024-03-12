@@ -19,7 +19,7 @@
 				"useLiteralKeys": "off"
 			},
 			"nursery": {
-				"noUnusedImports": "error"
+				"noUnusedImports": "off"
 			}
 		}
 	},

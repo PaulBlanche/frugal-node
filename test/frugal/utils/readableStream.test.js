@@ -43,12 +43,12 @@ test("unit/frugal/utils/readableStream.js: text line stream", async () => {
 test("unit/frugal/utils/readableStream.js: merge streams", async () => {
 	const stream1 = /** @type {webStream.ReadableStream<string>} */ (
 		/** @type {any} */ (webStream.ReadableStream).from(
-			every(["a1", "b1", "c1", "d1", "e1", "f1"], 45),
+			every(["a1", "b1", "c1", "d1", "e1", "f1"], 450),
 		)
 	);
 	const stream2 = /** @type {webStream.ReadableStream<string>} */ (
 		/** @type {any} */ (webStream.ReadableStream).from(
-			every(["a2", "b2", "c2", "d2", "e2", "f2"], 28),
+			every(["a2", "b2", "c2", "d2", "e2", "f2"], 280),
 		)
 	);
 

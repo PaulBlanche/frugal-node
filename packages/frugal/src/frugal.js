@@ -1,6 +1,7 @@
 import { FrugalBuildConfig } from "./BuildConfig.js";
 import { FrugalConfig } from "./Config.js";
 import * as builder from "./builder/builder.js";
+import { WatchCache } from "./watcher/WatchCache.js";
 import { WatchContext } from "./watcher/WatchContext.js";
 
 /** @type {import('./frugal.ts').build} */
@@ -24,5 +25,5 @@ export async function context(config, buildConfig) {
 
 	const frugalBuildConfig = FrugalBuildConfig.create(buildConfig);
 
-	return WatchContext.create(frugalConfig, frugalBuildConfig);
+	return WatchContext.create(frugalConfig, frugalBuildConfig, WatchCache.create());
 }

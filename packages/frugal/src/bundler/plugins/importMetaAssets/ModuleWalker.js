@@ -9,13 +9,39 @@ export const ModuleWalker = {
 	create,
 };
 
+let offset = 0;
+
+/**
+ * @param {string} code
+ * @param {import('@swc/core').ParseOptions} options
+ * @returns {{ module: import('@swc/core').Module, offset: number }}
+ */
+function parse(code, options) {
+	// we need parsing to be sync, because somewhere during the parsing, the
+	// spans of the node are attributed, and there is a race condition : calling
+	// `parse(file1); parse(file2)` does not garantee that file1 will get its
+	// span before file2 and watching the order `parse` finishes does not
+	// garantee the same order either. Only parsing files one at a time does.
+	const module = swc.parseSync(code, { ...options, comments: true });
+
+	const currentOffset = offset;
+
+	offset += code.length + 1;
+
+	return {
+		module,
+		offset: currentOffset,
+	};
+}
+
 /**
  * @type {import('./ModuleWalker.ts').ModuleWalkerMaker['create']} filePath
  */
 async function create(filePath) {
 	const codeRaw = await fs.readFile(filePath);
 	const code = DECODER.decode(codeRaw);
-	const module = await swc.parse(code, {
+
+	const { module, offset } = parse(code, {
 		syntax: "typescript",
 	});
 
@@ -74,7 +100,6 @@ async function create(filePath) {
 	}
 
 	/**
-	 *
 	 * @param {import('@swc/core').Node} node
 	 * @returns {import('./ModuleWalker.ts').Source | undefined}
 	 */
@@ -83,29 +108,13 @@ async function create(filePath) {
 			return undefined;
 		}
 
-		const beforeSourceView = new DataView(
-			codeRaw.buffer,
-			0,
-			node.span.start - module.span.start,
-		);
-
-		const sourceView = new DataView(
-			codeRaw.buffer,
-			node.span.start - module.span.start,
-			node.span.end - node.span.start,
-		);
-
-		const beforeSource = DECODER.decode(beforeSourceView);
-
-		const source = DECODER.decode(sourceView);
-
-		const start = beforeSource.length;
-		const stop = start + source.length;
+		const start = node.span.start - offset - 1;
+		const end = node.span.end - offset - 1;
 
 		return {
-			content: source,
-			start,
-			stop,
+			content: code.substring(start, end),
+			start: start,
+			end: end,
 		};
 	}
 }

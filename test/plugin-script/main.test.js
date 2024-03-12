@@ -11,7 +11,9 @@ const snapshot = await init(import.meta.url);
 const baseHelper = await BuildHelper.setup(import.meta.dirname);
 
 test("integration/build/plugin/script: page script order", async (context) => {
-	const helper = baseHelper.extends({ pages: ["scriptOrder/page1.ts", "scriptOrder/page2.ts"] });
+	const helper = baseHelper.extends({
+		global: { pages: ["scriptOrder/page1.ts", "scriptOrder/page2.ts"] },
+	});
 	await helper.build();
 
 	const page1Assets = await helper.getAssets("scriptOrder/page1.ts");
@@ -40,7 +42,7 @@ test("integration/build/plugin/script: page script order", async (context) => {
 });
 
 test("integration/build/plugin/script: import.meta.environment", async () => {
-	const helper = baseHelper.extends({ pages: ["importMetaEnvironment/page.ts"] });
+	const helper = baseHelper.extends({ global: { pages: ["importMetaEnvironment/page.ts"] } });
 	await helper.build();
 
 	const assets = await helper.getAssets("importMetaEnvironment/page.ts");
@@ -62,8 +64,12 @@ test("integration/build/plugin/script: import.meta.environment", async () => {
 
 test("integration/build/plugin/script: interaction with css modules", async (context) => {
 	const helper = baseHelper.extends({
-		pages: ["cssModules/page.ts"],
-		plugins: [script(), css({ cssModule: true })],
+		global: {
+			pages: ["cssModules/page.ts"],
+		},
+		build: {
+			plugins: [script(), css({ cssModule: true })],
+		},
 	});
 	await helper.build();
 

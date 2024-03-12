@@ -3,11 +3,11 @@ import * as lexer from "es-module-lexer";
 import * as fs from "../utils/fs.js";
 
 /** @type {import('./dependencies.ts').dependencies} */
-export function dependencies(filePath) {
+export async function dependencies(filePath) {
 	/** @type {Map<string, import('./dependencies.ts').Node>} */
 	const nodes = new Map();
 
-	_walk(filePath);
+	await _walk(filePath);
 
 	return [...nodes.keys()];
 

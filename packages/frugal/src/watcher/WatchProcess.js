@@ -3,13 +3,15 @@ import * as webStream from "node:stream/web";
 import chalk from "chalk";
 import { log } from "../utils/log.js";
 import * as readableStream from "../utils/readableStream.js";
-import { spawnWatcher } from "./spawnWatcher.js";
+import { Watcher } from "./Watcher.js";
 
 /** @type {import('./WatchProcess.ts').create} */
 export function create() {
 	const state = {
 		/** @type {import('./WatchProcess.ts').Listener[]} */
 		listeners: [],
+		/** @type {Watcher|undefined} */
+		watcher: undefined,
 		/** @type {import("../utils/ChildProcess.ts").ChildProcess | undefined} */
 		process: undefined,
 	};
@@ -29,12 +31,13 @@ export function create() {
 				throw Error("process was already spawned");
 			}
 
-			state.process = await spawnWatcher(process.argv[1], {
+			state.watcher = await Watcher.create(process.argv[1], {
 				env: {
 					FRUGAL_WATCH_PROCESS_CHILD: "1",
 					FORCE_COLOR: String(chalk.level),
 				},
 			});
+			state.process = state.watcher.spawn();
 
 			const pid = state.process.pid;
 
@@ -48,7 +51,7 @@ export function create() {
 		},
 
 		async kill() {
-			state.process?.kill("SIGINT");
+			await state.watcher?.dispose();
 			await state.process?.status;
 		},
 	};
@@ -80,12 +83,12 @@ export function create() {
 			try {
 				const data = JSON.parse(trimedLine);
 				switch (data.type) {
-					case "suspend": {
-						_emit("suspend");
+					case "build:start": {
+						_emit("build:start");
 						break;
 					}
-					case "reload": {
-						_emit("reload");
+					case "build:end": {
+						_emit("build:end");
 						break;
 					}
 					default:

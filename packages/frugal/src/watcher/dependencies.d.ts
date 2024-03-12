@@ -5,4 +5,4 @@ export type Node = {
 	children: Record<string, boolean>;
 };
 
-export function dependencies(path: string): string[];
+export function dependencies(path: string): Promise<string[]>;

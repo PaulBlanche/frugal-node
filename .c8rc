@@ -4,5 +4,5 @@
 	"src": ["./packages"],
 	"report-dir": "./coverage",
 	"include": ["packages"],
-	"exclude": ["**/_type/**", "**/packages/*/exports/**"]
+	"exclude": ["**/_type/**", "**/packages/*/exports/**", "**/*.d.ts"]
 }

@@ -5,4 +5,4 @@ interface CookieSessionStorageMaker {
 	create(cookieConfig?: CookieConfig): SessionStorage;
 }
 
-export const CookieStorage: CookieSessionStorageMaker;
+export const CookieSessionStorage: CookieSessionStorageMaker;

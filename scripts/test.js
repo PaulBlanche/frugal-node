@@ -93,6 +93,7 @@ async function testProcessBody() {
 		concurrency: true,
 		only: process.env[TEST_ONLY_ENV] !== undefined,
 		testNamePatterns: nameFilterRegexp,
+		timeout: 30 * 1000,
 	})
 		.compose(new spec())
 		.pipe(process.stdout);

@@ -1,4 +1,4 @@
-export type EventType = "suspend" | "reload";
+export type EventType = "build:end" | "build:start";
 
 export type Listener = (type: EventType) => void;
 

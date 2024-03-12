@@ -1,10 +1,9 @@
 import * as path from "node:path";
-import fastGlob from "fast-glob";
 import { Hash } from "../../../utils/Hash.js";
 import * as fs from "../../../utils/fs.js";
+import { log } from "../../../utils/log.js";
 import { ModuleWalker } from "./ModuleWalker.js";
 import { UrlMetaTransformer } from "./UrlMetaTransformer.js";
-import { dynamicUrlMetaToGlob } from "./dynamicUrlMetaToGlob.js";
 import * as utils from "./utils.js";
 
 /** @type {import('./importMetaAssets.js').importMetaAssets} */
@@ -21,29 +20,9 @@ export function importMetaAssets(config) {
 
 				await walker.walk({
 					enter: (node, getSource) => {
-						if (isDynamicUrlMeta(node) && node.arguments?.[0] !== undefined) {
-							const source = getSource();
-
-							if (source === undefined) {
-								return;
-							}
-
-							const serverAssets = collectDynamicUrlMeta(
-								node.arguments?.[0].expression,
-								source.content,
-								args.path,
-							);
-
-							if (serverAssets === undefined) {
-								return;
-							}
-
-							transformer.dynamicUrl(serverAssets, source.start);
-
-							assets.push(...serverAssets);
-						}
-
-						if (isStaticUrlMeta(node) && node.arguments?.[0] !== undefined) {
+						if (isDynamicUrlMeta(node)) {
+							log("toto");
+						} else if (isStaticUrlMeta(node) && node.arguments?.[0] !== undefined) {
 							let relativePath;
 
 							if (utils.isStringLiteral(node.arguments?.[0].expression)) {
@@ -70,7 +49,7 @@ export function importMetaAssets(config) {
 									path: relativePath,
 								};
 
-								transformer.staticUrl(serverAsset, source.start, source.stop);
+								transformer.staticUrl(serverAsset, source.start, source.end);
 
 								assets.push(serverAsset);
 							}
@@ -109,32 +88,6 @@ function serverAssetOut(relativePath) {
 	const filename = path.basename(relativePath, ext);
 
 	return `./assets/${filename}-${hash}${ext}`;
-}
-
-/**
- *
- * @param {import('@swc/core').Expression} node
- * @param {string} sourceString
- * @param {string} importer
- * @returns {import('./UrlMetaTransformer.ts').ServerAsset[]|undefined}
- */
-function collectDynamicUrlMeta(node, sourceString, importer) {
-	const glob = dynamicUrlMetaToGlob(node, sourceString);
-
-	if (glob === undefined) {
-		return undefined;
-	}
-
-	const paths = fastGlob.sync(glob, { cwd: path.dirname(importer) });
-
-	return paths.map((assetPath) => {
-		const relativePath =
-			assetPath.startsWith("./") || assetPath.startsWith("../")
-				? assetPath
-				: `./${assetPath}`;
-
-		return { path: relativePath, out: serverAssetOut(relativePath), importer };
-	});
 }
 
 /**

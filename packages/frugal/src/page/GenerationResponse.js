@@ -18,6 +18,14 @@ export function create(response, init) {
 		serialized: undefined,
 	};
 
+	const headers = new Headers(response.headers);
+
+	const generationDate = new Date().toUTCString();
+	if (headers.get("Last-Modified") === null) {
+		headers.set("Last-Modified", generationDate);
+	}
+	headers.set("X-Frugal-Generation-Date", generationDate);
+
 	return {
 		get path() {
 			return init.path;
@@ -43,7 +51,7 @@ export function create(response, init) {
 		},
 
 		get headers() {
-			return response.headers;
+			return headers;
 		},
 
 		get status() {

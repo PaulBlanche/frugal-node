@@ -1,14 +1,14 @@
 import * as assert from "node:assert/strict";
 import { mock, test } from "node:test";
 
-import * as page from "../../../packages/frugal/src/page/Page.js";
-import * as pageResponse from "../../../packages/frugal/src/page/PageResponse.js";
+import { Page, PageError } from "../../../packages/frugal/src/page/Page.js";
+import { PageResponse } from "../../../packages/frugal/src/page/PageResponse.js";
 import * as jsonValue from "../../../packages/frugal/src/utils/jsonValue.js";
 
 test("unit/frugal/page/Page.js: compile errors", () => {
 	assert.throws(
 		() =>
-			page.compile({
+			Page.create({
 				entrypoint: "foo",
 				moduleHash: "bar",
 				pageDescriptor: /** @type {any} */ ({}),
@@ -18,7 +18,7 @@ test("unit/frugal/page/Page.js: compile errors", () => {
 
 	assert.throws(
 		() =>
-			page.compile({
+			Page.create({
 				entrypoint: "foo",
 				moduleHash: "bar",
 				pageDescriptor: /** @type {any} */ ({
@@ -30,7 +30,7 @@ test("unit/frugal/page/Page.js: compile errors", () => {
 
 	assert.doesNotThrow(
 		() =>
-			page.compile({
+			Page.create({
 				entrypoint: "foo",
 				moduleHash: "bar",
 				pageDescriptor: /** @type {any} */ ({
@@ -43,7 +43,7 @@ test("unit/frugal/page/Page.js: compile errors", () => {
 
 	assert.throws(
 		() =>
-			page.compile({
+			Page.create({
 				entrypoint: "foo",
 				moduleHash: "bar",
 				pageDescriptor: /** @type {any} */ ({
@@ -56,7 +56,7 @@ test("unit/frugal/page/Page.js: compile errors", () => {
 
 	assert.throws(
 		() =>
-			page.compile({
+			Page.create({
 				entrypoint: "foo",
 				moduleHash: "bar",
 				pageDescriptor: /** @type {any} */ ({
@@ -69,7 +69,7 @@ test("unit/frugal/page/Page.js: compile errors", () => {
 
 	assert.throws(
 		() =>
-			page.compile({
+			Page.create({
 				entrypoint: "foo",
 				moduleHash: "bar",
 				pageDescriptor: /** @type {any} */ ({
@@ -82,7 +82,7 @@ test("unit/frugal/page/Page.js: compile errors", () => {
 
 	assert.doesNotThrow(
 		() =>
-			page.compile({
+			Page.create({
 				entrypoint: "foo",
 				moduleHash: "bar",
 				pageDescriptor: /** @type {any} */ ({
@@ -96,7 +96,7 @@ test("unit/frugal/page/Page.js: compile errors", () => {
 
 	assert.throws(
 		() =>
-			page.compile({
+			Page.create({
 				entrypoint: "foo",
 				moduleHash: "bar",
 				pageDescriptor: /** @type {any} */ ({
@@ -110,7 +110,7 @@ test("unit/frugal/page/Page.js: compile errors", () => {
 
 	assert.doesNotThrow(
 		() =>
-			page.compile({
+			Page.create({
 				entrypoint: "foo",
 				moduleHash: "bar",
 				pageDescriptor: /** @type {any} */ ({
@@ -124,7 +124,7 @@ test("unit/frugal/page/Page.js: compile errors", () => {
 
 	assert.throws(
 		() =>
-			page.compile({
+			Page.create({
 				entrypoint: "foo",
 				moduleHash: "bar",
 				pageDescriptor: /** @type {any} */ ({
@@ -138,7 +138,7 @@ test("unit/frugal/page/Page.js: compile errors", () => {
 
 	assert.doesNotThrow(
 		() =>
-			page.compile({
+			Page.create({
 				entrypoint: "foo",
 				moduleHash: "bar",
 				pageDescriptor: /** @type {any} */ ({
@@ -152,7 +152,7 @@ test("unit/frugal/page/Page.js: compile errors", () => {
 
 	assert.throws(
 		() =>
-			page.compile({
+			Page.create({
 				entrypoint: "foo",
 				moduleHash: "bar",
 				pageDescriptor: /** @type {any} */ ({
@@ -166,7 +166,7 @@ test("unit/frugal/page/Page.js: compile errors", () => {
 
 	assert.doesNotThrow(
 		() =>
-			page.compile({
+			Page.create({
 				entrypoint: "foo",
 				moduleHash: "bar",
 				pageDescriptor: /** @type {any} */ ({
@@ -180,7 +180,7 @@ test("unit/frugal/page/Page.js: compile errors", () => {
 
 	assert.doesNotThrow(
 		() =>
-			page.compile({
+			Page.create({
 				entrypoint: "foo",
 				moduleHash: "bar",
 				pageDescriptor: /** @type {any} */ ({
@@ -194,7 +194,7 @@ test("unit/frugal/page/Page.js: compile errors", () => {
 
 	assert.throws(
 		() =>
-			page.compile({
+			Page.create({
 				entrypoint: "foo",
 				moduleHash: "bar",
 				pageDescriptor: /** @type {any} */ ({
@@ -208,7 +208,7 @@ test("unit/frugal/page/Page.js: compile errors", () => {
 
 	assert.doesNotThrow(
 		() =>
-			page.compile({
+			Page.create({
 				entrypoint: "foo",
 				moduleHash: "bar",
 				pageDescriptor: /** @type {any} */ ({
@@ -222,7 +222,7 @@ test("unit/frugal/page/Page.js: compile errors", () => {
 
 	assert.throws(
 		() =>
-			page.compile({
+			Page.create({
 				entrypoint: "foo",
 				moduleHash: "bar",
 				pageDescriptor: /** @type {any} */ ({
@@ -236,7 +236,7 @@ test("unit/frugal/page/Page.js: compile errors", () => {
 
 	assert.doesNotThrow(
 		() =>
-			page.compile({
+			Page.create({
 				entrypoint: "foo",
 				moduleHash: "bar",
 				pageDescriptor: /** @type {any} */ ({
@@ -250,7 +250,7 @@ test("unit/frugal/page/Page.js: compile errors", () => {
 
 	assert.throws(
 		() =>
-			page.compile({
+			Page.create({
 				entrypoint: "foo",
 				moduleHash: "bar",
 				pageDescriptor: /** @type {any} */ ({
@@ -265,7 +265,7 @@ test("unit/frugal/page/Page.js: compile errors", () => {
 
 	assert.doesNotThrow(
 		() =>
-			page.compile({
+			Page.create({
 				entrypoint: "foo",
 				moduleHash: "bar",
 				pageDescriptor: /** @type {any} */ ({
@@ -281,18 +281,18 @@ test("unit/frugal/page/Page.js: compile errors", () => {
 
 test("unit/frugal/page/Page.js: compile type", () => {
 	assert.ok(
-		page.compile({
+		Page.create({
 			entrypoint: "foo",
 			moduleHash: "bar",
 			pageDescriptor: {
 				route: "/foo",
 				render: () => "foo",
 			},
-		}) instanceof page.StaticPage,
+		}).type === "static",
 		"descriptor should be compiled as StaticPage by default",
 	);
 	assert.ok(
-		page.compile({
+		Page.create({
 			entrypoint: "foo",
 			moduleHash: "bar",
 			pageDescriptor: /** @type {any} */ ({
@@ -301,14 +301,14 @@ test("unit/frugal/page/Page.js: compile type", () => {
 				render: () => "foo",
 				generate: () => {},
 			}),
-		}) instanceof page.DynamicPage,
+		}).type === "dynamic",
 		"descriptor with type 'dynamic' and generate function should be compiled as DynamicPage",
 	);
 });
 
 test("unit/frugal/page/Page.js: complete StaticPage", () => {
 	const spyRender = mock.fn(() => "foo");
-	const spyBuild = mock.fn(() => new pageResponse.EmptyResponse({}));
+	const spyBuild = mock.fn((context) => context.empty({}));
 	const spyGetBuildPaths = mock.fn(() => [{ id: "1" }]);
 	const descriptor =
 		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").StaticPageDescriptor<"/foo/:id", jsonValue.JsonValue>} */ ({
@@ -320,7 +320,7 @@ test("unit/frugal/page/Page.js: complete StaticPage", () => {
 		});
 	const entrypoint = "foo";
 	const moduleHash = "bar";
-	const compiledPage = page.compile({ entrypoint, moduleHash, pageDescriptor: descriptor });
+	const compiledPage = Page.create({ entrypoint, moduleHash, pageDescriptor: descriptor });
 
 	assert.deepEqual(compiledPage.type, "static", "Page should be a static page");
 	assert.deepEqual(compiledPage.moduleHash, moduleHash, "Page should hold its own moduleHash");
@@ -332,14 +332,13 @@ test("unit/frugal/page/Page.js: complete StaticPage", () => {
 		"Page should hold its own route",
 	);
 
-	const getBuildPathsContext =
-		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").GetBuildPathsContext} */ ({});
-	compiledPage.getBuildPaths(getBuildPathsContext);
+	compiledPage.getBuildPaths();
 	assert.strictEqual(spyGetBuildPaths.mock.calls.length, 1);
-	assert.deepEqual(spyGetBuildPaths.mock.calls[0].arguments, [getBuildPathsContext]);
 
 	const buildContext =
-		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").BuildContext<"/foo/:id">} */ ({});
+		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").BuildContext<"/foo/:id">} */ ({
+			empty: (init) => PageResponse.empty(init),
+		});
 	compiledPage.build(buildContext);
 	assert.strictEqual(spyBuild.mock.calls.length, 1);
 	assert.deepEqual(spyBuild.mock.calls[0].arguments, [buildContext]);
@@ -363,7 +362,7 @@ test("unit/frugal/page/Page.js: complete StaticPage", () => {
 		 * @param {any} error
 		 */
 		(error) => {
-			assert.ok(error instanceof page.PageError);
+			assert.ok(error instanceof PageError);
 			assert.strictEqual(
 				error.message,
 				'Error while compiling route "/foo/:id" for params "{"foo":"1"}"',
@@ -407,19 +406,17 @@ test("unit/frugal/page/Page.js: StaticPage with descriptor that throws", async (
 		);
 	const entrypoint = "foo";
 	const moduleHash = "bar";
-	const compiledPage = page.compile({ entrypoint, moduleHash, pageDescriptor: descriptor });
+	const compiledPage = Page.create({ entrypoint, moduleHash, pageDescriptor: descriptor });
 
 	assert.deepEqual(compiledPage.type, "static", "Page should be a static page");
 
-	const getBuildPathsContext =
-		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").GetBuildPathsContext} */ ({});
 	assert.throws(
-		() => compiledPage.getBuildPaths(getBuildPathsContext),
+		() => compiledPage.getBuildPaths(),
 		/**
 		 * @param {any} error
 		 */
 		(error) => {
-			assert.ok(error instanceof page.PageError);
+			assert.ok(error instanceof PageError);
 			assert.strictEqual(
 				error.message,
 				'Error while building path list for route "/foo/:id"',
@@ -440,7 +437,7 @@ test("unit/frugal/page/Page.js: StaticPage with descriptor that throws", async (
 		 * @param {any} error
 		 */
 		(error) => {
-			assert.ok(error instanceof page.PageError);
+			assert.ok(error instanceof PageError);
 			assert.strictEqual(
 				error.message,
 				'Error while building route "/foo/:id" for params "{"id":"3"}"',
@@ -461,7 +458,7 @@ test("unit/frugal/page/Page.js: StaticPage with descriptor that throws", async (
 		 * @param {any} error
 		 */
 		(error) => {
-			assert.ok(error instanceof page.PageError);
+			assert.ok(error instanceof PageError);
 			assert.strictEqual(
 				error.message,
 				'Error while rendering route "/foo/:id" for params "{"id":"3"}"',
@@ -484,7 +481,7 @@ test("unit/frugal/page/Page.js: StaticPage with build that returns nothing", asy
 		});
 	const entrypoint = "foo";
 	const moduleHash = "bar";
-	const compiledPage = page.compile({ entrypoint, moduleHash, pageDescriptor: descriptor });
+	const compiledPage = Page.create({ entrypoint, moduleHash, pageDescriptor: descriptor });
 
 	assert.deepEqual(compiledPage.type, "static", "Page should be a static page");
 
@@ -508,7 +505,7 @@ test("unit/frugal/page/Page.js: minimal StaticPage", async () => {
 		});
 	const entrypoint = "foo";
 	const moduleHash = "bar";
-	const compiledPage = page.compile({ entrypoint, moduleHash, pageDescriptor: descriptor });
+	const compiledPage = Page.create({ entrypoint, moduleHash, pageDescriptor: descriptor });
 
 	assert.deepEqual(compiledPage.type, "static", "Page should be a static page");
 	assert.deepEqual(compiledPage.moduleHash, moduleHash, "Page should hold its own moduleHash");
@@ -516,16 +513,16 @@ test("unit/frugal/page/Page.js: minimal StaticPage", async () => {
 	assert.deepEqual(compiledPage.route, descriptor.route, "Page should hold its own route");
 	assert.deepEqual(compiledPage.strictPaths, true, "Page should default to true");
 
-	const getBuildPathsContext =
-		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").GetBuildPathsContext} */ ({});
 	assert.deepEqual(
-		compiledPage.getBuildPaths(getBuildPathsContext),
+		compiledPage.getBuildPaths(),
 		[{}],
 		"defaul getBuildPaths should default to returning an array of one empty object",
 	);
 
 	const buildContext =
-		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").BuildContext<"/foo/:id">} */ ({});
+		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").BuildContext<"/foo/:id">} */ ({
+			data: (data, init) => PageResponse.data(data, init),
+		});
 	const response = await compiledPage.build(buildContext);
 	assert.deepEqual(
 		response?.data,
@@ -575,7 +572,7 @@ test("unit/frugal/page/Page.js: minimal StaticPage", async () => {
 
 test("unit/frugal/page/Page.js: complete DynamicPage", () => {
 	const spyRender = mock.fn(() => "foo");
-	const spyGenerate = mock.fn(() => new pageResponse.EmptyResponse({}));
+	const spyGenerate = mock.fn((context) => context.empty({}));
 	const descriptor =
 		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").DynamicPageDescriptor<"/foo/:id", jsonValue.JsonValue>} */ ({
 			type: "dynamic",
@@ -585,7 +582,7 @@ test("unit/frugal/page/Page.js: complete DynamicPage", () => {
 		});
 	const entrypoint = "foo";
 	const moduleHash = "bar";
-	const compiledPage = page.compile({ entrypoint, moduleHash, pageDescriptor: descriptor });
+	const compiledPage = Page.create({ entrypoint, moduleHash, pageDescriptor: descriptor });
 
 	assert.deepEqual(compiledPage.type, "dynamic", "Page should be a dynamic page");
 	assert.deepEqual(compiledPage.moduleHash, moduleHash, "Page should hold its own moduleHash");
@@ -593,7 +590,9 @@ test("unit/frugal/page/Page.js: complete DynamicPage", () => {
 	assert.deepEqual(compiledPage.route, descriptor.route, "Page should hold its own route");
 
 	const generateContext =
-		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").GenerateContext<"/foo/:id">} */ ({});
+		/** @type {import("../../../packages/frugal/src/page/PageDescriptor.js").GenerateContext<"/foo/:id">} */ ({
+			empty: (init) => PageResponse.empty(init),
+		});
 	compiledPage.generate(generateContext);
 	assert.strictEqual(spyGenerate.mock.calls.length, 1);
 	assert.deepEqual(spyGenerate.mock.calls[0].arguments, [generateContext]);
@@ -617,7 +616,7 @@ test("unit/frugal/page/Page.js: complete DynamicPage", () => {
 		 * @param {any} error
 		 */
 		(error) => {
-			assert.ok(error instanceof page.PageError);
+			assert.ok(error instanceof PageError);
 			assert.strictEqual(
 				error.message,
 				'Error while compiling route "/foo/:id" for params "{"foo":"1"}"',
@@ -656,7 +655,7 @@ test("unit/frugal/page/Page.js: DynamicPage with descriptor that throws", async 
 		});
 	const entrypoint = "foo";
 	const moduleHash = "bar";
-	const compiledPage = page.compile({ entrypoint, moduleHash, pageDescriptor: descriptor });
+	const compiledPage = Page.create({ entrypoint, moduleHash, pageDescriptor: descriptor });
 
 	assert.deepEqual(compiledPage.type, "dynamic", "Page should be a dynamic page");
 
@@ -670,7 +669,7 @@ test("unit/frugal/page/Page.js: DynamicPage with descriptor that throws", async 
 		 * @param {any} error
 		 */
 		(error) => {
-			assert.ok(error instanceof page.PageError);
+			assert.ok(error instanceof PageError);
 			assert.strictEqual(
 				error.message,
 				'Error while generating route "/foo/:id" for params "{"id":"3"}"',
@@ -691,7 +690,7 @@ test("unit/frugal/page/Page.js: DynamicPage with descriptor that throws", async 
 		 * @param {any} error
 		 */
 		(error) => {
-			assert.ok(error instanceof page.PageError);
+			assert.ok(error instanceof PageError);
 			assert.strictEqual(
 				error.message,
 				'Error while rendering route "/foo/:id" for params "{"id":"3"}"',
@@ -715,7 +714,7 @@ test("unit/frugal/page/Page.js: DynamicPage with generate that returns nothing",
 		});
 	const entrypoint = "foo";
 	const moduleHash = "bar";
-	const compiledPage = page.compile({ entrypoint, moduleHash, pageDescriptor: descriptor });
+	const compiledPage = Page.create({ entrypoint, moduleHash, pageDescriptor: descriptor });
 
 	assert.deepEqual(compiledPage.type, "dynamic", "Page should be a dynamic page");
 

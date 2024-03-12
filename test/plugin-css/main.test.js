@@ -10,7 +10,7 @@ const snapshot = await init(import.meta.url);
 const baseHelper = await BuildHelper.setup(import.meta.dirname);
 
 test("integration/build/plugin/css: page css order", async (context) => {
-	const helper = baseHelper.extends({ pages: ["cssOrder/page.ts"] });
+	const helper = baseHelper.extends({ global: { pages: ["cssOrder/page.ts"] } });
 	await helper.build();
 
 	const assets = await helper.getAssets("cssOrder/page.ts");
@@ -30,10 +30,16 @@ test("integration/build/plugin/css: page css order", async (context) => {
 
 test("integration/build/plugin/css: one css bundle per page, one bundle per global css", async (context) => {
 	const helper = baseHelper.extends({
-		pages: ["oneBundlePerPage/page1.ts", "oneBundlePerPage/page2.ts"],
-		plugins: [
-			css({ globalCss: ["oneBundlePerPage/global1.css", "oneBundlePerPage/global2.css"] }),
-		],
+		global: {
+			pages: ["oneBundlePerPage/page1.ts", "oneBundlePerPage/page2.ts"],
+		},
+		build: {
+			plugins: [
+				css({
+					globalCss: ["oneBundlePerPage/global1.css", "oneBundlePerPage/global2.css"],
+				}),
+			],
+		},
 	});
 	await helper.build();
 
@@ -89,13 +95,17 @@ test("integration/build/plugin/css: one css bundle per page, one bundle per glob
 
 test("integration/build/plugin/css: one single bundle in site mode", async (context) => {
 	const helper = baseHelper.extends({
-		pages: ["oneBundlePerPage/page1.ts", "oneBundlePerPage/page2.ts"],
-		plugins: [
-			css({
-				scope: "global",
-				globalCss: ["oneBundlePerPage/global1.css", "oneBundlePerPage/global2.css"],
-			}),
-		],
+		global: {
+			pages: ["oneBundlePerPage/page1.ts", "oneBundlePerPage/page2.ts"],
+		},
+		build: {
+			plugins: [
+				css({
+					scope: "global",
+					globalCss: ["oneBundlePerPage/global1.css", "oneBundlePerPage/global2.css"],
+				}),
+			],
+		},
 	});
 	await helper.build();
 
@@ -130,14 +140,18 @@ test("integration/build/plugin/css: one single bundle in site mode", async (cont
 
 test("integration/build/plugin/css: esbuild options (minify)", async (context) => {
 	const helper = baseHelper.extends({
-		pages: ["oneBundlePerPage/page1.ts", "oneBundlePerPage/page2.ts"],
-		plugins: [
-			css({
-				scope: "global",
-				esbuildOptions: { minify: true },
-				globalCss: ["oneBundlePerPage/global1.css", "oneBundlePerPage/global2.css"],
-			}),
-		],
+		global: {
+			pages: ["oneBundlePerPage/page1.ts", "oneBundlePerPage/page2.ts"],
+		},
+		build: {
+			plugins: [
+				css({
+					scope: "global",
+					esbuildOptions: { minify: true },
+					globalCss: ["oneBundlePerPage/global1.css", "oneBundlePerPage/global2.css"],
+				}),
+			],
+		},
 	});
 	await helper.build();
 
@@ -172,16 +186,20 @@ test("integration/build/plugin/css: esbuild options (minify)", async (context) =
 
 test("integration/build/plugin/css: css modules", async (context) => {
 	const helper = baseHelper.extends({
-		pages: ["cssModules/page.ts"],
-		plugins: [
-			css({
-				cssModule: {
-					// to avoid hash beeing different on different machines runing the
-					// tests
-					pattern: "[local]",
-				},
-			}),
-		],
+		global: {
+			pages: ["cssModules/page.ts"],
+		},
+		build: {
+			plugins: [
+				css({
+					cssModule: {
+						// to avoid hash beeing different on different machines runing the
+						// tests
+						pattern: "[local]",
+					},
+				}),
+			],
+		},
 	});
 	await helper.build();
 
@@ -202,5 +220,13 @@ test("integration/build/plugin/css: css modules", async (context) => {
 
 	const cache = await helper.getCache();
 
-	snapshot.assert(context, await cache.get("/page"), "bundle with css module class");
+	const entry = await cache.get("/page");
+	snapshot.assert(
+		context,
+		{
+			...entry,
+			headers: [],
+		},
+		"bundle with css module class",
+	);
 });

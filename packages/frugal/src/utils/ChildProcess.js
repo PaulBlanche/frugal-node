@@ -57,10 +57,12 @@ export function spawn(command, options) {
 		addEventListener(type, listener) {
 			state.listeners[type].push(/** @type {any} */ (listener));
 		},
-		kill(signal) {
+		async kill(signal) {
 			_kill(signal);
-			stdout.stream.cancel();
-			stderr.stream.cancel();
+			try {
+				await stdout.stream.cancel();
+				await stderr.stream.cancel();
+			} catch {}
 		},
 		async restart() {
 			state.isRestarting = true;
@@ -79,11 +81,12 @@ export function spawn(command, options) {
 
 	/** @param {NodeJS.Signals} [signal] */
 	function _kill(signal) {
-		stderr.streamReadable?.removeAllListeners();
-		stdout.streamReadable?.removeAllListeners();
-
 		if (!state.exited) {
 			state.process.spawned.kill(signal);
+			state.process.spawned.on("exit", () => {
+				stderr.streamReadable?.removeAllListeners();
+				stdout.streamReadable?.removeAllListeners();
+			});
 		}
 	}
 

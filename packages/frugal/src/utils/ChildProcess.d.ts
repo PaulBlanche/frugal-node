@@ -23,7 +23,7 @@ export interface ChildProcess {
 	readonly stderr: streamWeb.ReadableStream<Uint8Array>;
 	readonly stdout: streamWeb.ReadableStream<Uint8Array>;
 	readonly pid: number | undefined;
-	kill(signal?: NodeJS.Signals): void;
+	kill(signal?: NodeJS.Signals): Promise<void>;
 	restart(): Promise<void>;
 	addEventListener<TYPE extends keyof ListenerDict>(
 		type: TYPE,

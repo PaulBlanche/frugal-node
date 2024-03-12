@@ -6,7 +6,7 @@ export async function watchModeStaticPage(context, next) {
 		return next(context);
 	}
 
-	const cachedResponse = context.cache.get(context.url.pathname);
+	const cachedResponse = await context.cache.get(context.url.pathname);
 
 	if (context.page.strictPaths && cachedResponse === undefined) {
 		context.log(
@@ -39,5 +39,12 @@ export async function watchModeStaticPage(context, next) {
 
 	await context.cache.add(generationResponse);
 
-	return toResponse(generationResponse);
+	const response = toResponse(generationResponse);
+
+	const generationDate = cachedResponse?.headers.get("X-Frugal-Generation-Date") ?? undefined;
+	if (generationDate) {
+		response.headers.set("X-Frugal-Generation-Date", generationDate);
+	}
+
+	return response;
 }

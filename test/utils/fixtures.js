@@ -25,6 +25,24 @@ export async function setupFixtures(dirname) {
  */
 export async function loadFixtureConfig(dirname) {
 	const hash = String(Date.now());
-	const { config } = await import(path.resolve(dirname, `project/frugal.config.js#${hash}`));
+	const { default: config } = await import(
+		path.resolve(dirname, `project/frugal.config.js#${hash}`)
+	);
 	return config;
+}
+
+/**
+ * @param {string} dirname
+ * @returns {Promise<import('../../packages/frugal/exports/config/index.ts').BuildConfig>}
+ */
+export async function loadFixtureBuildConfig(dirname) {
+	const hash = String(Date.now());
+	try {
+		const { default: config } = await import(
+			path.resolve(dirname, `project/frugal.config.build.js#${hash}`)
+		);
+		return config;
+	} catch {
+		return {};
+	}
 }

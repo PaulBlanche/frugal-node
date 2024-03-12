@@ -1,5 +1,5 @@
 /** @type {import('./MemorySessionStorage.ts').MemorySessionStorageMaker} */
-export const MemoryStorage = {
+export const MemorySessionStorage = {
 	create,
 };
 

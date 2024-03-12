@@ -1,11 +1,11 @@
 {
   "integration/build/plugin/script: page script order:1": {
     "name": "integration/build/plugin/script: page script order",
-    "value": "import \"./chunk-2Y3QE7SW.mjs\";\n\n// scriptOrder/0-before.script.ts\nif (true) {\n  console.log(\"before.script.ts\");\n}\n\n// scriptOrder/2-after.script.ts\nif (true) {\n  console.log(\"after.script.ts\");\n}\n"
+    "value": "import \"./chunk-XY2IQRYM.js\";\n\n// scriptOrder/0-before.script.ts\nif (true) {\n  console.log(\"before.script.ts\");\n}\n\n// scriptOrder/2-after.script.ts\nif (true) {\n  console.log(\"after.script.ts\");\n}\n"
   },
   "integration/build/plugin/script: page script order:2": {
     "name": "integration/build/plugin/script: page script order",
-    "value": "import \"./chunk-2Y3QE7SW.mjs\";\n"
+    "value": "import \"./chunk-XY2IQRYM.js\";\n"
   },
   "integration/build/plugin/script: interaction with css modules:1": {
     "name": "integration/build/plugin/script: interaction with css modules",
@@ -13,6 +13,6 @@
   },
   "integration/build/plugin/script: interaction with css modules:2": {
     "name": "integration/build/plugin/script: interaction with css modules",
-    "value": "/* dist/.temp/build/cssModules/page-CTUBHP46.css */\n.CBGdRa_foo {\n  color: red;\n}\n"
+    "value": "/* dist/.temp/build/page-MTW4YTIY.css */\n.CBGdRa_foo {\n  color: red;\n}\n"
   }
 }

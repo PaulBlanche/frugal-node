@@ -99,7 +99,6 @@
 		"cookie": "^0.6.0",
 		"es-module-lexer": "^1.4.1",
 		"esbuild": "^0.20.0",
-		"fast-glob": "^3.3.2",
 		"imurmurhash": "^0.1.4",
 		"magic-string": "^0.30.7",
 		"mime": "^4.0.1",

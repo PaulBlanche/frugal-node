@@ -1,12 +1,12 @@
 import * as assert from "node:assert/strict";
 import { ReadableStream } from "node:stream/web";
 import { test } from "node:test";
-import { fromReadableStream } from "../../../../packages/frugal/src/utils/readableStream.js";
-import { serve } from "../../../../packages/frugal/src/utils/serve.js";
-import { waitForPort } from "../../../utils/waitForPort.js";
+import { fromReadableStream } from "../../../packages/frugal/src/utils/readableStream.js";
+import { serve } from "../../../packages/frugal/src/utils/serve.js";
+import { waitForPort } from "../../utils/waitForPort.js";
 
 test("unit/frugal/utils/http/serve.js: input to the handler the request from the client and serve back the response", async () => {
-	await waitForPort({ port: 8000, hostname: "0.0.0.0" });
+	await waitForPort({ port: 8001, hostname: "0.0.0.0" });
 
 	const abortController = new AbortController();
 	const serverPromise = serve(
@@ -24,12 +24,12 @@ test("unit/frugal/utils/http/serve.js: input to the handler the request from the
 		},
 		{
 			hostname: "0.0.0.0",
-			port: 8000,
+			port: 8001,
 			signal: abortController.signal,
 		},
 	);
 
-	const response = await fetch("http://0.0.0.0:8000/any/url", {
+	const response = await fetch("http://0.0.0.0:8001/any/url", {
 		body: "ping",
 		headers: [
 			["foo", "bar"],
@@ -47,7 +47,7 @@ test("unit/frugal/utils/http/serve.js: input to the handler the request from the
 });
 
 test("unit/frugal/utils/http/serve.js: can recieve and answer with ReadableStream", async () => {
-	await waitForPort({ port: 8000, hostname: "0.0.0.0" });
+	await waitForPort({ port: 8001, hostname: "0.0.0.0" });
 
 	const abortController = new AbortController();
 	const serverPromise = serve(
@@ -61,18 +61,21 @@ test("unit/frugal/utils/http/serve.js: can recieve and answer with ReadableStrea
 				chunks.push(new TextDecoder().decode(chunk));
 			}
 			assert.deepEqual(chunks, ["pi", "ng"]);
+			// @ts-expect-error: no types for `ReadableStream.from` but the method exists
 			return new Response(ReadableStream.from(["po", "ng"]));
 		},
 		{
 			hostname: "0.0.0.0",
-			port: 8000,
+			port: 8001,
 			signal: abortController.signal,
 		},
 	);
 
-	const response = await fetch("http://0.0.0.0:8000/any/url", {
+	const response = await fetch("http://0.0.0.0:8001/any/url", {
+		// @ts-expect-error: no types for `ReadableStream.from` but the method exists
 		body: ReadableStream.from(["pi", "ng"]),
 		method: "POST",
+		// @ts-expect-error: no types duplex, but exists on undici implementation
 		duplex: "half",
 	});
 

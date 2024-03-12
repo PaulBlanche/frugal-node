@@ -11,6 +11,6 @@
 		"allowImportingTsExtensions": true,
 		"forceConsistentCasingInFileNames": false,
 	},
-	"include": ["packages"],
-	"exclude": ["node_modules", "**/import-meta-shim.js"],
+	"include": ["packages", "test"],
+	"exclude": ["node_modules", "**/import-meta-shim.js", "test/**/project"],
 }

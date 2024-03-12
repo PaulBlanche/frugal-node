@@ -7,9 +7,9 @@ export const WatchContext = {
 };
 
 /** @type {import('./WatchContext.ts').WatchContextMaker['create']} */
-export function create(config, buildConfig) {
+export function create(config, buildConfig, watchCache) {
 	if (isInChildWatchProcess()) {
-		return createWrapper(ChildContext.create(config, buildConfig));
+		return createWrapper(ChildContext.create(config, buildConfig, watchCache));
 	}
 	return createWrapper(ParentContext.create());
 }

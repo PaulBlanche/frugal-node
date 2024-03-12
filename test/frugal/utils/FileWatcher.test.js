@@ -2,7 +2,7 @@ import * as assert from "node:assert/strict";
 import * as path from "node:path";
 import { test } from "node:test";
 import * as url from "node:url";
-import * as fileWatcher from "../../../packages/frugal/src/utils/fileWatcher.js";
+import { FileWatcher } from "../../../packages/frugal/src/utils/FileWatcher.js";
 import * as fs from "../../../packages/frugal/src/utils/fs.js";
 
 test("unit/frugal/utils/fileWatcher.js: FileWatcher events", async () => {
@@ -10,11 +10,11 @@ test("unit/frugal/utils/fileWatcher.js: FileWatcher events", async () => {
 	await safeRemoveDir(dataDir);
 	await fs.ensureDir(dataDir);
 
-	const watcher = fileWatcher.watch([url.fileURLToPath(import.meta.resolve("./data"))], {
+	const watcher = FileWatcher.watch([url.fileURLToPath(import.meta.resolve("./data"))], {
 		interval: 300,
 	});
 
-	/** @type {fileWatcher.FsEvent[]} */
+	/** @type {import("../../../packages/frugal/src/utils/FileWatcher.js").FsEvent[]} */
 	const events = [];
 
 	(async () => {
@@ -84,11 +84,11 @@ test("unit/frugal/utils/fs.js: FileWatcher debounce", async () => {
 	await fs.writeTextFile(path.resolve(dataDir, "foo.txt"), "foo");
 	await fs.writeTextFile(path.resolve(dataDir, "bar.txt"), "bar");
 
-	const watcher = fileWatcher.watch([url.fileURLToPath(import.meta.resolve("./data"))], {
+	const watcher = FileWatcher.watch([url.fileURLToPath(import.meta.resolve("./data"))], {
 		interval: 300,
 	});
 
-	/** @type {fileWatcher.FsEvent[]} */
+	/** @type {import("../../../packages/frugal/src/utils/FileWatcher.js").FsEvent[]} */
 	const events = [];
 
 	(async () => {

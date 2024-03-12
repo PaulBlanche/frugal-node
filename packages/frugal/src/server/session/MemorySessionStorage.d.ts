@@ -4,4 +4,4 @@ interface MemorySessionStorageMaker {
 	create(): SessionStorage;
 }
 
-export const MemoryStorage: MemorySessionStorageMaker;
+export const MemorySessionStorage: MemorySessionStorageMaker;

@@ -1,4 +1,3 @@
-import { Hash } from "../../utils/Hash.js";
 import { MetafileAnalyser } from "../MetafileAnalyser.js";
 
 /** @type {import('./buildManifest.ts').buildManifest} */
@@ -29,8 +28,6 @@ export function buildManifest(context) {
 						config: "",
 					};
 
-					const idHasher = Hash.create();
-
 					for (const analysis of analysisResults) {
 						if (analysis === undefined) {
 							continue;
@@ -40,12 +37,8 @@ export function buildManifest(context) {
 							const configHash = context.watch
 								? `${analysis.moduleHash}-watch`
 								: analysis.moduleHash;
-							idHasher.update(configHash);
+							writableManifest.hash = configHash;
 							writableManifest.config = analysis.output;
-						}
-
-						if (analysis.type === "css") {
-							idHasher.update(analysis.moduleHash);
 						}
 
 						if (analysis.type === "page") {
@@ -54,11 +47,8 @@ export function buildManifest(context) {
 								entrypoint: analysis.entrypoint,
 								outputPath: analysis.output,
 							});
-							idHasher.update(analysis.moduleHash);
 						}
 					}
-
-					writableManifest.hash = idHasher.digest();
 
 					context.updateManifest(writableManifest);
 				} catch (error) {

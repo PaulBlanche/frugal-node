@@ -1,11 +1,11 @@
-import { DataResponse } from "../../../../../packages/frugal/exports/index.js";
+import * as frugal from "../../../../../packages/frugal/exports/page/index.js";
 
 export const type = "dynamic";
 
 export const route = "/";
 
-export function generate() {
-	return new DataResponse({});
+export function generate(context: frugal.GenerateContext<typeof route>) {
+	return context.data({});
 }
 
 export function render() {

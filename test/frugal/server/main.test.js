@@ -4,7 +4,7 @@ import { test } from "node:test";
 import * as url from "node:url";
 import { CookieSessionStorage } from "../../../packages/frugal/exports/index.js";
 import * as crypto from "../../../packages/frugal/exports/utils/crypto/index.js";
-import * as deferred from "../../../packages/frugal/exports/utils/deferred/index.js";
+import { Deferred } from "../../../packages/frugal/exports/utils/deferred/index.js";
 import { BuildHelper } from "../../utils/BuildHelper.js";
 import * as puppeteer from "../../utils/puppeteer.js";
 
@@ -345,7 +345,7 @@ await withServerAndBrowser(helper, async (browser) => {
 	await puppeteer.withPage(
 		async ({ page }) => {
 			await test("integration/server: trailing slash redirect", async () => {
-				const promise = deferred.create();
+				const promise = Deferred.create();
 
 				page.on("response", (response) => {
 					if (response.url() === "http://localhost:8000/static/1/") {
@@ -373,12 +373,15 @@ await withServerAndBrowser(helper, async (browser) => {
 });
 
 const helperWithCookieSessionStorage = helper.extends((config) => ({
-	...config,
-	server: {
-		...config.server,
-		session: {
-			...config.server?.session,
-			storage: new CookieSessionStorage(),
+	build: config.build,
+	global: {
+		...config,
+		server: {
+			...config.global.server,
+			session: {
+				...config.global.server?.session,
+				storage: CookieSessionStorage.create(),
+			},
 		},
 	},
 }));

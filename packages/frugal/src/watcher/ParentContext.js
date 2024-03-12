@@ -27,7 +27,16 @@ export function create() {
 		},
 		async watch() {
 			process.addEventListener((type) => {
-				liveReload.dispatch({ type });
+				switch (type) {
+					case "build:start": {
+						liveReload.dispatch({ type: "suspend" });
+						break;
+					}
+					case "build:end": {
+						liveReload.dispatch({ type: "reload" });
+						break;
+					}
+				}
 				_emit(type);
 			});
 

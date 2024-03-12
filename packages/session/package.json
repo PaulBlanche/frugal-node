@@ -1,0 +1,17 @@
+{
+	"name": "@frugal-node/session",
+	"version": "1.0.0",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./exports/index.d.ts",
+			"import": "./exports/index.js"
+		}
+	},
+	"peerDependencies": {
+		"frugal-node": "^1.x"
+	},
+	"dependencies": {
+		"esbuild": "^0.20.0"
+	}
+}

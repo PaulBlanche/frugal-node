@@ -12,8 +12,8 @@ export const ChildContext = {
 };
 
 /** @type {import('./ChildContext.ts').ChildContextMaker['create']} */
-export function create(config, buildConfig) {
-	const watchCache = WatchCache.create();
+export function create(config, buildConfig, watchCache) {
+	//const watchCache = WatchCache.create();
 
 	const state = {
 		serverController: new AbortController(),
@@ -26,7 +26,7 @@ export function create(config, buildConfig) {
 		setup: (build, context) => {
 			build.onStart(() => {
 				console.log({
-					type: "suspend",
+					type: "build:start",
 					[WATCH_MESSAGE_SYMBOL]: true,
 				});
 			});
@@ -52,7 +52,7 @@ export function create(config, buildConfig) {
 							signal: state.serverController.signal,
 							onListen: () => {
 								console.log({
-									type: "reload",
+									type: "build:end",
 									[WATCH_MESSAGE_SYMBOL]: true,
 								});
 							},

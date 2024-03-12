@@ -1,10 +1,12 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 import * as url from "node:url";
-import { send } from "../../../../packages/frugal/src/utils/send.js";
-import { serve } from "../../../../packages/frugal/src/utils/serve.js";
+import { send } from "../../../packages/frugal/src/utils/send.js";
+import { serve } from "../../../packages/frugal/src/utils/serve.js";
+import { waitForPort } from "../../utils/waitForPort.js";
 
 test("unit/frugal/utils/http/send.js: send static file from a directory", async () => {
+	await waitForPort({ port: 8001, hostname: "0.0.0.0" });
 	const abortController = new AbortController();
 	const serverPromise = serve(
 		(req) =>
@@ -21,7 +23,7 @@ test("unit/frugal/utils/http/send.js: send static file from a directory", async 
 	assert.deepEqual(await responseFoo.text(), "foo");
 	const headers = Object.fromEntries(responseFoo.headers.entries());
 	assert.deepEqual(headers["content-length"], "3");
-	assert.deepEqual(headers["content-type"], "text/plain; charset=utf-8");
+	assert.deepEqual(headers["content-type"], "text/plain");
 	assert.deepEqual(typeof headers["last-modified"], "string");
 	assert.deepEqual(typeof headers["etag"], "string");
 

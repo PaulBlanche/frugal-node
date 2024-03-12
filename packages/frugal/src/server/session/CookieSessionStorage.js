@@ -3,7 +3,7 @@ import { getCookies, setCookie } from "../../utils/cookies.js";
 const DEFAULT_COOKIE_NAME = "__frugal_session_storage";
 
 /** @type {import('./CookieSessionStorage.ts').CookieSessionStorageMaker} */
-export const CookieStorage = {
+export const CookieSessionStorage = {
 	create,
 };
 

@@ -116,6 +116,10 @@ export async function create({ config, manifest, watch, cache }) {
 					);
 				});
 
+				if (response.headers.get("Date") === null) {
+					response.headers.set("Date", new Date().toUTCString());
+				}
+
 				if (session) {
 					await manager?.persist(session, response.headers);
 				}

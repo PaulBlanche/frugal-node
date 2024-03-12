@@ -5,7 +5,7 @@ type Entry = { node: swc.Node; type: "enter" | "exit" };
 type Source = {
 	content: string;
 	start: number;
-	stop: number;
+	end: number;
 };
 
 type Visitor = {

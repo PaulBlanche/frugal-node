@@ -1,11 +1,11 @@
-import { DataResponse, RenderContext } from "../../../../../packages/frugal/exports/index.js";
+import { BuildContext, RenderContext } from "../../../../../packages/frugal/exports/index.js";
 
 export const route = "/";
 
 type Data = { foo: string };
 
-export function build() {
-	return new DataResponse(
+export function build(context: BuildContext<typeof route>) {
+	return context.data(
 		{ foo: "bar" },
 		{
 			status: 204,

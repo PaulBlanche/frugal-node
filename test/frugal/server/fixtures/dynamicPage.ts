@@ -16,11 +16,12 @@ export function generate({
 	params,
 	request,
 	session,
+	data,
 }: frugal.GenerateContext<typeof route>): frugal.DataResponse<Data> {
 	const count = session?.get<number>("counter") ?? 0;
 	session?.set("counter", count + 1);
 
-	return new frugal.DataResponse(
+	return data(
 		{
 			params,
 			count,

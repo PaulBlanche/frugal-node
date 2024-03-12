@@ -15,8 +15,6 @@ function create(config, { current, previous }) {
 		added: [],
 		/** @type {import('./loadCacheData.ts').CacheEntry[]} */
 		evicted: [],
-		/** @type {import('./loadCacheData.ts').CacheEntry[]} */
-		current: [],
 	};
 
 	const keysInCurrent = new Set();
@@ -43,7 +41,7 @@ function create(config, { current, previous }) {
 		},
 
 		get current() {
-			return state.current;
+			return Object.values(current);
 		},
 
 		async read(entry) {

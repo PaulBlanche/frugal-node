@@ -1,5 +1,6 @@
 import { FrugalBuildConfig } from "../BuildConfig.js";
 import { FrugalConfig } from "../Config.ts";
+import { WatchCache } from "./WatchCache.js";
 import { WatchOptions } from "./types.ts";
 
 export interface ChildContext {
@@ -9,7 +10,11 @@ export interface ChildContext {
 }
 
 interface ChildContextMaker {
-	create(config: FrugalConfig, buildConfig: FrugalBuildConfig): ChildContext;
+	create(
+		config: FrugalConfig,
+		buildConfig: FrugalBuildConfig,
+		watchCache: WatchCache,
+	): ChildContext;
 }
 
 export const ChildContext: ChildContextMaker;

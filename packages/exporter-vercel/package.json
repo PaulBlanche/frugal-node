@@ -5,8 +5,7 @@
 	"exports": {
 		".": {
 			"types": "./exports/index.d.ts",
-			"import": "./exports/index.js",
-			"deno": "./exports/mod.ts"
+			"import": "./exports/index.js"
 		}
 	},
 	"peerDependencies": {

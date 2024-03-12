@@ -20,9 +20,10 @@ export function build({
 	params,
 	session,
 	request,
+	data,
 }: frugal.BuildContext<typeof route>): frugal.PageResponse<Data> {
 	const count = session?.get<number>("counter") ?? 0;
-	return new frugal.DataResponse(
+	return data(
 		{
 			params,
 			count,
@@ -41,12 +42,13 @@ export function build({
 export function generate({
 	request,
 	session,
+	empty,
 }: frugal.GenerateContext<typeof route>): frugal.PageResponse<Data> | undefined {
 	if (request?.method === "POST") {
 		const count = session?.get<number>("counter") ?? 0;
 		session?.set("counter", count + 1);
 
-		return new frugal.EmptyResponse({
+		return empty({
 			forceDynamic: true,
 			status: 303,
 			headers: {

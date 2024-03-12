@@ -7,11 +7,11 @@ export function getBuildPaths() {
 	return [{ id: "1" }, { id: "2" }];
 }
 
-export async function build({ params, resolve }: frugal.BuildContext<typeof route>) {
-	const dataStore = await store(resolve("./data.json"));
+export async function build(context: frugal.BuildContext<typeof route>) {
+	const dataStore = await store(new URL("./data.json", import.meta.url));
 	const pageData = dataStore[1];
-	return new frugal.DataResponse(pageData[params.id].data, {
-		headers: pageData[params.id].headers,
+	return context.data(pageData[context.params.id].data, {
+		headers: pageData[context.params.id].headers,
 	});
 }
 

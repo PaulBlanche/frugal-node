@@ -6,7 +6,7 @@ import { BuildHelper } from "../../../utils/BuildHelper.js";
 const baseHelper = await BuildHelper.setup(import.meta.dirname);
 
 test("inte/frugal/build/pages: build with no pages", async () => {
-	const helper = baseHelper.extends({ pages: [] });
+	const helper = baseHelper.extends({ global: { pages: [] } });
 	await helper.build();
 
 	const cache = await helper.getCache();
@@ -14,7 +14,7 @@ test("inte/frugal/build/pages: build with no pages", async () => {
 });
 
 test("inte/frugal/build/pages: build with page that do not exists", async () => {
-	const helper = baseHelper.extends({ pages: ["./page-that-do-not-exists.ts"] });
+	const helper = baseHelper.extends({ global: { pages: ["./page-that-do-not-exists.ts"] } });
 
 	await assert.rejects(
 		async () => {
@@ -29,7 +29,7 @@ test("inte/frugal/build/pages: build with page that do not exists", async () => 
 });
 
 test("inte/frugal/build/pages: build with trivial static page", async () => {
-	const helper = baseHelper.extends({ pages: ["./trivialPage.ts"] });
+	const helper = baseHelper.extends({ global: { pages: ["./trivialPage.ts"] } });
 	await helper.build();
 
 	const cache = await helper.getCache();
@@ -45,7 +45,7 @@ test("inte/frugal/build/pages: build with trivial static page", async () => {
 });
 
 test("inte/frugal/build/pages: build with trivial static page with build", async () => {
-	const helper = baseHelper.extends({ pages: ["./trivialPageWithBuild.ts"] });
+	const helper = baseHelper.extends({ global: { pages: ["./trivialPageWithBuild.ts"] } });
 	await helper.build();
 
 	const cache = await helper.getCache();
@@ -61,7 +61,7 @@ test("inte/frugal/build/pages: build with trivial static page with build", async
 });
 
 test("inte/frugal/build/pages: build with trivial static page with getBuildPath", async () => {
-	const helper = baseHelper.extends({ pages: ["./trivialPageWithGetBuildPath.ts"] });
+	const helper = baseHelper.extends({ global: { pages: ["./trivialPageWithGetBuildPath.ts"] } });
 	await helper.build();
 
 	const cache = await helper.getCache();
@@ -84,7 +84,7 @@ test("inte/frugal/build/pages: build with trivial static page with getBuildPath"
 });
 
 test("inte/frugal/build/pages: build with complete static page", async () => {
-	const helper = baseHelper.extends({ pages: ["./completePage.ts"] });
+	const helper = baseHelper.extends({ global: { pages: ["./completePage.ts"] } });
 	await helper.build();
 
 	const cache = await helper.getCache();
@@ -107,7 +107,7 @@ test("inte/frugal/build/pages: build with complete static page", async () => {
 });
 
 test("inte/frugal/build/pages: build dynamic page", async () => {
-	const helper = baseHelper.extends({ pages: ["./dynamicPage.ts"] });
+	const helper = baseHelper.extends({ global: { pages: ["./dynamicPage.ts"] } });
 	await helper.build();
 
 	const cache = await helper.getCache();
@@ -115,7 +115,7 @@ test("inte/frugal/build/pages: build dynamic page", async () => {
 });
 
 test("inte/frugal/build/pages: build static page with empty response", async () => {
-	const helper = baseHelper.extends({ pages: ["./pageWithEmptyResponse.ts"] });
+	const helper = baseHelper.extends({ global: { pages: ["./pageWithEmptyResponse.ts"] } });
 	await helper.build();
 
 	const cache = await helper.getCache();

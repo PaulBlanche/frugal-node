@@ -1,5 +1,5 @@
 import * as net from "net";
-import * as deferred from "../../packages/frugal/exports/utils/deferred/index.js";
+import { Deferred } from "../../packages/frugal/exports/utils/deferred/index.js";
 
 /**
  * @param {{ port:number, hostname:string, timeout?:number, retry?:number }} options
@@ -24,7 +24,7 @@ export async function waitForPort(options) {
  * @param {{ port:number, hostname:string }} options
  */
 function checkPort({ port, hostname }) {
-	const deferredResult = deferred.create();
+	const deferredResult = Deferred.create();
 
 	const client = new net.Socket();
 

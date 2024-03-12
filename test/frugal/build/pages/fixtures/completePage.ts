@@ -1,6 +1,5 @@
 import {
 	BuildContext,
-	DataResponse,
 	PathList,
 	RenderContext,
 } from "../../../../../packages/frugal/exports/index.js";
@@ -13,9 +12,9 @@ export function getBuildPaths(): PathList<typeof route> {
 
 type Data = { foo: string };
 
-export function build({ params }: BuildContext<typeof route>) {
+export function build({ params, data }: BuildContext<typeof route>) {
 	if (params.foo === "bar") {
-		return new DataResponse(
+		return data(
 			{ foo: "Hello bar" },
 			{
 				status: 201,
@@ -26,7 +25,7 @@ export function build({ params }: BuildContext<typeof route>) {
 		);
 	}
 	if (params.foo === "quux") {
-		return new DataResponse(
+		return data(
 			{ foo: "Hello quux" },
 			{
 				status: 405,

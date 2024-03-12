@@ -1,10 +1,10 @@
 import * as assert from "node:assert/strict";
 import * as webStream from "node:stream/web";
 import { mock, test } from "node:test";
-import { spawn } from "../../../packages/frugal/src/utils/spawn.js";
+import { ChildProcess } from "../../../packages/frugal/src/utils/ChildProcess.js";
 
-test("unit/frugal/utils/spawn.js: spawn a subprocess piping stdout", async () => {
-	const childProcess = spawn(process.execPath, {
+test("unit/frugal/utils/ChildProcess.js: spawn a subprocess piping stdout", async () => {
+	const childProcess = ChildProcess.spawn(process.execPath, {
 		args: ["--eval", 'console.log("foo"); console.error("bar"); console.log("baz");'],
 	});
 
@@ -21,11 +21,11 @@ test("unit/frugal/utils/spawn.js: spawn a subprocess piping stdout", async () =>
 	assert.deepEqual(stderr.join(""), "bar\n");
 });
 
-test("unit/frugal/utils/spawn.js: restartable", async () => {
+test("unit/frugal/utils/ChildProcess.js: restartable", async () => {
 	const restartListenerSpy = mock.fn(() => {});
 	const exitListenerSpy = mock.fn(() => {});
 
-	const childProcess = spawn(process.execPath, {
+	const childProcess = ChildProcess.spawn(process.execPath, {
 		args: [
 			"--eval",
 			"(async () => { console.log('start'); await new Promise((res) => setTimeout(res, 500)); console.log('done'); })();",
@@ -57,8 +57,8 @@ test("unit/frugal/utils/spawn.js: restartable", async () => {
 	assert.deepEqual(exitListenerSpy.mock.calls.length, 1);
 });
 
-test("unit/frugal/utils/spawn.js: flood stdio", async () => {
-	const childProcess = spawn(process.execPath, {
+test("unit/frugal/utils/ChildProcess.js: flood stdio", async () => {
+	const childProcess = ChildProcess.spawn(process.execPath, {
 		args: ["--eval", "console.log('foo'.repeat(1000000))"],
 	});
 
