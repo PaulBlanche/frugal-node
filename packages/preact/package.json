@@ -1,0 +1,16 @@
+{
+	"name": "@frugal-node/preact",
+	"version": "1.0.4",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./exports/index.d.ts",
+			"import": "./exports/index.js"
+		}
+	},
+	"peerDependencies": {
+		"frugal-node": "^1.x",
+		"preact": "^10.x",
+		"preact-render-to-string": "^6.x"
+	}
+}

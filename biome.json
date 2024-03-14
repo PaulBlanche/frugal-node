@@ -17,9 +17,6 @@
 			"recommended": true,
 			"complexity": {
 				"useLiteralKeys": "off"
-			},
-			"nursery": {
-				"noUnusedImports": "off"
 			}
 		}
 	},

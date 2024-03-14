@@ -6,6 +6,17 @@ const LIVE_RELOAD_STATUS = /** @type {const} */ ({
 	error: 3,
 });
 
+const BACKOFF = (() => {
+	let i = 100;
+	let m = 0.084;
+	return Array.from({ length: 20 }, () => {
+		const current = i;
+		i = Math.floor(i + m * i);
+		m = m + 0.01;
+		return current;
+	});
+})();
+
 /** @type {import('./LiveReloadClient.ts').create} */
 export function create(url) {
 	const state = {
@@ -28,8 +39,12 @@ export function create(url) {
 			_setStatus(LIVE_RELOAD_STATUS.error);
 			source.close();
 
-			const wait = Math.floor((1 - Math.exp(-state.retry / 60)) * 2000);
-			console.log(`Unable to connect to live reload server, retry in ${wait} ms`);
+			const wait = BACKOFF[Math.min(state.retry, BACKOFF.length - 1)];
+			console.log(
+				`%cFrugal dev server%c Unable to connect to live reload server, retry in ${wait} ms`,
+				"background-color: #FFCB74; color: black; padding: 2px 5px;",
+				"color: inherit",
+			);
 
 			setTimeout(() => {
 				state.retry += 1;
@@ -52,13 +67,16 @@ export function create(url) {
 		});
 
 		source.addEventListener("open", () => {
-			console.log("Connected to live reload server");
+			console.log(
+				"%cFrugal dev server%c Connected to live reload server",
+				"background-color: #FFCB74; color: black; padding: 2px 5px;",
+				"color: inherit",
+			);
 			state.retry = 0;
 			_setStatus(LIVE_RELOAD_STATUS.connected);
 		});
 
 		addEventListener("beforeunload", () => {
-			console.log("close");
 			source.close();
 		});
 	}

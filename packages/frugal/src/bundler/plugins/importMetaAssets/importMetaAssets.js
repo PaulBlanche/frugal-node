@@ -21,7 +21,10 @@ export function importMetaAssets(config) {
 				await walker.walk({
 					enter: (node, getSource) => {
 						if (isDynamicUrlMeta(node)) {
-							log("toto");
+							log(
+								"Found a dynamic `new URL(..., import.meta)` that might not work in a bundled context",
+								{ scope: "import-meta-assets", level: "warning" },
+							);
 						} else if (isStaticUrlMeta(node) && node.arguments?.[0] !== undefined) {
 							let relativePath;
 
@@ -60,7 +63,14 @@ export function importMetaAssets(config) {
 				return {
 					contents: transformer.contents,
 					resolveDir: path.dirname(args.path),
-					loader: "ts",
+					loader:
+						walker.options.syntax === "typescript"
+							? walker.options.tsx
+								? "tsx"
+								: "ts"
+							: walker.options.jsx
+							  ? "jsx"
+							  : "js",
 				};
 			});
 

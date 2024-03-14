@@ -19,6 +19,9 @@ type Visitor = {
 
 export interface ModuleWalker {
 	readonly code: string;
+	readonly options:
+		| { syntax: "typescript"; tsx: boolean }
+		| { syntax: "ecmascript"; jsx: boolean };
 	walk(visitor: Visitor): Promise<void>;
 }
 

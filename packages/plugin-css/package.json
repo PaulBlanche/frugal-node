@@ -12,6 +12,7 @@
 		"frugal-node": "^1.x"
 	},
 	"dependencies": {
-		"lightningcss": "^1.22.1"
+		"lightningcss": "^1.22.1",
+		"detect-libc": "^1.0.3"
 	}
 }

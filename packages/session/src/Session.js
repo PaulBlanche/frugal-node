@@ -16,6 +16,7 @@ export const Session = {
 			throw new Error("History was already initialised");
 		}
 		INSTANCE = create(config);
+		dispatchEvent(new CustomEvent("frugal:session", { detail: INSTANCE }));
 	},
 	observe() {
 		if (INSTANCE === undefined) {
@@ -47,8 +48,17 @@ export const Session = {
 		}
 		return INSTANCE.addEventListener(type, listener);
 	},
+	removeEventListener(type, listener) {
+		if (INSTANCE === undefined) {
+			throw new Error("Session must be initialised first");
+		}
+		return INSTANCE.removeEventListener(type, listener);
+	},
 };
 
+if (typeof document !== "undefined") {
+	window.FRUGAL_SESSION_INSTANCE = Session;
+}
 /**
  *
  * @param {import("./Session.ts").SessionConfig} [config]
@@ -116,6 +126,9 @@ function create(config) {
 		},
 		addEventListener(type, listener) {
 			SessionHistory.addEventListener(type, listener);
+		},
+		removeEventListener(type, listener) {
+			SessionHistory.removeEventListener(type, listener);
 		},
 	};
 }

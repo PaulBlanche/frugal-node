@@ -1,19 +1,4 @@
-import { NavigationEvent } from "./Navigation.js";
 import { NavigationConfig } from "./Page.js";
-
-export type GlobalNavigationEvent = { type: "start" | "end" } & NavigationEvent;
-
-declare global {
-	interface WindowEventMap {
-		"frugal:navigation": CustomEvent<GlobalNavigationEvent>;
-	}
-
-	interface Document {
-		startViewTransition?(fn: () => void): {
-			finished: Promise<boolean>;
-		};
-	}
-}
 
 type SessionHistoryEvents = {
 	mount: { type: "mount" };
@@ -44,6 +29,10 @@ export interface SessionHistory {
 	): Promise<boolean>;
 	scrollRestoration: "auto" | "manual";
 	addEventListener<TYPE extends keyof SessionHistoryEvents>(
+		type: TYPE,
+		listener: SessionHistoryListener<TYPE>,
+	): void;
+	removeEventListener<TYPE extends keyof SessionHistoryEvents>(
 		type: TYPE,
 		listener: SessionHistoryListener<TYPE>,
 	): void;

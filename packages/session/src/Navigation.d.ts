@@ -1,4 +1,18 @@
-import { NavigationConfig } from "./Page.js";
+import type { NavigationConfig } from "./Page.js";
+
+declare global {
+	interface WindowEventMap {
+		"frugal:navigation": CustomEvent<GlobalNavigationEvent>;
+	}
+
+	interface Document {
+		startViewTransition?(fn: () => void): {
+			finished: Promise<boolean>;
+		};
+	}
+}
+
+export type GlobalNavigationEvent = { type: "start" | "end" } & NavigationEvent;
 
 export type NavigationEndpoint = {
 	__frugal_history_id: string;

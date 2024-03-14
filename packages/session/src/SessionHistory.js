@@ -51,6 +51,13 @@ export const SessionHistory = {
 
 		INSTANCE.addEventListener(type, listener);
 	},
+	removeEventListener(type, listener) {
+		if (INSTANCE === undefined) {
+			throw new Error("History must be initialised first");
+		}
+
+		INSTANCE.removeEventListener(type, listener);
+	},
 };
 
 /**
@@ -87,6 +94,7 @@ function create(config) {
 		disconnect,
 		navigate,
 		addEventListener,
+		removeEventListener,
 		get scrollRestoration() {
 			return state.scrollRestoration;
 		},
@@ -110,6 +118,14 @@ function create(config) {
 	/** @type {import('./SessionHistory.ts').SessionHistory['addEventListener']} */
 	function addEventListener(type, listener) {
 		state.listeners[type].push(/** @type {any} */ (listener));
+	}
+
+	/** @type {import('./SessionHistory.ts').SessionHistory['removeEventListener']} */
+	function removeEventListener(type, listener) {
+		const index = state.listeners[type].indexOf(listener);
+		if (index !== -1) {
+			state.listeners[type].splice(index, 1);
+		}
 	}
 
 	/** @type {import('./SessionHistory.ts').SessionHistory['navigate']} */
@@ -235,7 +251,11 @@ function create(config) {
 			useTransition: !isFirstPageShow && (enableViewTransition ?? false),
 		});
 
-		navigation.addEventListener("mount", () => _emit("mount", { type: "mount" }));
+		navigation.addEventListener("mount", () => {
+			if (!isFirstPageShow) {
+				_emit("mount", { type: "mount" });
+			}
+		});
 		navigation.addEventListener("unmount", () => _emit("unmount", { type: "unmount" }));
 		navigation.addEventListener("beforerender", () => {
 			state.currentHistoryState = navigationEvent.to;

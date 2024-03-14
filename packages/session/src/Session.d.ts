@@ -1,5 +1,13 @@
-import { NavigationConfig } from "./Page.js";
-import { PrefetchConfig } from "./Prefetcher.js";
+import type { NavigationConfig } from "./Page.js";
+import type { PrefetchConfig } from "./Prefetcher.js";
+
+declare global {
+	var FRUGAL_SESSION_INSTANCE: Session | undefined;
+
+	interface WindowEventMap {
+		"frugal:session": CustomEvent<SessionSingleton>;
+	}
+}
 
 type SessionConfig = {
 	navigation?: Partial<
@@ -26,10 +34,14 @@ export interface Session {
 		type: TYPE,
 		listener: SessionListener<TYPE>,
 	): void;
+	removeEventListener<TYPE extends keyof SessionEvents>(
+		type: TYPE,
+		listener: SessionListener<TYPE>,
+	): void;
 }
 
 interface SessionSingleton extends Session {
 	init(options?: SessionConfig): void;
 }
 
-export const Session: SessionSingleton;
+export let Session: SessionSingleton;

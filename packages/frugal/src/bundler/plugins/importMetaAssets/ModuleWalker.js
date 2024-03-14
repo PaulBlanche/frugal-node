@@ -1,3 +1,4 @@
+import * as path from "node:path";
 import * as swc from "@swc/core";
 import * as fs from "../../../utils/fs.js";
 import * as utils from "./utils.js";
@@ -41,13 +42,17 @@ async function create(filePath) {
 	const codeRaw = await fs.readFile(filePath);
 	const code = DECODER.decode(codeRaw);
 
-	const { module, offset } = parse(code, {
-		syntax: "typescript",
-	});
+	const ext = path.extname(filePath);
+
+	const options = getParseOptions(ext);
+	const { module, offset } = parse(code, options);
 
 	return {
 		get code() {
 			return code;
+		},
+		get options() {
+			return options;
 		},
 		walk,
 	};
@@ -117,4 +122,19 @@ async function create(filePath) {
 			end: end,
 		};
 	}
+}
+
+/**
+ * @param {string} ext
+ * @returns {{ syntax:"typescript", tsx:boolean}|{syntax:'ecmascript', jsx:boolean}}
+ */
+function getParseOptions(ext) {
+	if ([".ts", ".tsx", ".mts", ".cts"].includes(ext)) {
+		return { syntax: "typescript", tsx: ext.endsWith("x") };
+	}
+	if ([".js", ".jsx", ".mjs", ".cjs"].includes(ext)) {
+		return { syntax: "ecmascript", jsx: ext.endsWith("x") };
+	}
+
+	throw Error(`unparsable file format ${ext}`);
 }
