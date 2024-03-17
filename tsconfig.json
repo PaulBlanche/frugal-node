@@ -9,8 +9,8 @@
 		"module": "NodeNext",
 		"lib": ["DOM", "DOM.Iterable", "ESNext"],
 		"allowImportingTsExtensions": true,
-		"forceConsistentCasingInFileNames": false,
+		"forceConsistentCasingInFileNames": false
 	},
-	"include": ["packages", "test"],
-	"exclude": ["node_modules", "**/import-meta-shim.js", "test/**/project"],
+	"include": ["packages", "test", "scripts"],
+	"exclude": ["node_modules", "**/import-meta-shim.js", "test/**/project"]
 }

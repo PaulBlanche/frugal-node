@@ -1,24 +1,33 @@
 {
 	"name": "@frugal-node/workspace",
-	"workspaces": ["packages/*"],
+	"version": "1.0.0",
+	"private": "true",
+	"workspaces": [
+		"packages/*"
+	],
 	"type": "module",
 	"scripts": {
 		"test": "node scripts/test.js",
 		"lint": "npx biome check .",
 		"typecheck": "tsc -p .",
 		"compile:livereload": "node packages/frugal/src/watcher/livereload/compileLiveReload.js",
-		"publish:frugal-node": "npm publish -w frugal-node",
-		"publish:exporter-static": "npm publish -w @frugal-node/exporter-static",
-		"publish:exporter-vercel": "npm publish -w @frugal-node/exporter-vercel",
-		"publish:plugin-css": "npm publish -w @frugal-node/plugin-css",
-		"publish:plugin-script": "npm publish -w @frugal-node/plugin-script",
+		"publish:frugal-node": "npm publish -w frugal-node --access=public",
+		"publish:exporter-static": "npm publish -w @frugal-node/exporter-static --access=public",
+		"publish:exporter-vercel": "npm publish -w @frugal-node/exporter-vercel --access=public",
+		"publish:plugin-css": "npm publish -w @frugal-node/plugin-css --access=public",
+		"publish:plugin-script": "npm publish -w @frugal-node/plugin-script --access=public",
+		"publish:session": "npm publish -w @frugal-node/session --access=public",
+		"publish:preact": "npm publish -w @frugal-node/preact --access=public",
 		"publish:all": "npm run publish:frugal-node && npm run publish:exporter-static && npm run publish:exporter-vercel && npm run publish:plugin-css && npm run publish:plugin-script"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.5.3",
+		"@changesets/cli": "^2.27.1",
 		"@types/node": "^20.11.17",
+		"@types/semver": "^7.5.8",
 		"c8": "^9.1.0",
 		"puppeteer": "^22.0.0",
+		"semver": "^7.6.0",
 		"typescript": "^5.3.3"
 	}
 }
