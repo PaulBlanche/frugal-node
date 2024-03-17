@@ -1,6 +1,6 @@
 {
 	"name": "@frugal-node/exporter-static",
-	"version": "1.0.4",
+	"version": "0.0.1",
 	"type": "module",
 	"exports": {
 		".": {
