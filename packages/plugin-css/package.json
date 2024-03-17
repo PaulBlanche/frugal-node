@@ -1,6 +1,6 @@
 {
 	"name": "@frugal-node/plugin-css",
-	"version": "1.0.5",
+	"version": "0.0.1",
 	"type": "module",
 	"exports": {
 		".": {
@@ -9,7 +9,7 @@
 		}
 	},
 	"peerDependencies": {
-		"frugal-node": "^1.x"
+		"frugal-node": "^0.0.1"
 	},
 	"dependencies": {
 		"lightningcss": "^1.22.1",

@@ -1,6 +1,6 @@
 {
 	"name": "@frugal-node/preact",
-	"version": "1.0.4",
+	"version": "0.0.1",
 	"type": "module",
 	"exports": {
 		".": {
@@ -9,7 +9,7 @@
 		}
 	},
 	"peerDependencies": {
-		"frugal-node": "^1.x",
+		"frugal-node": "^0.0.1",
 		"preact": "^10.x",
 		"preact-render-to-string": "^6.x"
 	}
