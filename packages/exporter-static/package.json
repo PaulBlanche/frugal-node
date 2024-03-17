@@ -9,6 +9,6 @@
 		}
 	},
 	"peerDependencies": {
-		"frugal-node": "^1.x"
+		"frugal-node": "^0.0.1"
 	}
 }

@@ -9,7 +9,7 @@
 		}
 	},
 	"peerDependencies": {
-		"frugal-node": "^1.x"
+		"frugal-node": "^0.0.1"
 	},
 	"dependencies": {
 		"@vercel/kv": "^1.0.1",
