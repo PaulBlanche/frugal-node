@@ -27,7 +27,7 @@ jobs:
         run: npm run lint
 
       - name: Run typechecker
-        run: npm run typechec
+        run: npm run typecheck
 
       - name: Run tests
         run: npm run test
