@@ -1,6 +1,6 @@
 {
 	"name": "@frugal-node/session",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"type": "module",
 	"exports": {
 		".": {
@@ -9,7 +9,7 @@
 		}
 	},
 	"peerDependencies": {
-		"frugal-node": "^0.0.1"
+		"frugal-node": "^0.1.0"
 	},
 	"dependencies": {
 		"esbuild": "^0.20.0"

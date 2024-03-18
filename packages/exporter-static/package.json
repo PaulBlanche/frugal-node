@@ -1,6 +1,6 @@
 {
 	"name": "@frugal-node/exporter-static",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"type": "module",
 	"exports": {
 		".": {
@@ -9,6 +9,6 @@
 		}
 	},
 	"peerDependencies": {
-		"frugal-node": "^0.0.1"
+		"frugal-node": "^0.1.0"
 	}
 }
