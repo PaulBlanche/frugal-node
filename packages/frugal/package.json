@@ -1,6 +1,6 @@
 {
 	"name": "frugal-node",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"type": "module",
 	"scripts": {
 		"postinstall": "node src/watcher/livereload/compileLiveReload.js"
