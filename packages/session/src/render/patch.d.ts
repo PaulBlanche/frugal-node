@@ -1,4 +1,4 @@
-import { NodePatch } from "./types.js";
+import type { NodePatch } from "./types.js";
 
 export type PatchQueueItem = {
 	patch: NodePatch;

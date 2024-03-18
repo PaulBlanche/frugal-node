@@ -1,6 +1,6 @@
-import { BuildConfig } from "./BuildConfig.js";
-import { Config } from "./Config.js";
-import { WatchContext } from "./watcher/WatchContext.js";
+import type { BuildConfig } from "./BuildConfig.js";
+import type { Config } from "./Config.js";
+import type { WatchContext } from "./watcher/WatchContext.js";
 
 export function build(config: Config, buildConfig: BuildConfig): Promise<void>;
 

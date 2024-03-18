@@ -1,6 +1,6 @@
-import { Assets, Render } from "frugal-node/page";
-import { JsonValue } from "frugal-node/utils/jsonValue";
-import { Document } from "./DefaultDocument.js";
+import type { Assets, Render } from "frugal-node/page";
+import type { JsonValue } from "frugal-node/utils/jsonValue";
+import type { Document } from "./DefaultDocument.js";
 
 export type PageProps = {
 	descriptor: string;

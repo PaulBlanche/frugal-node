@@ -1,4 +1,4 @@
-import * as esbuild from "esbuild";
+import type * as esbuild from "esbuild";
 
 type EsbuildContext = esbuild.BuildContext<
 	Omit<esbuild.BuildOptions, "metafile"> & { metafile: true }
@@ -22,4 +22,4 @@ interface EsbuildCompilerMaker {
 	create(name: string): EsbuildCompiler;
 }
 
-export const EsbuildCompiler: EsbuildCompilerMaker;
+export let EsbuildCompiler: EsbuildCompilerMaker;

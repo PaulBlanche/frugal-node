@@ -69,7 +69,7 @@ function toHexString(bytes) {
 function fromHexString(string) {
 	const bytes =
 		string.match(/.{1,2}/g)?.map((byte) => {
-			return parseInt(byte, 16);
+			return Number.parseInt(byte, 16);
 		}) ?? [];
 	return new Uint8Array(bytes);
 }

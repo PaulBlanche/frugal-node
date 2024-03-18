@@ -1,4 +1,4 @@
-import * as http from "node:http";
+import type * as http from "node:http";
 
 export type HandlerInfo = {
 	hostname: string;

@@ -1,4 +1,4 @@
-import * as preact from "preact";
+import type * as preact from "preact";
 
 export type Manager = { update(state: preact.VNode[]): void; instanceStack: Set<Effect> };
 

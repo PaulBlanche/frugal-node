@@ -1,7 +1,7 @@
-import * as esbuild from "esbuild";
-import { FrugalBuildConfig } from "../BuildConfig.js";
-import { FrugalConfig } from "../Config.ts";
-import { Plugin, PrivatePlugin } from "./Plugin.ts";
+import type * as esbuild from "esbuild";
+import type { FrugalBuildConfig } from "../BuildConfig.js";
+import type { FrugalConfig } from "../Config.ts";
+import type { Plugin, PrivatePlugin } from "./Plugin.ts";
 
 export function build(
 	config: FrugalConfig,

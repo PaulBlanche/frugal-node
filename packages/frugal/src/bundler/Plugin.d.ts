@@ -1,5 +1,5 @@
-import * as esbuild from "esbuild";
-import { PluginContext, PrivatePluginContext } from "./PluginContext.ts";
+import type * as esbuild from "esbuild";
+import type { PluginContext, PrivatePluginContext } from "./PluginContext.ts";
 
 export type Plugin = {
 	name: string;

@@ -1,6 +1,6 @@
-import { CookieConfig } from "../../utils/cookies.js";
-import { PrivateSession } from "./Session.js";
-import { SessionStorage } from "./SessionStorage.js";
+import type { CookieConfig } from "../../utils/cookies.js";
+import type { PrivateSession } from "./Session.js";
+import type { SessionStorage } from "./SessionStorage.js";
 
 export type SessionManagerConfig = {
 	storage: SessionStorage;
@@ -19,4 +19,4 @@ interface SessionManagerMaker {
 	create(config: SessionManagerConfig): SessionManager;
 }
 
-export const SessionManager: SessionManagerMaker;
+export let SessionManager: SessionManagerMaker;

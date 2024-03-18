@@ -1,5 +1,5 @@
-import { GenerationResponse } from "../page/GenerationResponse.js";
-import { BuildCacheData, CacheConfig } from "./loadCacheData.js";
+import type { GenerationResponse } from "../page/GenerationResponse.js";
+import type { BuildCacheData, CacheConfig } from "./loadCacheData.js";
 
 export interface BuildCache {
 	add(response: GenerationResponse): Promise<void>;
@@ -11,4 +11,4 @@ interface BuildCacheMaker {
 	load(config: CacheConfig): Promise<BuildCache>;
 }
 
-export const BuildCache: BuildCacheMaker;
+export let BuildCache: BuildCacheMaker;

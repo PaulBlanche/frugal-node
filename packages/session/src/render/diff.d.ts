@@ -1,4 +1,4 @@
-import { NodePatch } from "./types.js";
+import type { NodePatch } from "./types.js";
 
 type DiffQueueItem = [patchList: NodePatch[], actual?: Node | null, target?: Node | null];
 

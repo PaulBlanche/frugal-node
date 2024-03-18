@@ -1,9 +1,9 @@
-import * as webStream from "node:stream/web";
-import * as pathToRegexp from "path-to-regexp";
-import { JsonValue } from "../utils/jsonValue.ts";
-import * as descriptor from "./PageDescriptor.ts";
-import { PageResponse } from "./PageResponse.ts";
-import { PathObject } from "./PathObject.ts";
+import type * as webStream from "node:stream/web";
+import type * as pathToRegexp from "path-to-regexp";
+import type { JsonValue } from "../utils/jsonValue.ts";
+import type * as descriptor from "./PageDescriptor.ts";
+import type { PageResponse } from "./PageResponse.ts";
+import type { PathObject } from "./PathObject.ts";
 
 type BasePage<PATH extends string = string, DATA extends JsonValue = JsonValue> = {
 	readonly moduleHash: string;
@@ -52,6 +52,6 @@ interface PageMaker {
 	}): Page<PATH, DATA>;
 }
 
-export const Page: PageMaker;
+export let Page: PageMaker;
 
 export class PageError extends Error {}

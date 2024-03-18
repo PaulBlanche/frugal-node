@@ -1,6 +1,6 @@
-import * as esbuild from "esbuild";
-import { FrugalBuildConfig } from "../../BuildConfig.js";
-import { FrugalConfig } from "../../Config.ts";
+import type * as esbuild from "esbuild";
+import type { FrugalBuildConfig } from "../../BuildConfig.js";
+import type { FrugalConfig } from "../../Config.ts";
 
 export function cleanOutDir(
 	config: FrugalConfig,

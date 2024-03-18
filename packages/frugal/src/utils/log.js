@@ -7,7 +7,7 @@ export const LEVELS = /** @type {const} */ ({
 	info: 20,
 	warning: 30,
 	error: 40,
-	silent: Infinity,
+	silent: Number.POSITIVE_INFINITY,
 });
 
 const GLOBAL_CONFIG = /** @type {import('./log.js').LogConfig} */ ({

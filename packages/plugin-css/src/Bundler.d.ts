@@ -1,5 +1,5 @@
-import * as esbuild from "esbuild";
-import { EsbuildCompiler, FrugalConfig } from "frugal-node/plugin";
+import type * as esbuild from "esbuild";
+import type { EsbuildCompiler, FrugalConfig } from "frugal-node/plugin";
 
 export type Bundle =
 	| {
@@ -28,4 +28,4 @@ interface BundlerMaker {
 	create(compiler: EsbuildCompiler, config: FrugalConfig, scope: "page" | "global"): Bundler;
 }
 
-export const Bundler: BundlerMaker;
+export let Bundler: BundlerMaker;

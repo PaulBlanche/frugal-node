@@ -1,6 +1,6 @@
-import * as webStream from "node:stream/web";
-import { PageResponse } from "../page/PageResponse.ts";
-import { JsonValue } from "../utils/jsonValue.ts";
+import type * as webStream from "node:stream/web";
+import type { PageResponse } from "../page/PageResponse.ts";
+import type { JsonValue } from "../utils/jsonValue.ts";
 
 export type Init<DATA extends JsonValue> = {
 	path: string;
@@ -33,6 +33,6 @@ interface GenerationResponseMaker {
 	): GenerationResponse;
 }
 
-export const GenerationResponse: GenerationResponseMaker;
+export let GenerationResponse: GenerationResponseMaker;
 
 export function toResponse(response: GenerationResponse | SerializedGenerationResponse): Response;

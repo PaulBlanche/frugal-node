@@ -1,6 +1,6 @@
-import * as esbuild from "esbuild";
-import { BaseGlobalAsset, BasePageAsset, Plugin } from "frugal-node/plugin";
-import { CssModuleOptions } from "./cssModules.js";
+import type * as esbuild from "esbuild";
+import type { BaseGlobalAsset, BasePageAsset, Plugin } from "frugal-node/plugin";
+import type { CssModuleOptions } from "./cssModules.js";
 
 export type CssOptions = {
 	outdir?: string;

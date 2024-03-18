@@ -1,5 +1,5 @@
-import { JsonValue } from "../utils/jsonValue.ts";
-import { ResponseInit } from "./PageDescriptor.js";
+import type { JsonValue } from "../utils/jsonValue.ts";
+import type { ResponseInit } from "./PageDescriptor.js";
 
 interface BaseResponse {
 	readonly headers: Headers;
@@ -20,11 +20,11 @@ export interface EmptyResponse extends BaseResponse {
 
 export type PageResponse<DATA extends JsonValue> = EmptyResponse | DataResponse<DATA>;
 
-export const FORCE_GENERATE_COOKIE: string;
+export let FORCE_GENERATE_COOKIE: string;
 
 interface PageResponseMaker {
 	data<DATA extends JsonValue>(data: DATA, init?: ResponseInit): DataResponse<DATA>;
 	empty(init?: ResponseInit): EmptyResponse;
 }
 
-export const PageResponse: PageResponseMaker;
+export let PageResponse: PageResponseMaker;

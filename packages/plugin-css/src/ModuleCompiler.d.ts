@@ -1,4 +1,4 @@
-import * as lightningcss from "lightningcss";
+import type * as lightningcss from "lightningcss";
 
 export type ClassName =
 	| { type: "dependency"; importIdentifier: string; name: string }
@@ -16,4 +16,4 @@ interface ModuleCompilerMaker {
 	create(exports: lightningcss.CSSModuleExports): ModuleCompiler;
 }
 
-export const ModuleCompiler: ModuleCompilerMaker;
+export let ModuleCompiler: ModuleCompilerMaker;

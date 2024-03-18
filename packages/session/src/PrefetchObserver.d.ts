@@ -1,4 +1,4 @@
-import { PrefetchConfig } from "./Prefetcher.js";
+import type { PrefetchConfig } from "./Prefetcher.js";
 
 export interface PrefetchObserver {
 	observe(): void;
@@ -9,4 +9,4 @@ interface PrefetchObserverMaker {
 	create(config: PrefetchConfig): PrefetchObserver;
 }
 
-export const PrefetchObserver: PrefetchObserverMaker;
+export let PrefetchObserver: PrefetchObserverMaker;

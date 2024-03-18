@@ -1,4 +1,4 @@
-import { Listener } from "./WatchProcess.js";
+import type { Listener } from "./WatchProcess.js";
 
 export interface ParentContext {
 	addEventListener(listener: Listener): void;
@@ -14,4 +14,4 @@ interface ParentContextMaker {
 	create(): ParentContext;
 }
 
-export const ParentContext: ParentContextMaker;
+export let ParentContext: ParentContextMaker;

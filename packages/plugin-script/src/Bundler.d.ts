@@ -1,5 +1,5 @@
-import * as esbuild from "esbuild";
-import { Asset, EsbuildCompiler, FrugalConfig } from "frugal-node/plugin";
+import type * as esbuild from "esbuild";
+import type { Asset, EsbuildCompiler, FrugalConfig } from "frugal-node/plugin";
 
 export type Facade = {
 	entrypoint: string;
@@ -18,4 +18,4 @@ interface BundlerMaker {
 	create(compiler: EsbuildCompiler, config: FrugalConfig): Bundler;
 }
 
-export const Bundler: BundlerMaker;
+export let Bundler: BundlerMaker;

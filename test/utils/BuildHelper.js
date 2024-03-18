@@ -12,6 +12,7 @@ import { Assets } from "../../packages/frugal/src/page/Assets.js";
 import { Server } from "../../packages/frugal/src/server/Server.js";
 import { ServerCache } from "../../packages/frugal/src/server/ServerCache.js";
 import { loadFixtureBuildConfig, loadFixtureConfig, setupFixtures } from "./fixtures.js";
+import { waitForPort } from "./waitForPort.js";
 
 /** @typedef {{ global: import("../../packages/frugal/src/Config.js").Config, build: import("../../packages/frugal/src/BuildConfig.js").BuildConfig}} HelperConfig */
 /**
@@ -126,6 +127,7 @@ export class BuildHelper {
 			},
 		};
 
+		await waitForPort({ port: this.#frugalConfig.server.port, hostname: "0.0.0.0" });
 		const manifest = await loadManifest(this.#frugalConfig);
 		const server = await Server.create({
 			config: this.#frugalConfig,
@@ -135,10 +137,12 @@ export class BuildHelper {
 		});
 
 		const controller = new AbortController();
+		/** @type {Promise<void>|undefined} */
+		let servePromise = undefined;
 		try {
 			await /** @type {Promise<void>} */ (
 				new Promise((res) => {
-					server.serve({
+					servePromise = server.serve({
 						signal: controller.signal,
 						onListen: () => res(),
 					});
@@ -147,6 +151,9 @@ export class BuildHelper {
 			await callback();
 		} finally {
 			controller.abort();
+			if (servePromise) {
+				await servePromise;
+			}
 		}
 	}
 }

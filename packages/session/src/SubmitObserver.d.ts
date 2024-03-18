@@ -1,5 +1,4 @@
-import { Form } from "./Form.ts";
-import { NavigationConfig } from "./Page.js";
+import type { NavigationConfig } from "./Page.js";
 
 export interface SubmitObserver {
 	observe(): void;
@@ -10,4 +9,4 @@ interface SubmitObserverMaker {
 	create(config: NavigationConfig): SubmitObserver;
 }
 
-export const SubmitObserver: SubmitObserverMaker;
+export let SubmitObserver: SubmitObserverMaker;

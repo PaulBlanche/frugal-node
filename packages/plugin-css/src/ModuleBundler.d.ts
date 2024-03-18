@@ -16,4 +16,4 @@ interface ModuleBundlerMaker {
 	create(config?: Config): ModuleBundler;
 }
 
-export const ModuleBundler: ModuleBundlerMaker;
+export let ModuleBundler: ModuleBundlerMaker;

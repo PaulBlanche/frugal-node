@@ -1,4 +1,4 @@
-import { EncodingType, Method } from "./form-constantes.js";
+import type { EncodingType, Method } from "./form-constantes.js";
 
 export interface Form {
 	submit(): void;
@@ -14,4 +14,4 @@ interface FormMaker {
 	create(form: HTMLFormElement, submitter?: HTMLElement | null | undefined): Form;
 }
 
-export const Form: FormMaker;
+export let Form: FormMaker;

@@ -1,8 +1,8 @@
 import type * as webStream from "node:stream/web";
 import type { JsonValue } from "../utils/jsonValue.ts";
 import type { Assets } from "./Assets.ts";
-import { DataResponse } from "./PageResponse.js";
-import { EmptyResponse } from "./PageResponse.js";
+import type { DataResponse } from "./PageResponse.js";
+import type { EmptyResponse } from "./PageResponse.js";
 import type { PageResponse } from "./PageResponse.ts";
 import type { PathObject } from "./PathObject.ts";
 

@@ -1,4 +1,4 @@
-import { Exporter } from "frugal-node/exporter";
+import type { Exporter } from "frugal-node/exporter";
 
 export type StaticSiteMode = "index.html"; // |"nginx" | "apache";
 

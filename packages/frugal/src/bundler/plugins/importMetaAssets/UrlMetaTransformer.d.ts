@@ -14,4 +14,4 @@ interface UrlMetaTransformerMaker {
 	create(code: string): UrlMetaTransformer;
 }
 
-export const UrlMetaTransformer: UrlMetaTransformerMaker;
+export let UrlMetaTransformer: UrlMetaTransformerMaker;

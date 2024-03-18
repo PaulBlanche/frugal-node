@@ -1,6 +1,6 @@
-import * as esbuild from "esbuild";
-import { Exporter } from "./Exporter.ts";
-import { Plugin } from "./bundler/Plugin.ts";
+import type * as esbuild from "esbuild";
+import type { Exporter } from "./Exporter.ts";
+import type { Plugin } from "./bundler/Plugin.ts";
 
 export type BuildConfig = {
 	esbuild?: Pick<
@@ -57,4 +57,4 @@ interface FrugalBuildConfigMaker {
 	create(config: BuildConfig): FrugalBuildConfig;
 }
 
-export const FrugalBuildConfig: FrugalBuildConfigMaker;
+export let FrugalBuildConfig: FrugalBuildConfigMaker;

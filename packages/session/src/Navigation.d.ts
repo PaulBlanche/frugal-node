@@ -72,4 +72,4 @@ interface NavigationMaker {
 	): Navigation;
 }
 
-export const Navigation: NavigationMaker;
+export let Navigation: NavigationMaker;

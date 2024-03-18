@@ -51,4 +51,4 @@ interface ChildProcessMaker {
 	spawn(command: string, options?: ChildProcessOptions): ChildProcess;
 }
 
-export const ChildProcess: ChildProcessMaker;
+export let ChildProcess: ChildProcessMaker;

@@ -1,11 +1,11 @@
-import { FrugalConfig, FrugalServerConfig } from "../Config.ts";
-import { DynamicPage, StaticPage } from "../page/Page.ts";
-import { Collapse } from "../page/PathObject.ts";
-import { Producer } from "../page/Producer.ts";
-import { log } from "../utils/log.ts";
-import { HandlerInfo } from "../utils/serve.ts";
-import { ServerCache } from "./ServerCache.ts";
-import { PrivateSession } from "./session/Session.ts";
+import type { FrugalConfig, FrugalServerConfig } from "../Config.ts";
+import type { DynamicPage, StaticPage } from "../page/Page.ts";
+import type { Collapse } from "../page/PathObject.ts";
+import type { Producer } from "../page/Producer.ts";
+import type { log } from "../utils/log.ts";
+import type { HandlerInfo } from "../utils/serve.ts";
+import type { ServerCache } from "./ServerCache.ts";
+import type { PrivateSession } from "./session/Session.ts";
 
 export type BaseContext = {
 	url: URL;

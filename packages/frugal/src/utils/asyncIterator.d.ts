@@ -1,4 +1,4 @@
-import { Deferred } from "./Deferred.ts";
+import type { Deferred } from "./Deferred.ts";
 
 export function debounce<T>(
 	stream: AsyncIterable<T>,

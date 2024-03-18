@@ -1,9 +1,9 @@
-import * as esbuild from "esbuild";
-import { FrugalBuildConfig } from "../BuildConfig.js";
-import { FrugalConfig } from "../Config.js";
-import { WritableManifest } from "../builder/manifest.js";
-import { AssetTypes } from "../page/Assets.ts";
-import { Asset } from "./AssetCollector.ts";
+import type * as esbuild from "esbuild";
+import type { FrugalBuildConfig } from "../BuildConfig.js";
+import type { FrugalConfig } from "../Config.js";
+import type { WritableManifest } from "../builder/manifest.js";
+import type { AssetTypes } from "../page/Assets.ts";
+import type { Asset } from "./AssetCollector.ts";
 
 export interface PluginContext {
 	readonly config: FrugalConfig;
@@ -31,4 +31,4 @@ interface PluginContextMaker {
 	): PrivatePluginContext;
 }
 
-export const PluginContext: PluginContextMaker;
+export let PluginContext: PluginContextMaker;

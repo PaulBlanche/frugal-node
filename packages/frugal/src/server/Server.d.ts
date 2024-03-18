@@ -1,8 +1,8 @@
-import * as http from "node:http";
-import { Config, FrugalConfig } from "../Config.ts";
-import { Manifest } from "../builder/manifest.ts";
-import { Handler, ServeOptions } from "../utils/serve.ts";
-import { ServerCache } from "./ServerCache.ts";
+import type * as http from "node:http";
+import type { Config, FrugalConfig } from "../Config.ts";
+import type { Manifest } from "../builder/manifest.ts";
+import type { Handler, ServeOptions } from "../utils/serve.ts";
+import type { ServerCache } from "./ServerCache.ts";
 
 export type ServerConfig = {
 	config: FrugalConfig | Config;
@@ -21,4 +21,4 @@ interface ServerMaker {
 	create(config: ServerConfig): Promise<Server>;
 }
 
-export const Server: ServerMaker;
+export let Server: ServerMaker;

@@ -1,4 +1,4 @@
-import { NavigationConfig } from "./Page.js";
+import type { NavigationConfig } from "./Page.js";
 
 type SessionHistoryEvents = {
 	mount: { type: "mount" };
@@ -42,4 +42,4 @@ interface SessionHistorySingleton extends SessionHistory {
 	init(options: SessionHistoryOptions): void;
 }
 
-export const SessionHistory: SessionHistorySingleton;
+export let SessionHistory: SessionHistorySingleton;

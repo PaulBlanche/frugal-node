@@ -1,4 +1,4 @@
-import * as webstream from "node:stream/web";
+import type * as webstream from "node:stream/web";
 
 export function toReadableStream<T>(stream: webstream.ReadableStream<T>): ReadableStream<T>;
 

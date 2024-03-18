@@ -1,5 +1,5 @@
-import * as esbuild from "esbuild";
-import { FrugalConfig } from "../Config.ts";
+import type * as esbuild from "esbuild";
+import type { FrugalConfig } from "../Config.ts";
 
 export type Analysis =
 	| {
@@ -29,4 +29,4 @@ interface MetafileAnalyserMaker {
 	create(metafile: esbuild.Metafile, config: FrugalConfig): MetafileAnalyser;
 }
 
-export const MetafileAnalyser: MetafileAnalyserMaker;
+export let MetafileAnalyser: MetafileAnalyserMaker;

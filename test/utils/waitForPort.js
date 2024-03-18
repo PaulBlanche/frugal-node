@@ -1,4 +1,4 @@
-import * as net from "net";
+import * as net from "node:net";
 import { Deferred } from "../../packages/frugal/exports/utils/deferred/index.js";
 
 /**
@@ -29,18 +29,17 @@ function checkPort({ port, hostname }) {
 	const client = new net.Socket();
 
 	client.once("connect", () => {
-		deferredResult.resolve(true);
 		cleanup(client);
+		deferredResult.resolve(true);
 	});
 
 	client.once("error", (error) => {
+		cleanup(client);
 		if (/** @type {Error & {code?:string}}*/ (error).code === "ECONNREFUSED") {
 			deferredResult.resolve(false);
 		} else {
 			deferredResult.reject(error);
 		}
-
-		cleanup(client);
 	});
 
 	client.connect({ port, host: hostname });

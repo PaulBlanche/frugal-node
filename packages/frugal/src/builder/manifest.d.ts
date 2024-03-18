@@ -1,6 +1,6 @@
-import { Config, FrugalConfig } from "../Config.js";
-import { CollectedAssets } from "../page/Assets.ts";
-import { PageDescriptor } from "../page/PageDescriptor.ts";
+import type { Config, FrugalConfig } from "../Config.js";
+import type { CollectedAssets } from "../page/Assets.ts";
+import type { PageDescriptor } from "../page/PageDescriptor.ts";
 
 export type WritableManifest = {
 	config: string;

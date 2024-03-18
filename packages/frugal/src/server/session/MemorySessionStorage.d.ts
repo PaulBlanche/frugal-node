@@ -1,7 +1,7 @@
-import { SessionStorage } from "./SessionStorage.ts";
+import type { SessionStorage } from "./SessionStorage.ts";
 
 interface MemorySessionStorageMaker {
 	create(): SessionStorage;
 }
 
-export const MemorySessionStorage: MemorySessionStorageMaker;
+export let MemorySessionStorage: MemorySessionStorageMaker;

@@ -7,4 +7,4 @@ interface HashMaker {
 	create(): Hash;
 }
 
-export const Hash: HashMaker;
+export let Hash: HashMaker;

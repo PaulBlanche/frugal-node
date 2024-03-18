@@ -1,9 +1,9 @@
-import { FrugalConfig } from "../Config.ts";
-import { CollectedAssets } from "./Assets.js";
-import { GenerationResponse } from "./GenerationResponse.ts";
-import { Page } from "./Page.js";
-import { Session, State } from "./PageDescriptor.ts";
-import { Collapse } from "./PathObject.ts";
+import type { FrugalConfig } from "../Config.ts";
+import type { CollectedAssets } from "./Assets.js";
+import type { GenerationResponse } from "./GenerationResponse.ts";
+import type { Page } from "./Page.js";
+import type { Session, State } from "./PageDescriptor.ts";
+import type { Collapse } from "./PathObject.ts";
 
 export interface Producer {
 	buildAll(): Promise<GenerationResponse[]>;
@@ -27,6 +27,6 @@ interface ProducerMaker {
 	): Producer;
 }
 
-export const Producer: ProducerMaker;
+export let Producer: ProducerMaker;
 
 export class ProducerError extends Error {}
