@@ -1,5 +1,5 @@
-import { Form } from "./Form.ts";
-import { NavigationConfig, PageResult } from "./Page.js";
+import type { Form } from "./Form.ts";
+import type { NavigationConfig, PageResult } from "./Page.js";
 
 export interface Submitter {
 	submit(event?: SubmitEvent): Promise<PageResult>;
@@ -9,4 +9,4 @@ interface SubmitterMaker {
 	create(form: Form, config: NavigationConfig): Submitter;
 }
 
-export const Submitter: SubmitterMaker;
+export let Submitter: SubmitterMaker;

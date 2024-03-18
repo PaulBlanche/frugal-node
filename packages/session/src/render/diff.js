@@ -1,4 +1,3 @@
-//import { AttributePatch, NodePatch, NodeType, PatchType, UpdateElementPatch } from "./types.ts";
 import { NodeType, PatchType } from "./types.js";
 import { clone, getAttributes, hash } from "./utils.js";
 

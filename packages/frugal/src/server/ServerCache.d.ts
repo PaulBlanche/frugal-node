@@ -1,4 +1,7 @@
-import { GenerationResponse, SerializedGenerationResponse } from "../page/GenerationResponse.js";
+import type {
+	GenerationResponse,
+	SerializedGenerationResponse,
+} from "../page/GenerationResponse.js";
 
 export type CacheStorage = {
 	set(path: string, response: SerializedGenerationResponse): Promise<void> | void;
@@ -18,4 +21,4 @@ interface ServerCacheMaker {
 	create(storage: CacheStorage): ServerCache;
 }
 
-export const ServerCache: ServerCacheMaker;
+export let ServerCache: ServerCacheMaker;

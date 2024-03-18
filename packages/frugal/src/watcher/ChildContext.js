@@ -2,7 +2,6 @@ import { buildPlugin } from "../builder/buildPlugin.js";
 import * as manifest from "../builder/manifest.js";
 import * as bundler from "../bundler/bundler.js";
 import { Server } from "../server/Server.js";
-import { WatchCache } from "./WatchCache.js";
 
 const WATCH_MESSAGE_SYMBOL = Symbol("WATCH_MESSAGE_SYMBOL");
 

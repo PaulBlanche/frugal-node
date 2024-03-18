@@ -14,7 +14,7 @@ export type LogConfig = {
 	timeFormatter: Intl.DateTimeFormat;
 };
 
-export const LEVELS: Record<Level, number>;
+export let LEVELS: Record<Level, number>;
 
 export function config(config?: Partial<LogConfig>): void;
 

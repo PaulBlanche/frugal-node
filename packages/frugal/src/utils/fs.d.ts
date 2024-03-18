@@ -1,4 +1,4 @@
-import * as webStream from "node:stream/web";
+import type * as webStream from "node:stream/web";
 
 export type CopyOptions = {
 	recursive?: boolean;

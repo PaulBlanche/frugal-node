@@ -1,8 +1,8 @@
-import { BaseContext } from "./server/context.ts";
-import { Middleware } from "./server/middleware.ts";
-import { SessionStorage } from "./server/session/SessionStorage.ts";
-import { CookieConfig } from "./utils/cookies.ts";
-import * as log from "./utils/log.ts";
+import type { BaseContext } from "./server/context.ts";
+import type { Middleware } from "./server/middleware.ts";
+import type { SessionStorage } from "./server/session/SessionStorage.ts";
+import type { CookieConfig } from "./utils/cookies.ts";
+import type * as log from "./utils/log.ts";
 
 export type Config = {
 	self: string;
@@ -59,6 +59,6 @@ interface FrugalConfigMaker {
 	create(config: Config): FrugalConfig;
 }
 
-export const FrugalConfig: FrugalConfigMaker;
+export let FrugalConfig: FrugalConfigMaker;
 
 export class ConfigError extends Error {}

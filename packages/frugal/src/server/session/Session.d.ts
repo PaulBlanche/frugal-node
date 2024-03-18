@@ -1,5 +1,5 @@
-import { Session as PublicSession } from "../../page/PageDescriptor.js";
-import { SessionData } from "./SessionStorage.js";
+import type { Session as PublicSession } from "../../page/PageDescriptor.js";
+import type { SessionData } from "./SessionStorage.js";
 
 interface PrivateSession extends PublicSession {
 	readonly id: string | undefined;
@@ -13,4 +13,4 @@ interface SessionMaker {
 	create(data?: SessionData, id?: string): PrivateSession;
 }
 
-export const Session: SessionMaker;
+export let Session: SessionMaker;

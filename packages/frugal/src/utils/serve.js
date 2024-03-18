@@ -24,8 +24,10 @@ export function serve(handler, options = {}) {
 		options.onListen?.({ hostname, port });
 	});
 
-	return new Promise((res, rej) => {
-		options.signal?.addEventListener("abort", () => server.close(() => setTimeout(res, 100)));
+	return new Promise((res) => {
+		options.signal?.addEventListener("abort", () => {
+			server.close(() => setTimeout(res, 100));
+		});
 	});
 }
 

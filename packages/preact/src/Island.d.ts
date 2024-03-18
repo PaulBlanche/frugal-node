@@ -1,4 +1,4 @@
-import * as preact from "preact";
+import type * as preact from "preact";
 
 export type HydrationStrategy = "load" | "idle" | "visible" | "media-query" | "never";
 
@@ -17,6 +17,7 @@ export type IslandProps<PROPS> = {
 	  }
 );
 
+// biome-ignore lint/suspicious/noExplicitAny: that's the return type of a preact function component
 export function Island<PROPS>(props: IslandProps<PROPS>): preact.VNode<any>;
 
-export const ISLAND_END: string;
+export let ISLAND_END: string;

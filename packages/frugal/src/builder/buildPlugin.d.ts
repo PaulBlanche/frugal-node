@@ -1,4 +1,4 @@
-import { PrivatePlugin } from "../bundler/Plugin.js";
-import { BuildCache } from "./BuildCache.js";
+import type { PrivatePlugin } from "../bundler/Plugin.js";
+import type { BuildCache } from "./BuildCache.js";
 
 export function buildPlugin(buildCache: BuildCache): PrivatePlugin;

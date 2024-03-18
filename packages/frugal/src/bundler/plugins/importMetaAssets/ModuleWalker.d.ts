@@ -1,4 +1,4 @@
-import * as swc from "@swc/core";
+import type * as swc from "@swc/core";
 
 type Entry = { node: swc.Node; type: "enter" | "exit" };
 
@@ -29,4 +29,4 @@ interface ModuleWalkerMaker {
 	create(filePath: string): Promise<ModuleWalker>;
 }
 
-export const ModuleWalker: ModuleWalkerMaker;
+export let ModuleWalker: ModuleWalkerMaker;

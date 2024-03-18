@@ -1,4 +1,4 @@
-import { Plugin } from "frugal-node/plugin";
+import type { Plugin } from "frugal-node/plugin";
 
 export type CssModuleOptions =
 	| boolean

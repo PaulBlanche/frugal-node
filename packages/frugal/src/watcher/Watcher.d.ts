@@ -1,4 +1,4 @@
-import { ChildProcess, ChildProcessOptions } from "../utils/ChildProcess.ts";
+import type { ChildProcess, ChildProcessOptions } from "../utils/ChildProcess.ts";
 
 interface WatcherMaker {
 	create(entrypoint: string, options: Omit<ChildProcessOptions, "args">): Promise<Watcher>;
@@ -9,4 +9,4 @@ export interface Watcher {
 	dispose(): Promise<void>;
 }
 
-export const Watcher: WatcherMaker;
+export let Watcher: WatcherMaker;

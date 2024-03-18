@@ -1,8 +1,8 @@
-import { FrugalBuildConfig } from "../BuildConfig.js";
-import { FrugalConfig } from "../Config.ts";
-import { WatchCache } from "./WatchCache.js";
-import { Listener } from "./WatchProcess.ts";
-import { WatchOptions } from "./types.ts";
+import type { FrugalBuildConfig } from "../BuildConfig.js";
+import type { FrugalConfig } from "../Config.ts";
+import type { WatchCache } from "./WatchCache.js";
+import type { Listener } from "./WatchProcess.ts";
+import type { WatchOptions } from "./types.ts";
 
 export interface WatchContext {
 	addEventListener(listener: Listener): void;
@@ -24,4 +24,4 @@ interface WatchContextMaker {
 	): WatchContext;
 }
 
-export const WatchContext: WatchContextMaker;
+export let WatchContext: WatchContextMaker;

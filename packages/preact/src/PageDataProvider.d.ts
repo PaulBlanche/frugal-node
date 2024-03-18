@@ -1,11 +1,11 @@
-import * as preact from "preact";
+import type * as preact from "preact";
 
 export type PageDataContext = {
 	data?: unknown;
 	embedData: boolean;
 };
 
-export const pageDataContext: preact.Context<PageDataContext | undefined>;
+export let pageDataContext: preact.Context<PageDataContext | undefined>;
 
 type PageDataProviderProps = {
 	context?: { data?: unknown };
@@ -14,6 +14,7 @@ type PageDataProviderProps = {
 
 export function PageDataProvider(
 	props: preact.RenderableProps<PageDataProviderProps>,
+	// biome-ignore lint/suspicious/noExplicitAny: that's the return type of a preact function component
 ): preact.VNode<any>;
 
 declare global {
@@ -26,7 +27,6 @@ declare global {
 	}
 
 	namespace globalThis {
-		// biome-ignore lint/style/noVar: only for types
 		var __FRUGAL__: FrugalGlobalNamespace;
 	}
 }

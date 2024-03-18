@@ -1,5 +1,5 @@
 import type * as esbuild from "esbuild";
-import { FrugalConfig } from "../Config.ts";
+import type { FrugalConfig } from "../Config.ts";
 
 export type Asset = {
 	entrypoint: string;
@@ -19,4 +19,4 @@ interface AssetCollectorMaker {
 	create(config: FrugalConfig, metafile: esbuild.Metafile): AssetCollector;
 }
 
-export const AssetCollector: AssetCollectorMaker;
+export let AssetCollector: AssetCollectorMaker;

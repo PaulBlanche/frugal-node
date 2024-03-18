@@ -1,4 +1,4 @@
-import { SerializedGenerationResponse } from "../page/GenerationResponse.js";
+import type { SerializedGenerationResponse } from "../page/GenerationResponse.js";
 
 export type CacheConfig = {
 	dir: string;

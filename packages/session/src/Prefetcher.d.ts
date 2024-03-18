@@ -15,4 +15,4 @@ interface PrefetcherMaker {
 	create(url: URL, config: PrefetchConfig): Prefetcher;
 }
 
-export const Prefetcher: PrefetcherMaker;
+export let Prefetcher: PrefetcherMaker;

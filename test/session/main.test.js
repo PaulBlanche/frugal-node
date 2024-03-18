@@ -45,12 +45,12 @@ await withServerAndBrowser(helper, async (browser) => {
 			const [sessionReadyPromise] = await getNavigationDonePromise(page, {
 				predicate: (event) =>
 					event.cause === "pageshow" &&
-					event.to.url === "http://localhost:8000/page1" &&
+					event.to.url === "http://0.0.0.0:8004/page1" &&
 					event.type === "end",
 				onNewDocument: true,
 			});
 
-			await page.goto("http://localhost:8000/page1");
+			await page.goto("http://0.0.0.0:8004/page1");
 
 			await withTimeout(sessionReadyPromise, "session should start");
 
@@ -66,7 +66,7 @@ await withServerAndBrowser(helper, async (browser) => {
 				const [navigationDonePromise] = await getNavigationDonePromise(page, {
 					predicate: (event) =>
 						event.cause === "push" &&
-						event.to.url === "http://localhost:8000/page2" &&
+						event.to.url === "http://0.0.0.0:8004/page2" &&
 						event.type === "end",
 				});
 
@@ -87,7 +87,7 @@ await withServerAndBrowser(helper, async (browser) => {
 						navigationEvent1.to.url,
 						navigationEvent1.type,
 					],
-					["push", "http://localhost:8000/page1", "http://localhost:8000/page2", "start"],
+					["push", "http://0.0.0.0:8004/page1", "http://0.0.0.0:8004/page2", "start"],
 				);
 				const navigationEvent2 = navigationEventSpy.mock.calls[1].arguments[0];
 				assert.deepEqual(
@@ -97,14 +97,14 @@ await withServerAndBrowser(helper, async (browser) => {
 						navigationEvent2.to.url,
 						navigationEvent2.type,
 					],
-					["push", "http://localhost:8000/page1", "http://localhost:8000/page2", "end"],
+					["push", "http://0.0.0.0:8004/page1", "http://0.0.0.0:8004/page2", "end"],
 				);
 
 				assert.equal(mountEventSpy.mock.calls.length, 1);
 				assert.equal(unmountEventSpy.mock.calls.length, 1);
 
 				// the url was modified
-				assert.equal(page.url(), "http://localhost:8000/page2");
+				assert.equal(page.url(), "http://0.0.0.0:8004/page2");
 				// the content was modified
 				assert.equal(await page.title(), "page 2");
 				// the javascript context was preserved
@@ -120,8 +120,8 @@ await withServerAndBrowser(helper, async (browser) => {
 				const [navigationBackDonePromise] = await getNavigationDonePromise(page, {
 					predicate: (event) =>
 						event.cause === "popstate" &&
-						event.to.url === "http://localhost:8000/page1" &&
-						event.from.url === "http://localhost:8000/page2" &&
+						event.to.url === "http://0.0.0.0:8004/page1" &&
+						event.from.url === "http://0.0.0.0:8004/page2" &&
 						event.type === "end",
 				});
 
@@ -138,12 +138,7 @@ await withServerAndBrowser(helper, async (browser) => {
 						navigationEvent1.to.url,
 						navigationEvent1.type,
 					],
-					[
-						"popstate",
-						"http://localhost:8000/page2",
-						"http://localhost:8000/page1",
-						"start",
-					],
+					["popstate", "http://0.0.0.0:8004/page2", "http://0.0.0.0:8004/page1", "start"],
 				);
 				const navigationEvent2 = navigationEventSpy.mock.calls[1].arguments[0];
 				assert.deepEqual(
@@ -153,19 +148,14 @@ await withServerAndBrowser(helper, async (browser) => {
 						navigationEvent2.to.url,
 						navigationEvent2.type,
 					],
-					[
-						"popstate",
-						"http://localhost:8000/page2",
-						"http://localhost:8000/page1",
-						"end",
-					],
+					["popstate", "http://0.0.0.0:8004/page2", "http://0.0.0.0:8004/page1", "end"],
 				);
 
 				assert.equal(mountEventSpy.mock.calls.length, 1);
 				assert.equal(unmountEventSpy.mock.calls.length, 1);
 
 				// the url was modified
-				assert.equal(page.url(), "http://localhost:8000/page1");
+				assert.equal(page.url(), "http://0.0.0.0:8004/page1");
 				// the content was modified
 				assert.equal(await page.title(), "page 1");
 				// the javascript context was preserved
@@ -177,7 +167,7 @@ await withServerAndBrowser(helper, async (browser) => {
 				await page.evaluate("window.scroll(0, 150)");
 
 				// go to /page2 and scroll to 151
-				await page.goto("http://localhost:8000/page2");
+				await page.goto("http://0.0.0.0:8004/page2");
 				assert.equal(await page.evaluate("window.scrollY"), 0);
 				await page.evaluate("window.scroll(0, 151)");
 
@@ -185,12 +175,12 @@ await withServerAndBrowser(helper, async (browser) => {
 				await page.goto("http://google.com");
 
 				// go to /page1 and scroll to 152
-				await page.goto("http://localhost:8000/page1");
+				await page.goto("http://0.0.0.0:8004/page1");
 				assert.equal(await page.evaluate("window.scrollY"), 0);
 				await page.evaluate("window.scroll(0, 152)");
 
 				// go to /page2
-				await page.goto("http://localhost:8000/page2");
+				await page.goto("http://0.0.0.0:8004/page2");
 				assert.equal(await page.evaluate("window.scrollY"), 0);
 
 				// go back to /page1
@@ -247,12 +237,12 @@ await withServerAndBrowser(helper, async (browser) => {
 			const [sessionReadyPromise] = await getNavigationDonePromise(page, {
 				predicate: (event) =>
 					event.cause === "pageshow" &&
-					event.to.url === "http://localhost:8000/page3" &&
+					event.to.url === "http://0.0.0.0:8004/page3" &&
 					event.type === "end",
 				onNewDocument: true,
 			});
 
-			await page.goto("http://localhost:8000/page3");
+			await page.goto("http://0.0.0.0:8004/page3");
 
 			await withTimeout(sessionReadyPromise, "session should start");
 
@@ -265,7 +255,7 @@ await withServerAndBrowser(helper, async (browser) => {
 				const [navigationDonePromise] = await getNavigationDonePromise(page, {
 					predicate: (event) =>
 						event.cause === "push" &&
-						event.to.url === "http://localhost:8000/page1" &&
+						event.to.url === "http://0.0.0.0:8004/page1" &&
 						event.type === "end",
 				});
 
@@ -286,7 +276,7 @@ await withServerAndBrowser(helper, async (browser) => {
 						navigationEvent1.to.url,
 						navigationEvent1.type,
 					],
-					["push", "http://localhost:8000/page3", "http://localhost:8000/page1", "start"],
+					["push", "http://0.0.0.0:8004/page3", "http://0.0.0.0:8004/page1", "start"],
 				);
 				const navigationEvent2 = navigationEventSpy.mock.calls[1].arguments[0];
 				assert.deepEqual(
@@ -296,7 +286,7 @@ await withServerAndBrowser(helper, async (browser) => {
 						navigationEvent2.to.url,
 						navigationEvent2.type,
 					],
-					["push", "http://localhost:8000/page3", "http://localhost:8000/page1", "end"],
+					["push", "http://0.0.0.0:8004/page3", "http://0.0.0.0:8004/page1", "end"],
 				);
 
 				assert.equal(mountEventSpy.mock.calls.length, 1);
@@ -341,12 +331,12 @@ await withServerAndBrowser(helper, async (browser) => {
 			const [sessionReadyPromise] = await getNavigationDonePromise(page, {
 				predicate: (event) =>
 					event.cause === "pageshow" &&
-					event.to.url === "http://localhost:8000/page3" &&
+					event.to.url === "http://0.0.0.0:8004/page3" &&
 					event.type === "end",
 				onNewDocument: true,
 			});
 
-			await page.goto("http://localhost:8000/page3");
+			await page.goto("http://0.0.0.0:8004/page3");
 
 			await withTimeout(sessionReadyPromise, "session should start");
 
@@ -407,12 +397,12 @@ await withServerAndBrowser(helper, async (browser) => {
 			const [sessionReadyPromise] = await getNavigationDonePromise(page, {
 				predicate: (event) =>
 					event.cause === "pageshow" &&
-					event.to.url === "http://localhost:8000/page3" &&
+					event.to.url === "http://0.0.0.0:8004/page3" &&
 					event.type === "end",
 				onNewDocument: true,
 			});
 
-			await page.goto("http://localhost:8000/page3");
+			await page.goto("http://0.0.0.0:8004/page3");
 
 			await withTimeout(sessionReadyPromise, "session should start");
 
@@ -473,12 +463,12 @@ await withServerAndBrowser(helper, async (browser) => {
 			const [sessionReadyPromise] = await getNavigationDonePromise(page, {
 				predicate: (event) =>
 					event.cause === "pageshow" &&
-					event.to.url === "http://localhost:8000/page3" &&
+					event.to.url === "http://0.0.0.0:8004/page3" &&
 					event.type === "end",
 				onNewDocument: true,
 			});
 
-			await page.goto("http://localhost:8000/page3");
+			await page.goto("http://0.0.0.0:8004/page3");
 
 			await withTimeout(sessionReadyPromise, "session should start");
 
@@ -507,7 +497,7 @@ await withServerAndBrowser(helper, async (browser) => {
 						navigationEvent1.to.url,
 						navigationEvent1.type,
 					],
-					["push", "http://localhost:8000/page3", "http://localhost:8000/page4", "start"],
+					["push", "http://0.0.0.0:8004/page3", "http://0.0.0.0:8004/page4", "start"],
 				);
 				assert.equal(unmountEventSpy.mock.calls.length, 1);
 				assert.equal(mountEventSpy.mock.calls.length, 0);
@@ -551,12 +541,12 @@ await withServerAndBrowser(helper, async (browser) => {
 			const [sessionReadyPromise] = await getNavigationDonePromise(page, {
 				predicate: (event) =>
 					event.cause === "pageshow" &&
-					event.to.url === "http://localhost:8000/page1" &&
+					event.to.url === "http://0.0.0.0:8004/page1" &&
 					event.type === "end",
 				onNewDocument: true,
 			});
 
-			await page.goto("http://localhost:8000/page1");
+			await page.goto("http://0.0.0.0:8004/page1");
 
 			await withTimeout(sessionReadyPromise, "session should start");
 
@@ -588,7 +578,7 @@ await withServerAndBrowser(helper, async (browser) => {
 						navigationEvent1.to.url,
 						navigationEvent1.type,
 					],
-					["push", "http://localhost:8000/page1", "http://localhost:8000/page2", "start"],
+					["push", "http://0.0.0.0:8004/page1", "http://0.0.0.0:8004/page2", "start"],
 				);
 				assert.equal(unmountEventSpy.mock.calls.length, 0);
 				assert.equal(mountEventSpy.mock.calls.length, 0);
@@ -632,12 +622,12 @@ await withServerAndBrowser(helper, async (browser) => {
 			const [sessionReadyPromise] = await getNavigationDonePromise(page, {
 				predicate: (event) =>
 					event.cause === "pageshow" &&
-					event.to.url === "http://localhost:8000/page1" &&
+					event.to.url === "http://0.0.0.0:8004/page1" &&
 					event.type === "end",
 				onNewDocument: true,
 			});
 
-			await page.goto("http://localhost:8000/page1");
+			await page.goto("http://0.0.0.0:8004/page1");
 
 			await withTimeout(sessionReadyPromise, "session should start");
 
@@ -650,7 +640,7 @@ await withServerAndBrowser(helper, async (browser) => {
 				const [navigationDonePromise] = await getNavigationDonePromise(page, {
 					predicate: (event) =>
 						event.cause === "push" &&
-						event.to.url === "http://localhost:8000/page2" &&
+						event.to.url === "http://0.0.0.0:8004/page2" &&
 						event.type === "end",
 				});
 				let isNavigationDone = false;
@@ -659,9 +649,12 @@ await withServerAndBrowser(helper, async (browser) => {
 				});
 
 				const navigationResult = await page.evaluate(() => {
-					return window.exposed_session_navigate("http://localhost:8000/page2", {
-						state: "toto",
-					});
+					return /** @type{any}*/ (window).exposed_session_navigate(
+						"http://0.0.0.0:8004/page2",
+						{
+							state: "toto",
+						},
+					);
 				});
 
 				assert.ok(navigationResult, "navigation should succeed");
@@ -687,9 +680,9 @@ await withServerAndBrowser(helper, async (browser) => {
 					],
 					[
 						"push",
-						"http://localhost:8000/page1",
+						"http://0.0.0.0:8004/page1",
 						undefined,
-						"http://localhost:8000/page2",
+						"http://0.0.0.0:8004/page2",
 						"toto",
 						"start",
 					],
@@ -706,9 +699,9 @@ await withServerAndBrowser(helper, async (browser) => {
 					],
 					[
 						"push",
-						"http://localhost:8000/page1",
+						"http://0.0.0.0:8004/page1",
 						undefined,
-						"http://localhost:8000/page2",
+						"http://0.0.0.0:8004/page2",
 						"toto",
 						"end",
 					],
@@ -755,12 +748,12 @@ await withServerAndBrowser(helper, async (browser) => {
 			const [sessionReadyPromise] = await getNavigationDonePromise(page, {
 				predicate: (event) =>
 					event.cause === "pageshow" &&
-					event.to.url === "http://localhost:8000/page1" &&
+					event.to.url === "http://0.0.0.0:8004/page1" &&
 					event.type === "end",
 				onNewDocument: true,
 			});
 
-			await page.goto("http://localhost:8000/page1");
+			await page.goto("http://0.0.0.0:8004/page1");
 
 			await withTimeout(sessionReadyPromise, "session should start");
 
@@ -777,9 +770,12 @@ await withServerAndBrowser(helper, async (browser) => {
 				});
 
 				const navigationResult = await page.evaluate(() => {
-					return window.exposed_session_navigate("http://localhost:8000/page2", {
-						state: "toto",
-					});
+					return /** @type{any}*/ (window).exposed_session_navigate(
+						"http://0.0.0.0:8004/page2",
+						{
+							state: "toto",
+						},
+					);
 				});
 
 				assert.ok(!navigationResult, "navigation should abort");
@@ -797,7 +793,7 @@ await withServerAndBrowser(helper, async (browser) => {
 						navigationEvent1.to.url,
 						navigationEvent1.type,
 					],
-					["push", "http://localhost:8000/page1", "http://localhost:8000/page2", "start"],
+					["push", "http://0.0.0.0:8004/page1", "http://0.0.0.0:8004/page2", "start"],
 				);
 				assert.equal(unmountEventSpy.mock.calls.length, 0);
 				assert.equal(mountEventSpy.mock.calls.length, 0);
@@ -841,12 +837,12 @@ await withServerAndBrowser(helper, async (browser) => {
 			const [sessionReadyPromise] = await getNavigationDonePromise(page, {
 				predicate: (event) =>
 					event.cause === "pageshow" &&
-					event.to.url === "http://localhost:8000/page1" &&
+					event.to.url === "http://0.0.0.0:8004/page1" &&
 					event.type === "end",
 				onNewDocument: true,
 			});
 
-			await page.goto("http://localhost:8000/page1");
+			await page.goto("http://0.0.0.0:8004/page1");
 
 			await withTimeout(sessionReadyPromise, "session should start");
 
@@ -864,9 +860,12 @@ await withServerAndBrowser(helper, async (browser) => {
 
 				await assert.rejects(() =>
 					page.evaluate(() => {
-						return window.exposed_session_navigate("http://localhost:8000/page2", {
-							state: "toto",
-						});
+						return /** @type{any}*/ (window).exposed_session_navigate(
+							"http://0.0.0.0:8004/page2",
+							{
+								state: "toto",
+							},
+						);
 					}),
 				);
 
@@ -883,7 +882,7 @@ await withServerAndBrowser(helper, async (browser) => {
 						navigationEvent1.to.url,
 						navigationEvent1.type,
 					],
-					["push", "http://localhost:8000/page1", "http://localhost:8000/page2", "start"],
+					["push", "http://0.0.0.0:8004/page1", "http://0.0.0.0:8004/page2", "start"],
 				);
 				assert.equal(unmountEventSpy.mock.calls.length, 1);
 				assert.equal(mountEventSpy.mock.calls.length, 0);
@@ -924,7 +923,7 @@ async function withTimeout(promise, message) {
 
 /**
  * @param {Page} page
- * @param {{predicate:(event: import("../../packages/session/src/SessionHistory.js").GlobalNavigationEvent) => boolean, onNewDocument?: boolean }} config
+ * @param {{predicate:(event: import("../../packages/session/src/Navigation.ts").GlobalNavigationEvent) => boolean, onNewDocument?: boolean }} config
  */
 async function getNavigationDonePromise(page, config) {
 	const deferred = Deferred.create();

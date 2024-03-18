@@ -1,4 +1,4 @@
-import { CacheConfig, CacheEntry, SerializedCache } from "./loadCacheData.js";
+import type { CacheConfig, CacheEntry, SerializedCache } from "./loadCacheData.js";
 
 export interface Snapshot {
 	readonly evicted: CacheEntry[];
@@ -13,4 +13,4 @@ interface SnapshotMaker {
 	load(config: CacheConfig): Promise<Snapshot>;
 }
 
-export const Snapshot: SnapshotMaker;
+export let Snapshot: SnapshotMaker;

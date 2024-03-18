@@ -16,7 +16,7 @@ export type AttributePatch =
 	| { type: typeof PatchType.REMOVE_ATTRIBUTE; name: string }
 	| { type: typeof PatchType.SET_ATTRIBUTE; name: string; value: string | true };
 
-export const PatchType: {
+export let PatchType: {
 	PRESERVE_NODE: 0;
 	REMOVE_NODE: 1;
 	APPEND_NODE: 2;
@@ -27,7 +27,7 @@ export const PatchType: {
 	SET_ATTRIBUTE: 7;
 };
 
-export const NodeType: {
+export let NodeType: {
 	ELEMENT_NODE: 1;
 	TEXT_NODE: 3;
 	DOCUMENT_NODE: 9;

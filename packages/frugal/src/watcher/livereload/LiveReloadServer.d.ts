@@ -1,4 +1,4 @@
-import { ServeOptions } from "../../utils/serve.js";
+import type { ServeOptions } from "../../utils/serve.js";
 
 type Event = { type: "suspend" | "reload" | "connected" };
 
@@ -12,4 +12,4 @@ interface LiveReloadServerMaker {
 	create(): LiveReloadServer;
 }
 
-export const LiveReloadServer: LiveReloadServerMaker;
+export let LiveReloadServer: LiveReloadServerMaker;

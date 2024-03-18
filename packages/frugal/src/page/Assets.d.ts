@@ -22,4 +22,4 @@ interface AssetsMaker {
 	create(assets: CollectedAssets, entrypoint: string): Assets;
 }
 
-export const Assets: AssetsMaker;
+export let Assets: AssetsMaker;

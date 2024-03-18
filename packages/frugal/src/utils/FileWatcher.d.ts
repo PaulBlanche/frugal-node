@@ -17,4 +17,4 @@ interface FileWatcherMaker {
 	watch(paths: string[], otions?: WatchOptions): FileWatcher;
 }
 
-export const FileWatcher: FileWatcherMaker;
+export let FileWatcher: FileWatcherMaker;

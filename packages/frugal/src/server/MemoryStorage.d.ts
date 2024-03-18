@@ -1,7 +1,7 @@
-import { CacheStorage } from "./ServerCache.ts";
+import type { CacheStorage } from "./ServerCache.ts";
 
 interface MemoryStorageMaker {
 	create(): CacheStorage;
 }
 
-export const MemoryStorage: MemoryStorageMaker;
+export let MemoryStorage: MemoryStorageMaker;

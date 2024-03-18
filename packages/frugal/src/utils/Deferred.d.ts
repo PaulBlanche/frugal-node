@@ -9,4 +9,4 @@ interface DeferredMaker {
 	create<T>(): Deferred<T>;
 }
 
-export const Deferred: DeferredMaker;
+export let Deferred: DeferredMaker;

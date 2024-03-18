@@ -62,7 +62,7 @@ test("inte/frugal/build/importMeta: skip dynamic 'new URL(..., import.meta.url)'
 			await fs.promises.stat(assetUrl);
 		},
 		(error) => {
-			assert.deepEqual(error.code, "ENOENT");
+			assert.deepEqual(/** @type{any}*/ (error).code, "ENOENT");
 			return true;
 		},
 	);

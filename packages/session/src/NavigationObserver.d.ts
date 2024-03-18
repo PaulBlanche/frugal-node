@@ -1,4 +1,4 @@
-import { NavigationConfig } from "./Page.js";
+import type { NavigationConfig } from "./Page.js";
 
 export interface NavigationObserver {
 	observe(): void;
@@ -9,4 +9,4 @@ interface NavigationObserverMaker {
 	create(config: NavigationConfig): NavigationObserver;
 }
 
-export const NavigationObserver: NavigationObserverMaker;
+export let NavigationObserver: NavigationObserverMaker;

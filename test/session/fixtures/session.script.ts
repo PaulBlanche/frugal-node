@@ -21,5 +21,5 @@ if (import.meta.environment === "client") {
 		dispatchEvent(new CustomEvent("unmount"));
 	});
 
-	window.exposed_session_navigate = Session.navigate;
+	(window as any).exposed_session_navigate = Session.navigate;
 }

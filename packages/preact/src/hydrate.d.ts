@@ -1,4 +1,4 @@
-import { App } from "./Hydratable.js";
+import type { App } from "./Hydratable.js";
 
 export type GetApp<PROPS> = () => Promise<App<PROPS>> | App<PROPS>;
 

@@ -1,5 +1,5 @@
-import { BaseContext } from "../context.js";
-import { Next } from "../middleware.js";
+import type { BaseContext } from "../context.js";
+import type { Next } from "../middleware.js";
 
 export function trailingSlashRedirect(
 	context: BaseContext,

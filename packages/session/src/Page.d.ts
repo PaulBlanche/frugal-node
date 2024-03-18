@@ -18,6 +18,6 @@ interface PageMaker {
 	create(url: string | URL, config: NavigationConfig): Page;
 }
 
-export const Page: PageMaker;
+export let Page: PageMaker;
 
-export const LOADING_CLASSNAME: string;
+export let LOADING_CLASSNAME: string;
