@@ -9,7 +9,7 @@
 		}
 	},
 	"peerDependencies": {
-		"frugal-node": "^0.1.0",
+		"frugal-node": "^1.0.0",
 		"preact": "^10.x",
 		"preact-render-to-string": "^6.x"
 	}

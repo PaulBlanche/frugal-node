@@ -9,7 +9,7 @@
 		}
 	},
 	"peerDependencies": {
-		"frugal-node": "^0.1.0"
+		"frugal-node": "^1.0.0"
 	},
 	"dependencies": {
 		"esbuild": "^0.20.0"
