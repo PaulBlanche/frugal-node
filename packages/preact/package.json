@@ -1,6 +1,6 @@
 {
 	"name": "@frugal-node/preact",
-	"version": "1.0.0",
+	"version": "1.0.10",
 	"type": "module",
 	"exports": {
 		".": {

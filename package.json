@@ -1,6 +1,6 @@
 {
 	"name": "@frugal-node/workspace",
-	"version": "1.0.0",
+	"version": "1.0.10",
 	"private": "true",
 	"workspaces": ["packages/*"],
 	"type": "module",
