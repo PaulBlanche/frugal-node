@@ -1,4 +1,7 @@
-import { GenerateContext, RenderContext } from "../../../../packages/frugal/exports/page/index.ts";
+import type {
+	GenerateContext,
+	RenderContext,
+} from "../../../../packages/frugal/exports/page/index.ts";
 import { store } from "./store.ts";
 
 export const route = "/page1/:id";
@@ -15,6 +18,6 @@ export async function build({ params, data }: GenerateContext<typeof route>) {
 	});
 }
 
-export function render({ data, path }: RenderContext<typeof route, number>) {
-	return `data : ${data}, path: ${JSON.stringify(path)}`;
+export function render({ data, location }: RenderContext<typeof route, number>) {
+	return `data : ${data}, path: ${JSON.stringify(location)}`;
 }

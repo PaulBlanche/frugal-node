@@ -1,17 +1,3 @@
-/*import * as fs from "../../../dep/std/fs.ts";
-import * as asserts from "../../../dep/std/testing/asserts.ts";
-
-import { Config } from "../../../mod.ts";
-import { FrugalHelper } from "../../utils/FrugalHelper.ts";
-import * as puppeteer from "../../utils/puppeteer.ts";
-
-if (import.meta.main) {
-	const config = await loadConfig();
-	FrugalHelper.watch(config);
-} else {
-	await setupTestFiles();
-}*/
-
 import * as assert from "node:assert/strict";
 import * as fs from "node:fs";
 import * as path from "node:path";
