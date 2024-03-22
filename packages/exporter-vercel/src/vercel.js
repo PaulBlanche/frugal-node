@@ -4,9 +4,7 @@ import * as esbuild from "esbuild";
 import { Snapshot, getManifestPath } from "frugal-node/exporter";
 import * as fs from "frugal-node/utils/fs";
 
-/**
- * @returns {import("frugal-node/exporter").Exporter}
- */
+/** @type {import("./vercel.ts").vercel} */
 export function vercel() {
 	return {
 		name: "vercel",
