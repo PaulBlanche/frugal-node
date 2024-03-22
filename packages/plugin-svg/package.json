@@ -1,0 +1,20 @@
+{
+	"name": "@frugal-node/plugin-svg",
+	"version": "1.0.0",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./exports/index.d.ts",
+			"import": "./exports/index.js"
+		}
+	},
+	"peerDependencies": {
+		"frugal-node": "^1.0.0"
+	},
+	"dependencies": {
+		"unist-util-visit": "^5.0.0",
+		"xast-util-from-xml": "^4.0.0",
+		"xast-util-to-xml": "^4.0.0",
+		"xml2js": "^0.6.2"
+	}
+}

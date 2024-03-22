@@ -6,6 +6,10 @@
 		".": {
 			"types": "./exports/index.d.ts",
 			"import": "./exports/index.js"
+		},
+		"./client": {
+			"types": "./exports/client/index.d.ts",
+			"import": "./exports/client/index.js"
 		}
 	},
 	"peerDependencies": {
