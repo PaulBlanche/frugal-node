@@ -31,31 +31,16 @@ function create() {
 		const defs = [];
 
 		for (const symbol of symbols) {
-			for (const id of symbol.svg.gatheredIds) {
+			for (const id of symbol.gatheredIds) {
 				seenId[id] = seenId[id] ?? new Set();
 				seenId[id].add(symbol.path);
 			}
 
-			if (symbol.svg.defs) {
-				defs.push(...symbol.svg.defs);
+			if (symbol.defs) {
+				defs.push(...symbol.defs);
 			}
 
-			const symbolAttributes = Object.entries(symbol.svg.attributes)
-				.filter(
-					/** @returns {entry is [string, string]}*/ (entry) =>
-						entry[1] !== undefined && entry[1] !== null,
-				)
-				.filter(([key, _]) =>
-					["id", "viewbox", "preserveaspectratio"].includes(key.toLowerCase()),
-				)
-				.map(([key, value]) => `${key}="${value}"`)
-				.join(" ");
-
-			svgContent.push(
-				`<symbol ${symbolAttributes}>${toXml(symbol.svg.content)}</symbol><use href="#${
-					symbol.id
-				}" />`,
-			);
+			svgContent.push(toXml(symbol.symbol));
 		}
 
 		for (const [id, paths] of Object.entries(seenId)) {

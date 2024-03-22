@@ -1,3 +1,4 @@
+import type { GlobalNavigationEvent } from "./Navigation.js";
 import type { NavigationConfig } from "./Page.js";
 import type { PrefetchConfig } from "./Prefetcher.js";
 
@@ -6,6 +7,7 @@ declare global {
 
 	interface WindowEventMap {
 		"frugal:session": CustomEvent<SessionSingleton>;
+		"frugal:navigation": CustomEvent<GlobalNavigationEvent>;
 	}
 }
 

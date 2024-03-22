@@ -54,16 +54,24 @@ function create() {
 
 		removeAll(svg, (node) => isElement(node) && node.name === "defs");
 
+		const symbolAttributes = Object.fromEntries(
+			Object.entries(svg.attributes).filter(([key, _]) =>
+				["id", "viewbox", "preserveaspectratio"].includes(key.toLowerCase()),
+			),
+		);
+
 		/** @type {import("./SymbolBuilder.ts").SvgSymbol} */
 		const symbol = {
 			viewBox: viewBox ?? `0 0 ${width} ${height}`,
 			path: filePath,
 			id: hash,
-			svg: {
-				attributes: svg.attributes,
-				gatheredIds: gatherAllIds(svg),
-				defs: defs,
-				content: svg,
+			gatheredIds: gatherAllIds(svg),
+			defs: defs,
+			symbol: {
+				type: "element",
+				name: "symbol",
+				attributes: { ...symbolAttributes, id: hash },
+				children: svg.children,
 			},
 		};
 

@@ -4,12 +4,9 @@ export type SvgSymbol = {
 	viewBox: string;
 	path: string;
 	id: string;
-	svg: {
-		attributes: Record<string, string | null | undefined>;
-		gatheredIds: string[];
-		defs: Element[];
-		content: Element;
-	};
+	gatheredIds: string[];
+	defs: Element[];
+	symbol: Element;
 };
 
 export interface SymbolBuilder {

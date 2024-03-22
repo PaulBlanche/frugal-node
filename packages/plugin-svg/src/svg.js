@@ -19,6 +19,18 @@ export function svg(options = {}) {
 			/** @type {Map<string, string>} */
 			const spritesheetNameCache = new Map();
 
+			build.onStart(async () => {
+				try {
+					await fs.remove(path.resolve(context.config.publicDir, outdir), {
+						recursive: true,
+					});
+				} catch (error) {
+					if (!(error instanceof fs.NotFound)) {
+						throw error;
+					}
+				}
+			});
+
 			build.onResolve({ filter }, (args) => {
 				return { path: path.resolve(args.resolveDir, args.path) };
 			});
@@ -76,7 +88,6 @@ export function svg(options = {}) {
 			});
 
 			/**
-			 *
 			 * @param {string} filePath
 			 * @returns {string}
 			 */
@@ -89,8 +100,10 @@ export function svg(options = {}) {
 				}
 
 				const hash = Hash.create().update(baseName).update(String(Date.now())).digest();
+				const spritesheetName = `${baseName}-${hash}.svg`;
+				spritesheetNameCache.set(baseName, spritesheetName);
 
-				return `${name}-${hash}.svg`;
+				return spritesheetName;
 			}
 		},
 	};

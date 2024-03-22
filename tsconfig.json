@@ -6,6 +6,7 @@
 		"allowJs": true,
 		"target": "ESNext",
 		"moduleResolution": "NodeNext",
+		"resolveJsonModule": true,
 		"module": "NodeNext",
 		"lib": ["DOM", "DOM.Iterable", "ESNext"],
 		"allowImportingTsExtensions": true,
