@@ -1,5 +1,11 @@
 # @frugal-node/plugin-css
 
+## 1.0.11
+
+### Patch Changes
+
+- 207b74d: resolve node_module css
+
 ## 1.0.0
 
 ### Patch Changes
