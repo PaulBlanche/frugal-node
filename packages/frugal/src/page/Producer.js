@@ -39,9 +39,10 @@ export function create(manifestAssets, page, configHash, config) {
 			}
 
 			const path = page.compile(params);
+			const location = { pathname: path, search: "" };
 
 			const response = await page.build({
-				path,
+				location,
 				params,
 				data: PageResponse.data,
 				empty: PageResponse.empty,
@@ -61,7 +62,7 @@ export function create(manifestAssets, page, configHash, config) {
 			return GenerationResponse.create(response, {
 				render: (data) =>
 					page.render({
-						path,
+						location,
 						params,
 						assets: pageAssets,
 						data,
@@ -74,11 +75,14 @@ export function create(manifestAssets, page, configHash, config) {
 		},
 
 		async generate(request, path, params, state, session) {
+			const url = new URL(request.url);
+			const location = { pathname: url.pathname, search: url.search };
+
 			const response =
 				page.type === "static" && request.method === "GET"
 					? await page.build({
 							params,
-							path,
+							location,
 							data: PageResponse.data,
 							empty: PageResponse.empty,
 							state: state,
@@ -87,7 +91,7 @@ export function create(manifestAssets, page, configHash, config) {
 					  })
 					: await page.generate({
 							params,
-							path,
+							location,
 							data: PageResponse.data,
 							empty: PageResponse.empty,
 							state: state,
@@ -109,7 +113,7 @@ export function create(manifestAssets, page, configHash, config) {
 			return GenerationResponse.create(response, {
 				render: (data) =>
 					page.render({
-						path,
+						location,
 						params,
 						assets: pageAssets,
 						data,
@@ -129,7 +133,7 @@ export function create(manifestAssets, page, configHash, config) {
 			const path = page.compile(params);
 
 			const response = await page.build({
-				path,
+				location,
 				params,
 				data: PageResponse.data,
 				empty: PageResponse.empty,
@@ -149,7 +153,7 @@ export function create(manifestAssets, page, configHash, config) {
 			return GenerationResponse.create(response, {
 				render: (data) =>
 					page.render({
-						path,
+						location,
 						params,
 						assets: pageAssets,
 						data,

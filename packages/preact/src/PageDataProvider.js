@@ -6,14 +6,15 @@ export const pageDataContext =
 	(preact.createContext(undefined));
 
 /** @type {import("./PageDataProvider.ts").PageDataProvider} */
-export function PageDataProvider({ context, embedData = true, children }) {
+export function PageDataProvider({ context, children }) {
 	// server side we inject the serialized context in a script and wrap
 	// the tree in a `dataContext.Provider` to forward data.
 	if (typeof document === "undefined" && context) {
+		const embedData = context.embedData ?? true;
 		const script = `window.__FRUGAL__ = ${JSON.stringify({
-			...context,
 			data: embedData ? context.data : undefined,
 			embedData,
+			location: context.location,
 		})};`
 			// needed because the context might contain html that could
 			// accidentaly close the script early

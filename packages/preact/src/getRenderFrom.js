@@ -7,7 +7,7 @@ import { PageDataProvider } from "./PageDataProvider.js";
 
 /**@type {import('./getRenderFrom.ts').getRenderFrom} */
 export function getRenderFrom(Page, { Document = DefaultDocument, embedData = false } = {}) {
-	return ({ data, descriptor, assets }) => {
+	return ({ data, descriptor, assets, location }) => {
 		/** @type {preact.VNode[]} */
 		let head = [];
 
@@ -21,8 +21,8 @@ export function getRenderFrom(Page, { Document = DefaultDocument, embedData = fa
 				},
 				preact.h(
 					PageDataProvider,
-					{ context: { data }, embedData },
-					preact.h(Page, { descriptor: descriptor, assets: assets }),
+					{ context: { data, embedData, location } },
+					preact.h(Page, { descriptor, assets }),
 				),
 			),
 		);

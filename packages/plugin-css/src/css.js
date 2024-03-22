@@ -24,10 +24,6 @@ export function css(options = {}) {
 				cssModulesPlugin.setup(build, context);
 			}
 
-			build.onResolve({ filter: /^[^\.\/].*\.css$/ }, (args) => {
-				return { path: url.fileURLToPath(new URL(args.path, import.meta.url)) };
-			});
-
 			build.onEnd(async (result) => {
 				const metafile = result.metafile;
 				const errors = result.errors;

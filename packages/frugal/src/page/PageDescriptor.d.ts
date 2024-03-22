@@ -23,7 +23,7 @@ export type ResponseInit = {
 
 type BaseContext<PATH extends string> = {
 	params: PathObject<PATH>;
-	path: string;
+	location: { pathname: string; search: string };
 };
 
 export type RenderContext<

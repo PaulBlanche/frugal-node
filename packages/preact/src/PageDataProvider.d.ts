@@ -3,13 +3,17 @@ import type * as preact from "preact";
 export type PageDataContext = {
 	data?: unknown;
 	embedData: boolean;
+	location: { pathname: string; search: string };
 };
 
 export let pageDataContext: preact.Context<PageDataContext | undefined>;
 
 type PageDataProviderProps = {
-	context?: { data?: unknown };
-	embedData?: boolean;
+	context?: {
+		data?: unknown;
+		location: { pathname: string; search: string };
+		embedData?: boolean;
+	};
 };
 
 export function PageDataProvider(
@@ -19,11 +23,7 @@ export function PageDataProvider(
 
 declare global {
 	interface FrugalGlobalNamespace {
-		context: {
-			data?: unknown;
-			embedData: boolean;
-			pathname: string;
-		};
+		context: PageDataContext;
 	}
 
 	namespace globalThis {
