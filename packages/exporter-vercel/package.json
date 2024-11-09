@@ -1,0 +1,17 @@
+{
+	"name": "@frugal-node/exporter-vercel",
+	"version": "1.1.0",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./exports/index.d.ts",
+			"import": "./exports/index.js"
+		}
+	},
+	"dependencies": {
+		"@vercel/kv": "^3.0.0"
+	},
+	"peerDependencies": {
+		"@frugal-node/core": "^1.1.0"
+	}
+}

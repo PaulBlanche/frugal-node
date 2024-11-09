@@ -1,0 +1,9 @@
+node_modules
+.vscode
+coverage
+dist
+.vercel
+**/test/**/project/**
+**/test/**/data/**
+playground
+TODO.md

@@ -1,0 +1,61 @@
+.toc-list {
+	margin: 0;
+	padding-left: 1rem;
+	list-style: none;
+	font-weight: bold;
+
+	& .toc-list {
+		font-weight: normal;
+		border-left: 1px solid #ddd;
+	}
+}
+
+.toc-item {
+	position: relative;
+}
+
+.toc-item:not(:first-of-type) {
+	margin-top: 1rem;
+}
+
+.toc-item .toc-item {
+	margin-top: 0.3rem;
+}
+
+.toc-item::before {
+	font-weight: bold;
+}
+
+.toc-link {
+	composes: link from "../../../../styles/link.module.css";
+
+	&:not(:hover):not(:active):not(.active-link) {
+		text-decoration: none;
+	}
+
+	&:not(:focus) {
+		background-position-y: 1rem;
+	}
+	&:focus {
+		background-position-y: 0.2rem;
+	}
+}
+
+.toc-link-active {
+	composes: active-link from "../../../../styles/link.module.css";
+	composes: link from "../../../../styles/link.module.css";
+
+	background: none;
+}
+
+.toc-link-active::after {
+	content: "";
+	display: block;
+	position: absolute;
+	background: var(--color-yellow);
+	left: -1em;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	z-index: -1;
+}

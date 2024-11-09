@@ -1,0 +1,21 @@
+{
+	"name": "@frugal-node/workspace",
+	"version": "1.1.0",
+	"private": "true",
+	"workspaces": ["packages/*", "doc"],
+	"type": "module",
+	"scripts": {
+		"test:unit": "node --experimental-test-module-mocks --test --experimental-test-snapshots --no-warnings=ExperimentalWarning --test-name-pattern='/^unit\\//' '**/test/unit/**/*.test.js'",
+		"test:inte": "node --experimental-test-module-mocks --test --experimental-test-snapshots --no-warnings=ExperimentalWarning --test-name-pattern='/^inte\\//' '**/test/integration/**/*.test.js'",
+		"test": "node --experimental-test-module-mocks --experimental-test-snapshots --no-warnings=ExperimentalWarning ./packages/test-utils/src/runner.js",
+		"lint": "npx biome check .",
+		"typecheck": "tsc -p .",
+		"doc:dev": "npm -w @frugal-node/doc run dev",
+		"doc:build": "NODE_ENV=production npm -w @frugal-node/doc run build"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.0",
+		"@types/node": "^22.5.5",
+		"typescript": "^5.6.2"
+	}
+}

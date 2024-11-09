@@ -1,0 +1,14 @@
+.page {
+	composes: foo-bar;
+	composes: global-selector from global;
+	color: blue;
+}
+
+.foo-bar {
+	composes: base-dep from "./dep.module.css";
+	color: green;
+}
+
+:global(.global-selector) {
+	color: violet;
+}

@@ -1,0 +1,147 @@
+.wrapper {
+	background: #fafafa;
+	border: 1px solid #eaeaea;
+	position: relative;
+}
+
+.tablist {
+	display: flex;
+	background: #f0f0f0;
+	z-index: 1;
+	position: relative;
+}
+
+.tab {
+	cursor: pointer;
+	border: none;
+	background-color: #e8e8e8;
+	color: #9aa0a0;
+	padding: 0.7em 1em;
+	border-bottom: 1px solid #d8d8d8;
+	border-right: 1px solid #d8d8d8;
+	transition: background-color 0.1s, color 0.1s, border-color 0.1s, box-shadow 0.1s;
+	font-size: 85%;
+	line-height: 1.45;
+}
+
+.input:checked + label {
+	background-color: #fafafa;
+	color: #020202;
+	border-bottom-color: #6182b8;
+}
+
+.tabfocus {
+	display: inline-block;
+}
+
+@supports (display: flex) {
+	.input:focus-visible + label .tabfocus {
+		outline-offset: 0.2em;
+		outline: 2px solid #6884bf;
+	}
+}
+
+.tabpanels {
+	display: grid;
+}
+
+.tabpanel {
+	grid-area: 1 / 1;
+	overflow: auto;
+	visibility: hidden;
+}
+
+.tabpanel:focus {
+	outline: 4px solid #6884bf;
+}
+
+.tabpanel.active {
+	visibility: visible;
+}
+
+.copy {
+	position: absolute;
+	top: 3.3em;
+	right: 0.3em;
+	z-index: 2;
+	height: 2.7em;
+	width: 2.7em;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: none;
+	color: #a8a8a8;
+	background-color: #fafafa;
+	border: 1px solid #a8a8a8;
+	cursor: pointer;
+	opacity: 0;
+	transition: opacity 0.2s, color 0.2s, background-color 0.2s;
+	border-radius: 4px;
+}
+
+.wrapper:hover .copy {
+	opacity: 1;
+}
+
+.copy:hover,
+.copy:active,
+.copy.success {
+	background-color: #d8d8d8;
+	color: #333;
+}
+
+.copy:focus {
+	outline: 2px solid #6884bf;
+	opacity: 1;
+}
+
+.copy.success .check {
+	display: block;
+}
+.copy.success .clip {
+	display: none;
+}
+
+.clip {
+	display: block;
+}
+
+.check {
+	display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+	.wrapper {
+		background: #212121;
+	}
+
+	.tablist {
+		background: #020202;
+	}
+
+	.tab {
+		background-color: #212121;
+		color: #9aa0a0;
+		border-bottom-color: #515151;
+		border-right-color: #515151;
+	}
+
+	.tab[aria-selected="true"] {
+		background-color: #414141;
+		color: #eeffff;
+		border-bottom-color: #89ddff;
+	}
+
+	.copy {
+		color: #9aa0a0;
+		background-color: #212121;
+		border-color: #9aa0a0;
+	}
+
+	.copy:hover,
+	.copy:active,
+	.copy.success {
+		background-color: #515151;
+		color: #fff;
+	}
+}

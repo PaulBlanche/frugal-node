@@ -1,0 +1,12 @@
+{
+	"name": "@frugal-node/test-utils",
+	"version": "1.1.0",
+	"private": "true",
+	"type": "module",
+	"main": "./src/index.js",
+	"dependencies": {
+		"@types/jsdom": "^21.1.7",
+		"jsdom": "^25.0.1",
+		"puppeteer": "^23.3.0"
+	}
+}

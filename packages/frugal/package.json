@@ -1,0 +1,72 @@
+{
+	"name": "@frugal-node/core",
+	"version": "1.1.0",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./exports/index.d.ts",
+			"import": "./exports/index.js"
+		},
+		"./config/build": {
+			"types": "./exports/config/build.d.ts",
+			"import": "./exports/config/build.js"
+		},
+		"./config/runtime": {
+			"types": "./exports/config/runtime.d.ts",
+			"import": "./exports/config/runtime.js"
+		},
+		"./page": {
+			"types": "./exports/page/index.d.ts",
+			"import": "./exports/page/index.js"
+		},
+		"./plugin": {
+			"types": "./exports/plugin/index.d.ts",
+			"import": "./exports/plugin/index.js"
+		},
+		"./server": {
+			"types": "./exports/server/index.d.ts",
+			"import": "./exports/server/index.js"
+		},
+		"./utils/cookies": {
+			"types": "./exports/utils/cookies/index.d.ts",
+			"import": "./exports/utils/cookies/index.js"
+		},
+		"./utils/fs": {
+			"types": "./exports/utils/fs/index.d.ts",
+			"import": "./exports/utils/fs/index.js"
+		},
+		"./utils/Hash": {
+			"types": "./exports/utils/Hash/index.d.ts",
+			"import": "./exports/utils/Hash/index.js"
+		},
+		"./utils/log": {
+			"types": "./exports/utils/log/index.d.ts",
+			"import": "./exports/utils/log/index.js"
+		},
+		"./utils/serverData": {
+			"types": "./exports/utils/serverData/index.d.ts",
+			"import": "./exports/utils/serverData/index.js"
+		},
+		"./exporter": {
+			"types": "./exports/exporter/index.d.ts",
+			"import": "./exports/exporter/index.js"
+		}
+	},
+	"dependencies": {
+		"@swc/core": "^1.7.26",
+		"chalk": "^5.3.0",
+		"chokidar": "^4.0.0",
+		"cookie": "^1.0.1",
+		"esbuild": "^0.24.0",
+		"fast-glob": "^3.3.2",
+		"imurmurhash": "^0.1.4",
+		"magic-string": "^0.30.11",
+		"mime": "^4.0.4",
+		"path-to-regexp": "^8.1.0",
+		"zod": "^3.23.8"
+	},
+	"devDependencies": {
+		"@types/cookie": "^0.6.0",
+		"@types/imurmurhash": "^0.1.4"
+	}
+}

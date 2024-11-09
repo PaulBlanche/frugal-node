@@ -1,0 +1,73 @@
+.drawer {
+	z-index: 1001;
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	width: 280px;
+	padding-right: 2rem;
+
+	.toc {
+		display: block;
+	}
+
+	.close {
+		display: none;
+	}
+}
+
+.nav {
+	background-color: #fff;
+	height: 100%;
+	padding-top: 1em;
+	transition: transform 0.2s;
+}
+
+.toggle {
+	list-style: none;
+	height: 30px;
+	width: 30px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 14px;
+	border-radius: 50%;
+	border: 1px solid #dadada;
+
+	&::marker /* Latest Chrome, Edge, Firefox */,
+	&::-webkit-details-marker /* Safari */ {
+		display: none;
+	}
+
+	&:hover {
+		color: #000;
+	}
+}
+
+.drawer[open] {
+	.toc {
+		display: none;
+	}
+
+	.close {
+		display: block;
+	}
+
+	.toggle {
+		background-color: #eaeaea;
+	}
+}
+
+.overlay {
+	display: none;
+	position: relative;
+	z-index: 100;
+	transition: opacity 0.2s;
+}
+
+.drawer[open] + .overlay {
+	display: block;
+	position: fixed;
+	inset: 0;
+	background: #000;
+	opacity: 0.5;
+}

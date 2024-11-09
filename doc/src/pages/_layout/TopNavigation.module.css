@@ -1,0 +1,72 @@
+.navigation {
+	display: flex;
+	background: #fff;
+	height: 60px;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	border-bottom: #f0f0f0 2px solid;
+	z-index: 1000;
+	align-items: center;
+}
+
+.navigation-container {
+	composes: container from "../../styles/container.module.css";
+
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	font-size: 0.9rem;
+}
+
+@media (max-width: 360px) {
+	.navigation-with-button {
+		margin-left: 60px;
+	}
+}
+
+.entry {
+	composes: base-link from "../../styles/link.module.css";
+
+	padding: 1rem;
+	color: #888;
+	text-decoration-line: none;
+}
+
+.entry:hover {
+	text-decoration-line: underline;
+}
+
+.entry:focus {
+	outline-offset: -0.5em;
+	outline: 2px solid #6884bf;
+}
+
+@media (min-width: 660px) {
+	.entry {
+		margin: 0 1rem;
+	}
+}
+
+.active {
+	color: #000;
+	font-weight: bold;
+	text-decoration-line: underline;
+}
+
+.github-link {
+	margin: 0 1rem;
+	padding: 8px;
+
+	.icon {
+		width: 16px;
+		height: 16px;
+		display: block;
+		color: #24292f;
+	}
+
+	&:hover .icon {
+		opacity: 0.5;
+	}
+}

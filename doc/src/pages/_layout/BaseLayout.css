@@ -1,0 +1,29 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@200..700&family=Sofia+Sans+Condensed:wght@400..800&display=swap");
+
+:root {
+	--heading-font-familly: "Sofia sans condensed", sans-serif;
+	--body-font-familly: "Inter", sans-serif;
+	--color-yellow: #ffcb74;
+}
+
+html {
+	box-sizing: border-box;
+	scroll-padding-top: 60px;
+}
+
+body {
+	font: 16px / 1.5 var(--body-font-familly);
+	margin: 0;
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-font-smoothing: antialiased;
+}
+
+body.no-scroll {
+	overflow: hidden;
+}
+
+*,
+*:before,
+*:after {
+	box-sizing: inherit;
+}

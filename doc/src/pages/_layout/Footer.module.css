@@ -1,0 +1,16 @@
+.footer {
+	display: block;
+	background: #fff;
+	border-top: 2px solid #f0f0f0;
+	color: #7b7070;
+}
+
+.footer-container {
+	composes: container from "../../styles/container.module.css";
+
+	height: 5rem;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+}

@@ -1,0 +1,74 @@
+{
+	"$schema": "https://biomejs.dev/schemas/1.9.0/schema.json",
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	},
+	"files": {
+		"ignore": [
+			"**/*.min.js",
+			"**/*.min.d.ts",
+			"test/integration/**/project/**",
+			"playground/dist/**"
+		]
+	},
+	"organizeImports": {
+		"enabled": true
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"complexity": {
+				"useLiteralKeys": "off",
+				"useSimplifiedLogicExpression": "warn"
+			},
+			"correctness": {
+				"noConstantMathMinMaxClamp": "warn"
+			},
+			"style": {
+				"noDefaultExport": "error",
+				"noNegationElse": "error",
+				"useBlockStatements": "error",
+				"useCollapsedElseIf": "error",
+				"useShorthandArrayType": "error",
+				"useForOf": "error",
+				"useNodeAssertStrict": "error",
+				"useSingleCaseStatement": "error"
+			},
+			"suspicious": {
+				"noEmptyBlockStatements": "error",
+				"noSkippedTests": "warn",
+				"useAwait": "error"
+			}
+		},
+		"ignore": ["test/**/fixtures/**"]
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab",
+		"indentWidth": 4,
+		"lineWidth": 100
+	},
+	"javascript": {
+		"formatter": {
+			"bracketSameLine": false,
+			"bracketSpacing": true,
+			"quoteStyle": "double",
+			"jsxQuoteStyle": "double",
+			"quoteProperties": "asNeeded",
+			"trailingCommas": "all",
+			"semicolons": "always",
+			"arrowParentheses": "always"
+		}
+	},
+	"css": {
+		"parser": {
+			"cssModules": true
+		},
+		"formatter": {
+			"quoteStyle": "double"
+		}
+	}
+}

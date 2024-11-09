@@ -1,0 +1,79 @@
+.wrapper {
+	font-size: 85%;
+	line-height: 1.45;
+	position: relative;
+	font-family: Consolas, Monaco, Andale Mono, monospace;
+	background: #212121;
+	color: #eeffff;
+}
+
+pre.highlight {
+	padding: 16px;
+	margin: 0;
+	height: 100%;
+}
+
+pre.highlight-line-numbers {
+	margin-left: 50px;
+	padding-left: 0;
+}
+
+pre.line-numbers {
+	position: absolute;
+	top: 0;
+	padding: 16px;
+	left: 0;
+	opacity: 0.4;
+	user-select: none;
+	text-align: right;
+
+	z-index: 1;
+	background: transparent;
+	margin: 0;
+}
+
+pre.line-highlights {
+	position: absolute;
+	inset: 0;
+	padding: 16px 0;
+	user-select: none;
+	margin: 0;
+	pointer-events: none;
+}
+
+pre.highlight > .code {
+	display: block;
+	position: relative;
+	z-index: 1;
+	font-family: inherit;
+}
+
+.line-highlights .highlight {
+	background: #aaa;
+	opacity: 0.2;
+	padding-top: 1px;
+	padding-bottom: 3px;
+	margin-top: -1px;
+	margin-bottom: -3px;
+}
+
+@media (prefers-color-scheme: dark) {
+	.wrapper {
+		background: #212121;
+		color: #eeffff;
+	}
+
+	.line-highlights .highlight {
+		background: #717171;
+	}
+
+	:global(.shiki),
+	:global(.shiki) span {
+		color: var(--shiki-dark) !important;
+		background-color: var(--shiki-dark-bg) !important;
+		/* Optional, if you also want font styles */
+		font-style: var(--shiki-dark-font-style) !important;
+		font-weight: var(--shiki-dark-font-weight) !important;
+		text-decoration: var(--shiki-dark-text-decoration) !important;
+	}
+}

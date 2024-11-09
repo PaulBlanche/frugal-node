@@ -1,0 +1,23 @@
+{
+	"compilerOptions": {
+		"noEmit": true,
+		"checkJs": true,
+		"strict": true,
+		"allowJs": true,
+		"target": "ESNext",
+		"moduleResolution": "NodeNext",
+		"resolveJsonModule": true,
+		"module": "NodeNext",
+		"lib": ["DOM", "DOM.Iterable", "ESNext"],
+		"allowImportingTsExtensions": true,
+		"forceConsistentCasingInFileNames": false,
+		"jsx": "react-jsx",
+		"jsxImportSource": "preact"
+	},
+	"include": ["packages/**/*", "playground/**/*"],
+	"exclude": [
+		"node_modules/**/*",
+		"packages/**/test/integration/**/project/**/*",
+		"playground/dist/**/*"
+	]
+}

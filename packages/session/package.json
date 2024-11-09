@@ -1,0 +1,14 @@
+{
+	"name": "@frugal-node/session",
+	"version": "1.1.0",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./exports/index.d.ts",
+			"import": "./exports/index.js"
+		}
+	},
+	"peerDependencies": {
+		"@frugal-node/core": "^1.1.0"
+	}
+}
