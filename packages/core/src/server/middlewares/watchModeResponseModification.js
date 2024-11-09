@@ -44,7 +44,7 @@ const DECODER = new TextDecoder();
 
 /**
  * @param {import('node:stream/web').ReadableStream<Uint8Array>} responseBody
- * @param {import("../context.ts").BaseContext} context
+ * @param {import("../context.js").BaseContext} context
  */
 async function injectLivereloadScript(responseBody, context) {
 	//TODO : could be optimised, passing through the stream, intercepting and modifying the final chunk

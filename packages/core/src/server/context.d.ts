@@ -1,10 +1,10 @@
-import type { DynamicPage, StaticPage } from "../page/Page.ts";
+import type { DynamicPage, StaticPage } from "../page/Page.js";
 import type { Collapse } from "../page/PathParams.js";
 import type { Producer } from "../page/Producer.js";
 import type { log } from "../utils/log.js";
 import type { HandlerInfo } from "../utils/serve.js";
-import type { ServerCache } from "./ServerCache.ts";
-import type { Session } from "./session/Session.ts";
+import type { ServerCache } from "./ServerCache.js";
+import type { Session } from "./session/Session.js";
 
 export type BaseContext = {
 	url: URL;

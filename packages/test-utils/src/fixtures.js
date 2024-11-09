@@ -1,4 +1,4 @@
-/** @import { BuildConfig } from "../../frugal/src/BuildConfig.js" */
+/** @import { BuildConfig } from "../../core/src/BuildConfig.js" */
 
 import * as fs from "node:fs";
 import * as path from "node:path";

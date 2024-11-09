@@ -1,4 +1,4 @@
-import type { SessionStorage } from "./SessionStorage.ts";
+import type { SessionStorage } from "./SessionStorage.js";
 
 interface MemorySessionStorageCreator {
 	create(): SessionStorage;

@@ -1,7 +1,7 @@
 import type { FrugalResponse } from "./FrugalResponse.js";
 import type { Page } from "./Page.js";
 import type { Asset } from "./PageAssets.js";
-import type { PageSession, State } from "./PageDescriptor.ts";
+import type { PageSession, State } from "./PageDescriptor.js";
 
 export interface Producer {
 	buildAll(): Promise<FrugalResponse[]>;

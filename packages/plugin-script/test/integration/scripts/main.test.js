@@ -5,8 +5,8 @@ import { mock, test } from "node:test";
 import { BuildConfig } from "@frugal-node/core/config/build";
 import { PageAssets } from "@frugal-node/core/page";
 import { BuildHelper } from "@frugal-node/test-utils";
-import { build } from "../../../../frugal/src/build/build.js";
-import { loadManifest } from "../../../../frugal/src/build/manifest.js";
+import { build } from "../../../../core/src/build/build.js";
+import { loadManifest } from "../../../../core/src/build/manifest.js";
 
 const baseHelper = await BuildHelper.setupFixtures(import.meta.dirname);
 

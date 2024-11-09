@@ -1,5 +1,5 @@
 import type { Asset } from "../page/PageAssets.js";
-import type { PageDescriptor } from "../page/PageDescriptor.ts";
+import type { PageDescriptor } from "../page/PageDescriptor.js";
 
 export type WritableManifest = {
 	hash: string;

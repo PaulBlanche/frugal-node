@@ -1,7 +1,7 @@
 import type * as http from "node:http";
-import type { Manifest } from "../build/manifest.ts";
+import type { Manifest } from "../build/manifest.js";
 import type { Handler, ServeOptions } from "../utils/serve.js";
-import type { ServerCache } from "./ServerCache.ts";
+import type { ServerCache } from "./ServerCache.js";
 import type { InternalServerConfig } from "./ServerConfig.js";
 
 export type Config = {

@@ -1,4 +1,4 @@
-import type { CacheStorage } from "./ServerCache.ts";
+import type { CacheStorage } from "./ServerCache.js";
 
 interface MemoryStorageCreator {
 	create(): CacheStorage;

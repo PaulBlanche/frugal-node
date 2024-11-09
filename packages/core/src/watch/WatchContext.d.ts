@@ -1,7 +1,7 @@
 import type { InternalBuildConfig } from "../BuildConfig.js";
 import type { InternalRuntimeConfig } from "../RuntimeConfig.js";
 import type { WatchCache } from "./WatchCache.js";
-import type { Listener } from "./WatchProcess.ts";
+import type { Listener } from "./WatchProcess.js";
 
 export interface WatchContext {
 	addEventListener(listener: Listener): void;

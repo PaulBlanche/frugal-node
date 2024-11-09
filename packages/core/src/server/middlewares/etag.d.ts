@@ -1,5 +1,5 @@
-import type { BaseContext } from "../context.ts";
-import type { Next } from "../middleware.ts";
+import type { BaseContext } from "../context.js";
+import type { Next } from "../middleware.js";
 
 export function etag<CONTEXT extends BaseContext>(
 	context: CONTEXT,
