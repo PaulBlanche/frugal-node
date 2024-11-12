@@ -1,8 +1,8 @@
 import type * as pathToRegexp from "path-to-regexp";
+import type { ServerData } from "../utils/serverData.js";
 import type * as descriptor from "./PageDescriptor.js";
 import type { PageResponse } from "./PageResponse.js";
 import type { PathParams } from "./PathParams.js";
-import type { ServerData } from "../utils/serverData.js";
 
 type BasePage<PATH extends string = string, DATA extends ServerData = ServerData> = {
 	readonly moduleHash: string;

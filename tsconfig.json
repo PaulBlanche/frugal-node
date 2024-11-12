@@ -14,11 +14,11 @@
 		"jsx": "react-jsx",
 		"jsxImportSource": "preact"
 	},
-	"include": ["packages/**/*", "playground/**/*"],
+	"include": ["packages/**/*", "playground/**/*", "doc/**/*"],
 	"exclude": [
 		"node_modules/**/*",
 		"packages/**/test/integration/**/project/**/*",
 		"playground/dist/**/*",
-		"dist/**/*"
+		"**/dist/**/*"
 	]
 }

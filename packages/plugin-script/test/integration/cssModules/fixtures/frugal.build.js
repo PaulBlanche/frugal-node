@@ -18,6 +18,7 @@ export default {
 	plugins: [
 		script({
 			esbuildOptions: {
+				minify: false,
 				// disable hash in files to avoid test failure on different
 				// environment with different hash seed
 				chunkNames: "[name]",
@@ -28,6 +29,7 @@ export default {
 		css({
 			cssModule: true,
 			esbuildOptions: {
+				minify: false,
 				// disable hash in files to avoid test failure on different
 				// environment with different hash seed
 				chunkNames: "[name]",

@@ -1,3 +1,4 @@
+//@ts-nocheck
 const i = Symbol.for("preact-signals");
 function t() {
 	if (r > 1) {

@@ -20,7 +20,9 @@ export function MobileSiteNav({ toc, version, lang, class: className }: MobileSi
 	const drawerRef = hooks.useRef<HTMLDetailsElement>(null);
 
 	hooks.useEffect(() => {
+		document.addEventListener("keydown", handleKeyPress);
 		return () => {
+			document.removeEventListener("keydown", handleKeyPress);
 			FocusTrap.deactivate();
 		};
 	}, []);
@@ -33,6 +35,7 @@ export function MobileSiteNav({ toc, version, lang, class: className }: MobileSi
 	return (
 		<div class={className}>
 			<details ref={drawerRef} class={mobileSiteNav["drawer"]} open={isTrueOpen}>
+				{/* biome-ignore lint/a11y/useKeyWithClickEvents: keydown already trigger click on summary */}
 				<summary tabindex={0} onClick={toggle} class={clsx(mobileSiteNav["toggle"])}>
 					<TocIcon
 						class={clsx(mobileSiteNav["icon"], mobileSiteNav["toc"])}
@@ -56,11 +59,11 @@ export function MobileSiteNav({ toc, version, lang, class: className }: MobileSi
 				/>
 			</details>
 
+			{/* biome-ignore lint/a11y/useKeyWithClickEvents:  keyboard handling done in useEffect at document level*/}
 			<div
 				style={{
 					opacity: step === Step.DURING ? undefined : "0",
 				}}
-				onKeyPress={handleKeyPress}
 				onClick={close}
 				class={clsx(mobileSiteNav["overlay"])}
 			/>
@@ -74,7 +77,6 @@ export function MobileSiteNav({ toc, version, lang, class: className }: MobileSi
 	}
 
 	function toggle(event: MouseEvent) {
-		console.log("toggle");
 		setIsOpen((isOpen) => !isOpen);
 		document.body.classList.toggle("no-scroll");
 		drawerRef.current && FocusTrap.toggle(drawerRef.current, {});

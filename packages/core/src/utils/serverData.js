@@ -155,6 +155,73 @@ const serverDataSchema = /* @__PURE__ */ zod.union([
 	/* @__PURE__ */ zod.array(/* @__PURE__ */ zod.lazy(() => serverDataSchema)),
 ]);
 
+/** @type {self.transformToSerializable} */
+export function transformToSerializable(value, selector, key = "root") {
+	const map = selector(value, key);
+
+	if (map !== undefined) {
+		return map();
+	}
+
+	if (
+		value === null ||
+		value === undefined ||
+		typeof value === "string" ||
+		typeof value === "number" ||
+		typeof value === "boolean" ||
+		value instanceof Date ||
+		value instanceof URL
+	) {
+		return value;
+	}
+
+	if (value instanceof Map) {
+		const transformed = new Map();
+		let i = 0;
+		for (const [name, val] of value.entries()) {
+			transformed.set(
+				transformToSerializable(name, selector, `${key}.mapkey-${i++}`),
+				transformToSerializable(val, selector, `${key}.mapval-${i++}`),
+			);
+		}
+		return transformed;
+	}
+
+	if (value instanceof Set) {
+		const transformed = new Set();
+		let i = 0;
+		for (const val of value.values()) {
+			transformed.add(transformToSerializable(val, selector, `${key}.setval-${i++}`));
+		}
+		return transformed;
+	}
+
+	if (Array.isArray(value)) {
+		const transformed = [];
+		let i = 0;
+		for (const val of value) {
+			transformed.push(transformToSerializable(val, selector, `${key}.arrval-${i++}`));
+		}
+		return transformed;
+	}
+
+	/** @type {Record<any, any>} */
+	const transformed = {};
+	for (const [name, val] of Object.entries(value)) {
+		const transformedKey = transformToSerializable(name, selector, `${key}.objkey-${name}`);
+		if (!(typeof transformedKey === "string" || typeof transformedKey === "number")) {
+			throw Error(`type "${typeof transformedKey}" can't be used as an index type.`);
+		}
+		transformed[transformedKey] = transformToSerializable(
+			val,
+			selector,
+			`${key}.objval-${name}`,
+		);
+	}
+
+	return transformed;
+}
+
 /**
  *
  * @param {unknown} data

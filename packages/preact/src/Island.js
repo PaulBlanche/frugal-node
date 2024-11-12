@@ -1,7 +1,7 @@
 /** @import * as self from "./Island.js" */
 /** @import { ServerData } from "@frugal-node/core/utils/serverData" */
 
-import { serialize } from "@frugal-node/core/utils/serverData";
+import { serialize, transformToSerializable } from "@frugal-node/core/utils/serverData";
 import * as preact from "preact";
 import * as hooks from "preact/hooks";
 import { Head, HeadProvider } from "./Head.js";
@@ -132,52 +132,25 @@ function serializeProps(props) {
  * @param {any} props
  * @returns {any}
  */
-function wrapVNodesInSlots(id, props, key = "root") {
-	if (preact.isValidElement(props)) {
-		return preact.h(Slot, { slotId: key, islandId: id }, props);
-	}
-
-	if (
-		typeof props === "object" &&
-		props !== null &&
-		"type" in props &&
-		props.type === "frugal-slot"
-	) {
-		return preact.h(Slot, { slotId: key, islandId: id });
-	}
-
-	if (Array.isArray(props)) {
-		return props.map((prop, index) => {
-			return wrapVNodesInSlots(id, prop, `${key}.${index}`);
-		});
-	}
-
-	if (typeof props === "object" && props !== null) {
-		return Object.fromEntries(
-			Object.entries(props).map(([name, prop]) => {
-				return [name, wrapVNodesInSlots(id, prop, `${key}.${name}`)];
-			}),
-		);
-	}
-
-	if (props instanceof Set) {
-		const cleanSet = new Set();
-		let i = 0;
-		for (const prop of props.values()) {
-			cleanSet.add(wrapVNodesInSlots(id, prop, `${key}.${i++}`));
+function wrapVNodesInSlots(id, props) {
+	return transformToSerializable(props, (value, key) => {
+		if (key === "root.objval-children") {
+			return () => preact.h(Slot, { slotId: key, islandId: id }, /** @type {any} */ (value));
 		}
-		return cleanSet;
-	}
 
-	if (props instanceof Map) {
-		const cleanMap = new Map();
-		for (const [name, prop] of props.entries()) {
-			cleanMap.set(name, wrapVNodesInSlots(id, prop, `${key}.${name}`));
+		if (preact.isValidElement(value)) {
+			return () => preact.h(Slot, { slotId: key, islandId: id }, value);
 		}
-		return cleanMap;
-	}
 
-	return props;
+		if (
+			typeof value === "object" &&
+			value !== null &&
+			"type" in value &&
+			value.type === "frugal-slot"
+		) {
+			return () => preact.h(Slot, { slotId: key, islandId: id });
+		}
+	});
 }
 
 /**
@@ -185,39 +158,13 @@ function wrapVNodesInSlots(id, props, key = "root") {
  * @return {ServerData}
  */
 function removeVNodes(props) {
-	if (preact.isValidElement(props)) {
-		return { type: "frugal-slot" };
-	}
-
-	if (Array.isArray(props)) {
-		return props.map((prop) => {
-			return removeVNodes(prop);
-		});
-	}
-
-	if (typeof props === "object" && props !== null) {
-		return Object.fromEntries(
-			Object.entries(props).map(([name, prop]) => {
-				return [name, removeVNodes(prop)];
-			}),
-		);
-	}
-
-	if (props instanceof Set) {
-		const cleanSet = new Set();
-		for (const prop of props.values()) {
-			cleanSet.add(removeVNodes(prop));
+	return transformToSerializable(props, (value, key) => {
+		if (key === "root.objval-children") {
+			return () => ({ type: "frugal-slot" });
 		}
-		return cleanSet;
-	}
 
-	if (props instanceof Map) {
-		const cleanMap = new Map();
-		for (const [name, prop] of props.entries()) {
-			cleanMap.set(name, removeVNodes(prop));
+		if (preact.isValidElement(value)) {
+			return () => ({ type: "frugal-slot" });
 		}
-		return cleanMap;
-	}
-
-	return props;
+	});
 }

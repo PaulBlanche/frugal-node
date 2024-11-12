@@ -80,18 +80,3 @@ export async function dependencies(filePath) {
 		return specifiers;
 	}
 }
-
-/**
- * @param {string} ext
- * @returns {{ syntax:"typescript", tsx:boolean}|{syntax:'ecmascript', jsx:boolean}}
- */
-function getParseOptions(ext) {
-	if ([".ts", ".tsx", ".mts", ".cts"].includes(ext)) {
-		return { syntax: "typescript", tsx: ext.endsWith("x") };
-	}
-	if ([".js", ".jsx", ".mjs", ".cjs"].includes(ext)) {
-		return { syntax: "ecmascript", jsx: ext.endsWith("x") };
-	}
-
-	throw Error(`unparsable file format ${ext}`);
-}

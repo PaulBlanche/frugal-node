@@ -1,20 +1,16 @@
 import * as path from "node:path";
 import { BuildConfig } from "@frugal-node/core/config/build";
-import { RuntimeConfig } from "@frugal-node/core/config/runtime";
 import { toResponse } from "../../../../src/page/FrugalResponse.js";
 import * as fs from "../../../../src/utils/fs.js";
 import { WatchContext } from "../../../../src/watch/WatchContext.js";
 import buildConfig from "./frugal.build.js";
-import runtimeConfig from "./frugal.config.js";
-
-const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig);
 
 const internalBuildConfig = BuildConfig.create(buildConfig);
 await internalBuildConfig.validate();
 
 const data = await getData();
 
-const context = WatchContext.create(internalRuntimeConfig, internalBuildConfig, {
+const context = WatchContext.create(internalBuildConfig, {
 	async add(response) {
 		if (response.path in data) {
 			const previous = data[response.path];
@@ -53,7 +49,7 @@ const context = WatchContext.create(internalRuntimeConfig, internalBuildConfig, 
 	},
 });
 
-context.watch();
+context.watch({ port: 3001 });
 
 process.addListener("SIGINT", async () => {
 	await context.dispose();

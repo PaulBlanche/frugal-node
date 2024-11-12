@@ -1,8 +1,7 @@
-import type { RuntimeConfig } from "../RuntimeConfig.js";
 import type { InternalPlugin } from "../esbuild/Plugin.js";
 
 type WatchContext = {
-	startServer: (config: {  onListen: () => void }) => Promise<void>;
+	startServer: (config: { onListen: () => void }) => Promise<void>;
 };
 
 export function watchPlugin(context: WatchContext): InternalPlugin;

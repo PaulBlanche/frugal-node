@@ -36,3 +36,11 @@ export function _initGlobalState(uid: string): void;
 export function hash(serverData: ServerData): string;
 
 export function serialize(serverData: ServerData): string;
+
+export function transformToSerializable(
+	value: unknown,
+	// biome-ignore lint/suspicious/noExplicitAny: ok
+	selector: (value: unknown, key: string) => (() => any) | undefined,
+	key?: string,
+	// biome-ignore lint/suspicious/noExplicitAny: ok
+): any;

@@ -1,7 +1,7 @@
+import type { ServerData } from "../utils/serverData.js";
 import type { PageAssets } from "./PageAssets.js";
 import type { PageResponse } from "./PageResponse.js";
 import type { PathParams } from "./PathParams.js";
-import type { ServerData } from "../utils/serverData.js";
 
 export function assertDynamicDescriptor<PATH extends string, DATA extends ServerData>(
 	descriptor: unknown,

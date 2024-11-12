@@ -1,5 +1,5 @@
-import type { PageResponse } from "./PageResponse.js";
 import type { ServerData } from "../utils/serverData.js";
+import type { PageResponse } from "./PageResponse.js";
 
 export type Init<DATA extends ServerData> = {
 	path: string;

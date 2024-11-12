@@ -2,4 +2,4 @@
 import { foo } from "./main.module.css";
 
 // side effect to keep "foo"
-globalThis.foo = foo;
+(globalThis as any).foo = foo;

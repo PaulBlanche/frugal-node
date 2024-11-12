@@ -64,7 +64,7 @@ async function doHydrate(name, getComponent) {
 		return;
 	}
 
-	populateRanges(ids);
+	populateRanges(name, ids);
 
 	for (const id of ids) {
 		const props = window.__FRUGAL__.islands.instances[id].props;
@@ -80,17 +80,16 @@ async function doHydrate(name, getComponent) {
 
 		setRenderingIsland(id, node);
 
-		console.log("hydrate", name, Component, props);
-
 		preact.hydrate(node, parent);
 	}
 }
 
 /**
+ * @param {string} name
  * @param {string[]} ids
  * @returns {void}
  */
-function populateRanges(ids) {
+function populateRanges(name, ids) {
 	if (window.__FRUGAL__.islands === undefined) {
 		return;
 	}
@@ -100,6 +99,7 @@ function populateRanges(ids) {
 		const parent = range.start.parentNode;
 		if (parent !== null) {
 			window.__FRUGAL__.islands.instances[id] ??= {
+				name,
 				props: undefined,
 				components: new Set(),
 			};

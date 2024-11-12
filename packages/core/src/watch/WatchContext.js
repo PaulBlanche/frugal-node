@@ -35,8 +35,8 @@ function createWrapper(context) {
 			}
 		},
 
-		watch() {
-			return context.watch();
+		watch({ port } = {}) {
+			return context.watch({ port });
 		},
 
 		dispose() {

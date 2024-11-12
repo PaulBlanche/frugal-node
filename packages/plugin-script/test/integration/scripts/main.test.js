@@ -2,11 +2,7 @@ import * as assert from "node:assert/strict";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { mock, test } from "node:test";
-import { BuildConfig } from "@frugal-node/core/config/build";
-import { PageAssets } from "@frugal-node/core/page";
 import { BuildHelper } from "@frugal-node/test-utils";
-import { build } from "../../../../core/src/build/build.js";
-import { loadManifest } from "../../../../core/src/build/manifest.js";
 
 const baseHelper = await BuildHelper.setupFixtures(import.meta.dirname);
 
@@ -60,7 +56,6 @@ if (true) {
 if (true) {
   console.log("after.script.ts");
 }
-//# sourceMappingURL=page1.js.map
 `,
 	);
 
@@ -84,7 +79,6 @@ if (true) {
 			},
 		),
 		`import "./chunk.js";
-//# sourceMappingURL=page2.js.map
 `,
 	);
 

@@ -23,6 +23,7 @@ export default {
 				chunkNames: "[name]",
 				entryNames: "[name]",
 				assetNames: "[name]",
+				minify: false,
 			},
 		}),
 	],

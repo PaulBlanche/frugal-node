@@ -8,7 +8,7 @@ export interface WatchContext {
 
 	removeEventListener(listener: Listener): void;
 
-	watch(): Promise<void>;
+	watch(config?: { port?: number }): Promise<void>;
 
 	dispose(): Promise<void>;
 }
