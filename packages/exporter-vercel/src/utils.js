@@ -9,6 +9,6 @@ export function functionConfigContent() {
 export function globalConfigContent() {
 	return {
 		version: 3,
-		routes: [{ src: "^(?:/(.*))$", dest: "/", check: true }, { handle: "filesystem" }],
+		routes: [{ handle: "filesystem" }, { src: "^(?:/(.*))$", dest: "/", check: true }],
 	};
 }
