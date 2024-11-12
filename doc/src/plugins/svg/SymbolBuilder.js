@@ -42,7 +42,7 @@ function create() {
 		const viewBox = svg.attributes["viewBox"] ?? undefined;
 		const width = svg.attributes["width"] ?? undefined;
 		const height = svg.attributes["height"] ?? undefined;
-		if (!viewBox && (!width || !height)) {
+		if (!(viewBox || (width && height))) {
 			throw Error("no <svg> with no viewBox or width/height");
 		}
 

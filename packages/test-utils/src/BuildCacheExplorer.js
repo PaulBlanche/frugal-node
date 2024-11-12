@@ -1,11 +1,11 @@
-/** @import { InternalBuildConfig } from "../../frugal/src/BuildConfig.js"; */
-/** @import { BuildCacheData } from "../../frugal/src/build/BuildCache.js"; */
-/** @import {SerializedFrugalResponse } from "../../frugal/src/page/FrugalResponse.js" */
+/** @import { InternalBuildConfig } from "../../core/src/BuildConfig.js"; */
+/** @import { BuildCacheData } from "../../core/src/build/BuildCache.js"; */
+/** @import {SerializedFrugalResponse } from "../../core/src/page/FrugalResponse.js" */
 
 import * as assert from "node:assert/strict";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { loadData } from "../../frugal/src/build/BuildCache.js";
+import { loadData } from "../../core/src/build/BuildCache.js";
 
 export class BuildCacheExplorer {
 	/** @type {InternalBuildConfig} */

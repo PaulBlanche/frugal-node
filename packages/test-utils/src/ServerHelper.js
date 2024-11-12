@@ -1,9 +1,9 @@
 /** @import { InternalBuildConfig } from "@frugal-node/core/config/build" */
-/** @import { InternalServerConfig } from "../../frugal/exports/server/index.js" */
+/** @import { InternalServerConfig } from "../../core/exports/server/index.js" */
 
 import { Server, ServerCache, ServerConfig } from "@frugal-node/core/server";
-import { loadManifest } from "../../frugal/src/build/manifest.js";
-import { BuildSnapshot } from "../../frugal/src/exporter/BuildSnapshot.js";
+import { loadManifest } from "../../core/src/build/manifest.js";
+import { BuildSnapshot } from "../../core/src/exporter/BuildSnapshot.js";
 import { waitForPort } from "./waitForPort.js";
 
 export class ServerHelper {
@@ -56,11 +56,11 @@ export class ServerHelper {
 				return memory;
 			},
 			Promise.resolve(
-				/** @type {Record<string, import("../../frugal/src/page/FrugalResponse.js").SerializedFrugalResponse>} */ ({}),
+				/** @type {Record<string, import("../../core/src/page/FrugalResponse.js").SerializedFrugalResponse>} */ ({}),
 			),
 		);
 
-		/** @type {import("../../frugal/src/server/ServerCache.js").CacheStorage} */
+		/** @type {import("../../core/src/server/ServerCache.js").CacheStorage} */
 		const cacheStorage = {
 			get: (path) => {
 				return memory[path];

@@ -5,9 +5,7 @@
 	"workspaces": ["packages/*", "doc"],
 	"type": "module",
 	"scripts": {
-		"test:unit": "node --experimental-test-module-mocks --test --experimental-test-snapshots --no-warnings=ExperimentalWarning --test-name-pattern='/^unit\\//' '**/test/unit/**/*.test.js'",
-		"test:inte": "node --experimental-test-module-mocks --test --experimental-test-snapshots --no-warnings=ExperimentalWarning --test-name-pattern='/^inte\\//' '**/test/integration/**/*.test.js'",
-		"test": "node --experimental-test-module-mocks --experimental-test-snapshots --no-warnings=ExperimentalWarning ./packages/test-utils/src/runner.js",
+		"test": "node  ./packages/test-utils/src/runner.js",
 		"lint": "npx biome check .",
 		"typecheck": "tsc -p .",
 		"doc:dev": "npm -w @frugal-node/doc run dev",

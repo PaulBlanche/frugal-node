@@ -12,6 +12,7 @@ declare module "preact" {
 	}
 }
 
+// biome-ignore lint/suspicious/noExplicitAny: type of generic VNode
 export function setRenderingIsland(id: string, node: preact.VNode<any>): void;
 
 export function getRenderingIsland(): { id: string; node: preact.VNode } | undefined;

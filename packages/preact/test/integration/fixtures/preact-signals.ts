@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { isValidElement as e, options as i, Component as t } from "preact";
 import { useMemo as n, useRef as o, useEffect as r } from "preact/hooks";
 import { Signal as f, computed as l, signal as s, effect as u } from "./signal-core.ts";

@@ -8,6 +8,8 @@ export function emptyMockFs() {
 	MEMORY_FS = {};
 }
 
+const ENCODER = new TextEncoder();
+
 export const MOCK_FS = {
 	/** @type {fs.ensureFile}*/
 	ensureFile: () => {
@@ -31,5 +33,19 @@ export const MOCK_FS = {
 			chunks.push(chunk);
 		}
 		return chunks.join("");
+	},
+	/** @type {fs.readFile}*/
+	readFile: async (path) => {
+		const data = MEMORY_FS[path];
+
+		if (typeof data === "string") {
+			return Promise.resolve(ENCODER.encode(data));
+		}
+
+		const chunks = [];
+		for await (const chunk of data) {
+			chunks.push(chunk);
+		}
+		return ENCODER.encode(chunks.join(""));
 	},
 };

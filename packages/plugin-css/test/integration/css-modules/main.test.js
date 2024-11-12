@@ -24,6 +24,7 @@ test("inte/plugin/css: css modules", async () => {
 					chunkNames: "[dir]/[name]",
 					entryNames: "[dir]/[name]",
 					assetNames: "[dir]/[name]",
+					minify: false,
 				},
 			}),
 		],
@@ -61,7 +62,6 @@ test("inte/plugin/css: css modules", async () => {
 .global-selector {
   color: violet;
 }
-/*# sourceMappingURL=page.css.map */
 `,
 	);
 

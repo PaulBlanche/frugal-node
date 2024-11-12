@@ -15,6 +15,7 @@ export function ServerSidePageDataProvider(
 ): preact.VNode<any>;
 
 export function ClientSidePageDataProvider(
+	// biome-ignore lint/complexity/noBannedTypes: don't care for this type
 	props: preact.RenderableProps<{}>,
 	// biome-ignore lint/suspicious/noExplicitAny: that's the return type of a preact function component
 ): preact.VNode<any>;

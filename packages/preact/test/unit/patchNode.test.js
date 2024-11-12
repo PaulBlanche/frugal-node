@@ -64,7 +64,7 @@ await test("unit/patchNode: childNodes with render and no island or slots", asyn
 
 		patchNode();
 
-		setRenderingIsland("0", {});
+		setRenderingIsland("0", /** @type {any}*/ ({}));
 
 		assert.strictEqual(root.childNodes.length, realRootChildNodes.length);
 
@@ -97,7 +97,7 @@ await test("unit/patchNode: childNodes with render and island without slots", as
 
 		patchNode();
 
-		setRenderingIsland("0", {});
+		setRenderingIsland("0", /** @type {any}*/ ({}));
 
 		assert.strictEqual(root.childNodes.length, 5);
 		assert.strictEqual(realRootChildNodes.length, 13);
@@ -141,7 +141,7 @@ await test("unit/patchNode: childNodes with render and multiple slots", async ()
 
 		patchNode();
 
-		setRenderingIsland("0", {});
+		setRenderingIsland("0", /** @type {any}*/ ({}));
 
 		assert.strictEqual(root.childNodes.length, 13);
 		assert.strictEqual(realRootChildNodes.length, 30);
@@ -150,19 +150,19 @@ await test("unit/patchNode: childNodes with render and multiple slots", async ()
 		assert.strictEqual(root.childNodes[1], realRootChildNodes[5]);
 		assert.strictEqual(root.childNodes[2], realRootChildNodes[6]);
 
-		assert.strictEqual(root.childNodes[3].localName, "frugal-slot-0-0");
+		assert.strictEqual(/** @type {any}*/ (root.childNodes[3]).localName, "frugal-slot-0-0");
 
 		assert.strictEqual(root.childNodes[4], realRootChildNodes[12]);
 		assert.strictEqual(root.childNodes[5], realRootChildNodes[13]);
 		assert.strictEqual(root.childNodes[6], realRootChildNodes[14]);
 
-		assert.strictEqual(root.childNodes[7].localName, "frugal-slot-0-1");
+		assert.strictEqual(/** @type {any}*/ (root.childNodes[7]).localName, "frugal-slot-0-1");
 
 		assert.strictEqual(root.childNodes[8], realRootChildNodes[20]);
 		assert.strictEqual(root.childNodes[9], realRootChildNodes[21]);
 		assert.strictEqual(root.childNodes[10], realRootChildNodes[22]);
 
-		assert.strictEqual(root.childNodes[11].localName, "frugal-slot-0-2");
+		assert.strictEqual(/** @type {any}*/ (root.childNodes[11]).localName, "frugal-slot-0-2");
 
 		assert.strictEqual(root.childNodes[12], realRootChildNodes[25]);
 
@@ -200,7 +200,7 @@ await test("unit/patchNode: childNodes with render and multiple islands", async 
 
 		patchNode();
 
-		setRenderingIsland("0", {});
+		setRenderingIsland("0", /** @type {any}*/ ({}));
 
 		assert.strictEqual(root.childNodes.length, 5);
 		assert.strictEqual(realRootChildNodes.length, 31);
@@ -209,7 +209,7 @@ await test("unit/patchNode: childNodes with render and multiple islands", async 
 		assert.strictEqual(root.childNodes[1], realRootChildNodes[5]);
 		assert.strictEqual(root.childNodes[2], realRootChildNodes[6]);
 
-		assert.strictEqual(root.childNodes[3].localName, "frugal-slot-0-0");
+		assert.strictEqual(/** @type {any}*/ (root.childNodes[3]).localName, "frugal-slot-0-0");
 
 		assert.strictEqual(root.childNodes[4], realRootChildNodes[12]);
 
@@ -265,7 +265,7 @@ await test("unit/patchNode: parentNode with render", async () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();
-		setRenderingIsland("0", {});
+		setRenderingIsland("0", /** @type {any}*/ ({}));
 
 		for (const child of root.childNodes) {
 			assert.strictEqual(child.parentNode, root);
@@ -321,7 +321,7 @@ await test("unit/patchNode: nextSibling with render and no slots", async () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();
-		setRenderingIsland("0", {});
+		setRenderingIsland("0", /** @type {any}*/ ({}));
 
 		for (let i = 0; i < root.childNodes.length; i++) {
 			assert.strictEqual(root.childNodes[i].nextSibling, root.childNodes[i + 1] ?? null);
@@ -354,7 +354,7 @@ await test("unit/patchNode: nextSibling with render and with slots", async () =>
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();
-		setRenderingIsland("0", {});
+		setRenderingIsland("0", /** @type {any}*/ ({}));
 
 		for (let i = 0; i < root.childNodes.length; i++) {
 			assert.strictEqual(root.childNodes[i].nextSibling, root.childNodes[i + 1] ?? null);
@@ -406,7 +406,7 @@ await test("unit/patchNode: firstChild with render and island", async () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();
-		setRenderingIsland("0", {});
+		setRenderingIsland("0", /** @type {any}*/ ({}));
 
 		assert.strictEqual(root.firstChild, root.childNodes[0]);
 
@@ -430,7 +430,7 @@ await test("unit/patchNode: firstChild with render and island and slot as firstC
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();
-		setRenderingIsland("0", {});
+		setRenderingIsland("0", /** @type {any}*/ ({}));
 
 		assert.strictEqual(root.firstChild, root.childNodes[0]);
 
@@ -503,7 +503,7 @@ await test("unit/patchNode: removeNode with render", async () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();
-		setRenderingIsland("0", {});
+		setRenderingIsland("0", /** @type {any}*/ ({}));
 
 		root.removeChild(root.childNodes[5]);
 		root.removeChild(root.childNodes[3]);
@@ -588,7 +588,7 @@ await test("unit/patchNode: insertBefore with render", async () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();
-		setRenderingIsland("0", {});
+		setRenderingIsland("0", /** @type {any}*/ ({}));
 
 		for (let i = root.childNodes.length - 1; i >= 0; i--) {
 			root.insertBefore(document.createElement(`insert-before-${i}`), root.childNodes[i]);
@@ -635,7 +635,7 @@ await test("unit/patchNode: insertBefore a slot that was removed", async () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();
-		setRenderingIsland("0", {});
+		setRenderingIsland("0", /** @type {any}*/ ({}));
 
 		root.removeChild(root.childNodes[3]);
 
@@ -724,7 +724,7 @@ await test("unit/patchNode: appendChild with render", async () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();
-		setRenderingIsland("0", {});
+		setRenderingIsland("0", /** @type {any}*/ ({}));
 
 		root.appendChild(document.createElement("appended"));
 
@@ -769,7 +769,7 @@ await test("unit/patchNode: appendChild a slot that was removed", async () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();
-		setRenderingIsland("0", {});
+		setRenderingIsland("0", /** @type {any}*/ ({}));
 
 		root.removeChild(root.childNodes[3]);
 

@@ -7,3 +7,4 @@ dist
 **/test/**/data/**
 playground
 TODO.md
+lcov.info

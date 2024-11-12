@@ -35,7 +35,6 @@ var foo = format("CBGdRa_foo");
 
 // cssModules/main.script.ts
 globalThis.foo = foo;
-//# sourceMappingURL=page.js.map
 `,
 	);
 	assert.equal(
@@ -49,7 +48,6 @@ globalThis.foo = foo;
 .CBGdRa_foo {
   color: red;
 }
-/*# sourceMappingURL=page.css.map */
 `,
 	);
 });

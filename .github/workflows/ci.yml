@@ -1,0 +1,53 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        node-version: [22.x, 23.x]
+        include:
+          - deno-version: 22.x
+            coverage: true
+
+    runs-on: ubuntu-latest
+
+    env:
+      CI: true
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version}}
+
+      - name: Install deps
+        run: npm install
+      
+      - name: Run linter
+        run: npm run lint
+
+      - name: Run typechecker
+        run: npm run typecheck
+
+      - name: Run unit tests (with coverage)
+        run: npm run test -- -t unit -c
+
+      - name: Run integration tests
+        run: npm run test -- -t inte
+
+      - name: Codecov
+        if: matrix.coverage
+        uses: codecov/codecov-action@v4
+        with: 
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./lcov.info
+          fail_ci_if_error: true

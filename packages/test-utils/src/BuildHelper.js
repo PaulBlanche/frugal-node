@@ -1,12 +1,12 @@
-/** @import { InternalBuildConfig } from "../../frugal/exports/config/build.js" */
-/** @import { InternalRuntimeConfig } from "../../frugal/exports/config/runtime.js" */
+/** @import { InternalBuildConfig } from "../../core/exports/config/build.js" */
+/** @import { InternalRuntimeConfig } from "../../core/exports/config/runtime.js" */
 
 import { PageAssets } from "@frugal-node/core/page";
 import * as fs from "@frugal-node/core/utils/fs";
-import { BuildConfig } from "../../frugal/exports/config/build.js";
-import { RuntimeConfig } from "../../frugal/exports/config/runtime.js";
-import { build } from "../../frugal/exports/index.js";
-import { loadManifest } from "../../frugal/src/build/manifest.js";
+import { BuildConfig } from "../../core/exports/config/build.js";
+import { RuntimeConfig } from "../../core/exports/config/runtime.js";
+import { build } from "../../core/exports/index.js";
+import { loadManifest } from "../../core/src/build/manifest.js";
 import { BuildCacheExplorer } from "./BuildCacheExplorer.js";
 import * as fixtures from "./fixtures.js";
 

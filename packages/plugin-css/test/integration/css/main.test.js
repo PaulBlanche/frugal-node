@@ -36,12 +36,11 @@ test("inte/plugin/css: page css order", async () => {
   color: orange;
 }
 .main {
-  color: yellow;
+  color: #ff0;
 }
 .after {
-  color: blue;
+  color: #00f;
 }
-/*# sourceMappingURL=page.css.map */
 `,
 	);
 });
@@ -62,6 +61,7 @@ test("inte/plugin/css: one css bundle per page, one bundle per global css", asyn
 					chunkNames: "[dir]/[name]",
 					entryNames: "[dir]/[name]",
 					assetNames: "[dir]/[name]",
+					minify: false,
 				},
 			}),
 		],
@@ -96,11 +96,10 @@ test("inte/plugin/css: one css bundle per page, one bundle per global css", asyn
 				encoding: "utf-8",
 			},
 		),
-		`/* dist/.temp/build/global1-17HAOZG.css */
+		`/* oneBundlePerPage/global1/global1.css */
 .global1 {
   color: purple;
 }
-/*# sourceMappingURL=global1.css.map */
 `,
 	);
 	assert.equal(
@@ -110,11 +109,10 @@ test("inte/plugin/css: one css bundle per page, one bundle per global css", asyn
 				encoding: "utf-8",
 			},
 		),
-		`/* dist/.temp/build/global2-1WMA4DO.css */
+		`/* oneBundlePerPage/global2/global2.css */
 .global2 {
   color: yellow;
 }
-/*# sourceMappingURL=global2.css.map */
 `,
 	);
 	assert.equal(
@@ -129,9 +127,8 @@ test("inte/plugin/css: one css bundle per page, one bundle per global css", asyn
   color: orange;
 }
 .page1 {
-  color: blue;
+  color: #00f;
 }
-/*# sourceMappingURL=page1.css.map */
 `,
 	);
 	assert.equal(
@@ -148,7 +145,6 @@ test("inte/plugin/css: one css bundle per page, one bundle per global css", asyn
 .page2 {
   color: green;
 }
-/*# sourceMappingURL=page2.css.map */
 `,
 	);
 });
@@ -170,6 +166,7 @@ test("inte/plugin/css: one single bundle in site mode", async () => {
 					chunkNames: "[dir]/[name]",
 					entryNames: "[dir]/[name]",
 					assetNames: "[dir]/[name]",
+					minify: false,
 				},
 			}),
 		],
@@ -204,12 +201,12 @@ test("inte/plugin/css: one single bundle in site mode", async () => {
 				encoding: "utf-8",
 			},
 		),
-		`/* dist/.temp/build/global1-17HAOZG.css */
+		`/* oneBundlePerPage/global1/global1.css */
 .global1 {
   color: purple;
 }
 
-/* dist/.temp/build/global2-1WMA4DO.css */
+/* oneBundlePerPage/global2/global2.css */
 .global2 {
   color: yellow;
 }
@@ -219,7 +216,7 @@ test("inte/plugin/css: one single bundle in site mode", async () => {
   color: orange;
 }
 .page1 {
-  color: blue;
+  color: #00f;
 }
 
 /* dist/.temp/build/page2.css */
@@ -231,7 +228,6 @@ test("inte/plugin/css: one single bundle in site mode", async () => {
 }
 
 /* global-facade.css */
-/*# sourceMappingURL=stdin.css.map */
 `,
 	);
 });
@@ -244,7 +240,6 @@ test("inte/plugin/css: esbuild options (minify)", async (context) => {
 			css({
 				scope: "global",
 				esbuildOptions: {
-					minify: true,
 					// disable hash in files to avoid test failure on different
 					// environment with different hash seed
 					chunkNames: "[dir]/[name]",
@@ -289,7 +284,6 @@ test("inte/plugin/css: esbuild options (minify)", async (context) => {
 			},
 		),
 		`.page1{color:#00f}.common{color:orange}.page2{color:green}
-/*# sourceMappingURL=stdin.css.map */
 `,
 	);
 });
