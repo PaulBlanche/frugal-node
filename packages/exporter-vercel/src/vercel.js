@@ -9,11 +9,11 @@ import * as esbuild from "esbuild";
 import { functionConfigContent, globalConfigContent } from "./utils.js";
 
 /** @type {import("./vercel.ts").vercel} */
-export function vercel() {
+export function vercel({ outdir = undefined } = {}) {
 	return {
 		name: "vercel",
 		async export(context) {
-			const vercelDir = path.resolve(context.config.rootDir, ".vercel");
+			const vercelDir = path.resolve(outdir ?? context.config.rootDir, ".vercel");
 			const outputDir = path.resolve(vercelDir, "output");
 			const functionDir = path.resolve(outputDir, "functions/index.func");
 

@@ -1,3 +1,7 @@
 import type { Exporter } from "@frugal-node/core/exporter";
 
-export function vercel(): Exporter;
+type Config = {
+	outdir?: string;
+};
+
+export function vercel(config?: Config): Exporter;

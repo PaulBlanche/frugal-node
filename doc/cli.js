@@ -13,7 +13,7 @@ const config = {
 	log: {
 		level: "verbose",
 	},
-	exporter: vercel(),
+	exporter: vercel({ outdir: "../" }),
 	runtimeConfigPath: "./frugal.config.ts",
 	plugins: [css({ globalCss: "./src/global.css", cssModule: true }), script(), svg({})],
 };
