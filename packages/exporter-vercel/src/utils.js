@@ -1,7 +1,7 @@
 export function functionConfigContent() {
 	return {
 		handler: "index.mjs",
-		runtime: "nodejs18.x",
+		runtime: "nodejs20.x",
 		launcherType: "Nodejs",
 	};
 }
