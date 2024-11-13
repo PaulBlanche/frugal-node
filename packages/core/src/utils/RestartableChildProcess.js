@@ -117,7 +117,7 @@ export function spawn(command, options) {
 			}
 		});
 
-		const status = new Promise((res, rej) => {
+		const status = new Promise((res) => {
 			spawned.on("exit", (code, signal) => {
 				state.exited = true;
 				res({

@@ -1,3 +1,4 @@
+import type * as preact from "preact";
 import danger from "./danger.svg";
 
 export function Danger({

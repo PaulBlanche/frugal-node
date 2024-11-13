@@ -70,7 +70,7 @@ async function doHydrate(name, getComponent) {
 		const props = window.__FRUGAL__.islands.instances[id].props;
 		const parent = window.__FRUGAL__.islands.instances[id].parent;
 		if (parent === undefined) {
-			throw Error(`No markup found for island "${id}"`);
+			throw new Error(`No markup found for island "${id}"`);
 		}
 
 		const node =

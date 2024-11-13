@@ -36,7 +36,7 @@ function create() {
 
 		async spawn({ entrypoint, args, watch }) {
 			if (state.process !== undefined) {
-				throw Error("process was already spawned");
+				throw new Error("process was already spawned");
 			}
 
 			state.watcher = await Watcher.create(entrypoint, {

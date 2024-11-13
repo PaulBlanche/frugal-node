@@ -7,6 +7,7 @@ export type SideEffectProps = {
 	manager: Manager;
 };
 
+// biome-ignore lint/correctness/noUndeclaredVariables: fals positive
 export class Effect extends preact.Component<SideEffectProps> {
 	render(): null;
 }

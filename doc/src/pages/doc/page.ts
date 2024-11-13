@@ -1,10 +1,5 @@
 import * as url from "node:url";
-import {
-	type BuildContext,
-	PageResponse,
-	type PathParamsList,
-	RenderContext,
-} from "@frugal-node/core/page";
+import { type BuildContext, PageResponse, type PathParamsList } from "@frugal-node/core/page";
 import * as fs from "@frugal-node/core/utils/fs";
 import { getRenderFrom } from "@frugal-node/preact";
 import { isValidLang, isValidVersion } from "../../data/doc/config.ts";

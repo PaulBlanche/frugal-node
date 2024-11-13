@@ -100,7 +100,8 @@ function mockStack(error) {
  * @returns {Error}
  */
 function withoutStack(error) {
-	error.stack = undefined;
+	// biome-ignore lint/performance/noDelete: ok in tests
+	delete error.stack;
 	return error;
 }
 

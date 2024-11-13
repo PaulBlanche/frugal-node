@@ -55,7 +55,7 @@ function create() {
 		}
 
 		const spritesheet = `<svg xmlns="http://www.w3.org/2000/svg">${
-			defs.length !== 0 ? `<defs>${defs.map((def) => toXml(def)).join("\n")}</defs>` : ""
+			defs.length > 0 ? `<defs>${defs.map((def) => toXml(def)).join("\n")}</defs>` : ""
 		}${svgContent.join("\n")}</svg>`;
 
 		cache.set(name, spritesheet);

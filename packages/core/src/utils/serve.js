@@ -53,7 +53,7 @@ export function nativeHandler(handler) {
 		const response = await handler(request, {
 			hostname: parsed.hostname,
 			port: parsed.port,
-			identifier: await identifier(request, req),
+			identifier: identifier(request, req),
 		});
 
 		// for event-stream Response we need to close the body stream when the
@@ -178,6 +178,8 @@ function identifier(request, req) {
 	return identifier;
 }
 
+const FORWARDED_FOR_REGEXP = /\s*,\s*/;
+
 /**
  * @param {Request} request
  * @param {http.IncomingMessage} req
@@ -187,7 +189,7 @@ function getRemoteAddress(request, req) {
 	if (!xForwardedFor) {
 		return req.socket.remoteAddress;
 	}
-	const values = xForwardedFor.split(/\s*,\s*/);
+	const values = xForwardedFor.split(FORWARDED_FOR_REGEXP);
 	return values[0];
 }
 

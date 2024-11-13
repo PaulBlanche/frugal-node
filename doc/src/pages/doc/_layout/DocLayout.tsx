@@ -1,6 +1,7 @@
 import type { PageProps } from "@frugal-node/preact";
 import { useLocation } from "@frugal-node/preact/client";
 import { clsx } from "clsx";
+import type * as preact from "preact";
 import type { Lang, Version } from "../../../data/doc/config.ts";
 import { type Toc, entryHref, nextEntry, previousEntry } from "../../../data/doc/toc.ts";
 import { Carret } from "../../../glyphs/icons/Carret.tsx";
@@ -35,10 +36,10 @@ export function DocLayout({
 		<BaseLayout {...pageProps}>
 			<TopNavigation />
 
-			<div class={clsx(docLayout.wrapper)}>
+			<div class={clsx(docLayout["wrapper"])}>
 				<SiteNav class={docLayout["siteNav"]} toc={siteToc} version={version} lang={lang} />
 
-				<main class={clsx(docLayout.main)}>
+				<main class={clsx(docLayout["main"])}>
 					{children}
 					<nav class={clsx(docLayout["bottomNav"])}>
 						{previous && (
@@ -66,7 +67,7 @@ export function DocLayout({
 					<PageTocIsland pageToc={pageToc} class={clsx(docLayout.fixed)} />
 				</aside>*/}
 
-				<Footer class={clsx(docLayout.footer)} />
+				<Footer class={clsx(docLayout["footer"])} />
 			</div>
 		</BaseLayout>
 	);

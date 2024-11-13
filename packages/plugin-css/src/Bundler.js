@@ -120,9 +120,11 @@ function create(compiler, config, scope) {
 	}
 }
 
+const HASH_REGEXP = /-[A-Z0-9]+(\..*)$/;
+
 /** @param {string} path */
 function nameWithoutHash(path) {
-	return path.replace(/-[A-Z0-9]+(\..*)$/, (_, extension) => {
+	return path.replace(HASH_REGEXP, (_, extension) => {
 		return extension;
 	});
 }

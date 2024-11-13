@@ -6,7 +6,7 @@ import type {
 interface WatcherCreator {
 	create(
 		entrypoint: string,
-		options: RestartableChildProcessOptions & { watch?: string[] },
+		options: RestartableChildProcessOptions & { watch?: string[] | undefined },
 	): Promise<Watcher>;
 }
 

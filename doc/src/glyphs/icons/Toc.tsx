@@ -1,3 +1,4 @@
+import type * as preact from "preact";
 import toc from "./toc.svg";
 
 export function Toc({

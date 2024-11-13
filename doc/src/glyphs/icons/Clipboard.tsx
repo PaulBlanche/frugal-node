@@ -1,3 +1,4 @@
+import type * as preact from "preact";
 import clipboard from "./clipboard.svg";
 
 export function Clipboard({

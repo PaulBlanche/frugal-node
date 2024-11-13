@@ -82,7 +82,7 @@ async function writeEntry({ mode, config, entry, body }) {
  * @param {self.Entry} entry
  */
 function warnEntry({ mode, entry }) {
-	if (mode === "index.html" && entry.headers.length !== 0) {
+	if (mode === "index.html" && entry.headers.length > 0) {
 		log(
 			`Custom headers (in response on path "${entry.path}") are not handled by "index.html" mode`,
 			{

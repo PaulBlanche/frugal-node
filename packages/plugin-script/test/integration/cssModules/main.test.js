@@ -6,7 +6,7 @@ import { BuildHelper } from "@frugal-node/test-utils";
 
 const baseHelper = await BuildHelper.setupFixtures(import.meta.dirname);
 
-test("inte/plugin/script: interaction with css-modules", async (context) => {
+test("inte/plugin/script: interaction with css-modules", async () => {
 	await baseHelper.build();
 
 	const assets = await baseHelper.getAssets("cssModules/page.ts");

@@ -52,7 +52,7 @@ export class FocusTrap {
 
 	activate(element: HTMLElement, config: FocusTrapConfig) {
 		if (this.#activeTrap !== undefined) {
-			throw Error("a focus trap is already activated");
+			throw new Error("a focus trap is already activated");
 		}
 		this.#activeTrap = new Trap(element, config);
 		this.#activeTrap.activate();
@@ -151,4 +151,6 @@ function getFocusedIndex(focusable: NodeListOf<Element>) {
 			return index;
 		}
 	}
+
+	return undefined;
 }

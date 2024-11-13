@@ -25,7 +25,7 @@ await test("unit/patchNode: childNodes with no render", async () => {
 </body>
 `;
 
-	await withDom(html, (dom) => {
+	await withDom(html, () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		const realRootChildNodes = root.childNodes;
@@ -57,7 +57,7 @@ await test("unit/patchNode: childNodes with render and no island or slots", asyn
 </body>
 `;
 
-	await withDom(html, (dom) => {
+	await withDom(html, () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		const realRootChildNodes = root.childNodes;
@@ -90,7 +90,7 @@ await test("unit/patchNode: childNodes with render and island without slots", as
 </body>
 `;
 
-	await withDom(html, (dom) => {
+	await withDom(html, () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		const realRootChildNodes = root.childNodes;
@@ -134,7 +134,7 @@ await test("unit/patchNode: childNodes with render and multiple slots", async ()
 </body>
 `;
 
-	await withDom(html, (dom) => {
+	await withDom(html, () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		const realRootChildNodes = root.childNodes;
@@ -193,7 +193,7 @@ await test("unit/patchNode: childNodes with render and multiple islands", async 
 </body>
 `;
 
-	await withDom(html, (dom) => {
+	await withDom(html, () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		const realRootChildNodes = root.childNodes;
@@ -233,7 +233,7 @@ await test("unit/patchNode: parentNode with no render", async () => {
 </body>
 `;
 
-	await withDom(html, (dom) => {
+	await withDom(html, () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();
@@ -261,7 +261,7 @@ await test("unit/patchNode: parentNode with render", async () => {
 </body>
 `;
 
-	await withDom(html, (dom) => {
+	await withDom(html, () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();
@@ -291,7 +291,7 @@ await test("unit/patchNode: nextSibling with no render", async () => {
 </body>
 `;
 
-	await withDom(html, (dom) => {
+	await withDom(html, () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();
@@ -317,7 +317,7 @@ await test("unit/patchNode: nextSibling with render and no slots", async () => {
 </body>
 `;
 
-	await withDom(html, (dom) => {
+	await withDom(html, () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();
@@ -350,7 +350,7 @@ await test("unit/patchNode: nextSibling with render and with slots", async () =>
 </body>
 `;
 
-	await withDom(html, (dom) => {
+	await withDom(html, () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();
@@ -380,7 +380,7 @@ await test("unit/patchNode: firstChild with no render", async () => {
 </body>
 `;
 
-	await withDom(html, (dom) => {
+	await withDom(html, () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();
@@ -402,7 +402,7 @@ await test("unit/patchNode: firstChild with render and island", async () => {
 </body>
 `;
 
-	await withDom(html, (dom) => {
+	await withDom(html, () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();
@@ -426,7 +426,7 @@ await test("unit/patchNode: firstChild with render and island and slot as firstC
 </body>
 `;
 
-	await withDom(html, (dom) => {
+	await withDom(html, () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();
@@ -455,7 +455,7 @@ await test("unit/patchNode: removeNode with no render", async () => {
 </body>
 `;
 
-	await withDom(html, (dom) => {
+	await withDom(html, () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();
@@ -499,7 +499,7 @@ await test("unit/patchNode: removeNode with render", async () => {
 </body>
 `;
 
-	await withDom(html, (dom) => {
+	await withDom(html, () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();
@@ -540,7 +540,7 @@ await test("unit/patchNode: insertBefore with no render", async () => {
 </body>
 `;
 
-	await withDom(html, (dom) => {
+	await withDom(html, () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();
@@ -584,7 +584,7 @@ await test("unit/patchNode: insertBefore with render", async () => {
 </body>
 `;
 
-	await withDom(html, (dom) => {
+	await withDom(html, () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();
@@ -631,7 +631,7 @@ await test("unit/patchNode: insertBefore a slot that was removed", async () => {
 </body>
 `;
 
-	await withDom(html, (dom) => {
+	await withDom(html, () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();
@@ -678,7 +678,7 @@ await test("unit/patchNode: appendChild with no render", async () => {
 </body>
 `;
 
-	await withDom(html, (dom) => {
+	await withDom(html, () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();
@@ -720,7 +720,7 @@ await test("unit/patchNode: appendChild with render", async () => {
 </body>
 `;
 
-	await withDom(html, (dom) => {
+	await withDom(html, () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();
@@ -765,7 +765,7 @@ await test("unit/patchNode: appendChild a slot that was removed", async () => {
 </body>
 `;
 
-	await withDom(html, (dom) => {
+	await withDom(html, () => {
 		const root = /** @type {HTMLElement} */ (document.getElementById("fragment"));
 
 		patchNode();

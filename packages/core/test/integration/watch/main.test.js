@@ -78,7 +78,7 @@ await test("inte/watch: files are regenerated if page code changes", async () =>
 	watchHelper.kill();
 });
 
-await test("inte/watch: files are regenerated if dependency code changes", async (t) => {
+await test("inte/watch: files are regenerated if dependency code changes", async () => {
 	watchHelper.watch();
 
 	await watchHelper.awaitNextBuild();
@@ -129,7 +129,7 @@ await test("inte/watch: files are regenerated if dependency code changes", async
 	watchHelper.kill();
 });
 
-await test("inte/watch: files are regenerated on demand if data changes", async (t) => {
+await test("inte/watch: files are regenerated on demand if data changes", async () => {
 	watchHelper.watch();
 
 	await watchHelper.awaitNextBuild();

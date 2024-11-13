@@ -1,3 +1,4 @@
+import type * as preact from "preact";
 import arrow from "./arrow.svg";
 
 type ArrowProps = preact.JSX.IntrinsicElements["svg"] & { $type?: keyof typeof TRANSFORM };

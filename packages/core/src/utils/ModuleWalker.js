@@ -131,5 +131,5 @@ function getParseOptions(ext) {
 		return { syntax: "ecmascript", jsx: ext.endsWith("x") };
 	}
 
-	throw Error(`unparsable file format ${ext}`);
+	throw new Error(`unparsable file format ${ext}`);
 }

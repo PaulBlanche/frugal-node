@@ -21,7 +21,7 @@ export function ClientSidePageDataProvider(
 ): preact.VNode<any>;
 
 declare global {
-	interface FrugalGlobalNamespace {
+	interface FrugalGlobal {
 		pageData: {
 			location: { pathname: string; search: string };
 		} & (
@@ -46,7 +46,5 @@ declare global {
 		};
 	}
 
-	namespace globalThis {
-		var __FRUGAL__: FrugalGlobalNamespace;
-	}
+	var __FRUGAL__: FrugalGlobal;
 }

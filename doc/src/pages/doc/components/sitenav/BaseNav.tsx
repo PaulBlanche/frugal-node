@@ -1,3 +1,4 @@
+import type * as preact from "preact";
 import { type Lang, VERSIONS, type Version } from "../../../../data/doc/config.ts";
 import type { Toc } from "../../../../data/doc/manifest.ts";
 import { getHierarchy } from "../../../../data/doc/toc.ts";

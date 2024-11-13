@@ -81,16 +81,19 @@ function visit(actual, target) {
 	return [replaceNode(target)];
 }
 
+const START_NO_DIFF_REGEXP = /start-no-diff/;
+const END_NO_DIFF_REGEXP = /end-no-diff/;
+
 /**
  * @param {Comment} actual
  * @param {Comment} target
  * @returns {import("./diff.js").VisitResult}
  */
 function visitComment(actual, target) {
-	if (actual.data.match(/start-no-diff/) && target.data.match(/start-no-diff/)) {
+	if (actual.data.match(START_NO_DIFF_REGEXP) && target.data.match(START_NO_DIFF_REGEXP)) {
 		return [preserveNode(), [], true];
 	}
-	if (target.data.match(/end-no-diff/)) {
+	if (target.data.match(END_NO_DIFF_REGEXP)) {
 		return [preserveNode(), [], false];
 	}
 	return [replaceNode(target)];

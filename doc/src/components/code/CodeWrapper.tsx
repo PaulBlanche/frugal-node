@@ -22,8 +22,13 @@ export function CodeWrapper(props: CodeWrapperProps) {
 	const [copyStatus, setCopyStatus] = hooks.useState("pristine");
 	const id = hooks.useId();
 
+	// biome-ignore lint/correctness/useHookAtTopLevel: not top level, but in a map is ok
 	const labelRefs = props.files.map(() => hooks.useRef<HTMLLabelElement>(null));
+
+	// biome-ignore lint/correctness/useHookAtTopLevel: not top level, but in a map is ok
 	const inputRefs = props.files.map(() => hooks.useRef<HTMLInputElement>(null));
+
+	// biome-ignore lint/correctness/useHookAtTopLevel: not top level, but in a map is ok
 	const panelRefs = props.files.map(() => hooks.useRef<HTMLDivElement>(null));
 
 	return (
@@ -186,7 +191,7 @@ export function CodeWrapper(props: CodeWrapperProps) {
 		try {
 			await navigator.clipboard.writeText(text);
 			return true;
-		} catch (error) {
+		} catch {
 			return false;
 		}
 	}
@@ -206,7 +211,7 @@ export function CodeWrapper(props: CodeWrapperProps) {
 
 		try {
 			return document.execCommand("copy");
-		} catch (error) {
+		} catch {
 			return false;
 		} finally {
 			document.body.removeChild(textArea);

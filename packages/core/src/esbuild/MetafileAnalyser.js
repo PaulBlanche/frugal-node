@@ -26,6 +26,8 @@ function create(metafile, config) {
 			if (entryPointPath === config.runtimeConfigPath) {
 				return await _analyseConfig(output.entryPoint, outputPath);
 			}
+
+			return undefined;
 		},
 	};
 

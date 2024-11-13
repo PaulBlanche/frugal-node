@@ -5,7 +5,7 @@ export interface ParentContext {
 
 	removeEventListener(listener: Listener): void;
 
-	watch(config?: { port?: number }): Promise<void>;
+	watch(config?: { port?: number | undefined }): Promise<void>;
 
 	dispose(): Promise<void>;
 }

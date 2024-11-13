@@ -6,8 +6,6 @@ export type PathParams<PATH extends string> = Collapse<
 	}>["object"]
 >;
 
-type A = PathParams<`/:foo/:bar-:baz`>;
-
 type ContextBase = {
 	rest: string;
 	object: PathParamsBase;

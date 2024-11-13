@@ -6,7 +6,15 @@ import { Callout } from "./Callout.tsx";
 const CALLOUT_HINT = /^>\s*\[!(.*)\]/m;
 const CALLOUT_REGEX = /^>\s*\[!(.*)\](.*)?\n((?:>.*\n)*)$/m;
 
-export function calloutExtension() {
+type CalloutToken = {
+	type: "callout";
+	raw: string;
+	kind: string;
+	title: marked.Token[];
+	text: marked.Token[];
+};
+
+export function calloutExtension(): marked.TokenizerAndRendererExtension {
 	return {
 		name: "callout",
 		level: "block",
@@ -15,13 +23,13 @@ export function calloutExtension() {
 			return src.match(CALLOUT_HINT)?.index;
 		},
 
-		tokenizer(this: marked.TokenizerThis, src: string) {
+		tokenizer(this: marked.TokenizerThis, src: string): CalloutToken | undefined {
 			const match = CALLOUT_REGEX.exec(src);
 			if (match && match.index === 0) {
-				const title: marked.Tokens.Generic[] = [];
+				const title: marked.Token[] = [];
 				this.lexer.inline(match[2], title);
 
-				const text: marked.Tokens.Generic[] = [];
+				const text: marked.Token[] = [];
 				this.lexer.blockTokens(match[3].replace(/^>[^\S\r\n]*/gm, ""), text);
 
 				return {
@@ -32,14 +40,18 @@ export function calloutExtension() {
 					text,
 				};
 			}
+
+			return undefined;
 		},
 
 		renderer(this: marked.RendererThis, token: marked.Tokens.Generic) {
+			const calloutToken = token as CalloutToken;
+
 			return render(
 				preact.h(Callout, {
-					kind: token.kind,
-					title: this.parser.parseInline(token.title),
-					content: this.parser.parse(token.text),
+					kind: calloutToken.kind,
+					title: this.parser.parseInline(calloutToken.title),
+					content: this.parser.parse(calloutToken.text),
 				}),
 			);
 		},

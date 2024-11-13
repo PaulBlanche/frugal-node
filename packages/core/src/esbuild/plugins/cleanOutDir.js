@@ -1,10 +1,8 @@
 /** @import * as self from './cleanOutDir.js' */
-/** @import { PluginContext } from '../Plugin.js' */
 /** @import * as esbuild from 'esbuild' */
 
 import * as path from "node:path";
 import * as fs from "../../utils/fs.js";
-import { log } from "../../utils/log.js";
 
 /** @type {self.cleanOutDir} */
 export function cleanOutDir() {

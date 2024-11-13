@@ -28,10 +28,7 @@ export async function watchModeResponseModification(context, next) {
 	// inject livereload script at the end of the document for non empty html
 	// response
 	return new Response(
-		await injectLivereloadScript(
-			/** @type {webStream.ReadableStream} */ (response.body),
-			context,
-		),
+		await injectLivereloadScript(/** @type {webStream.ReadableStream} */ (response.body)),
 		{
 			headers,
 			status: response.status,
@@ -44,9 +41,8 @@ const DECODER = new TextDecoder();
 
 /**
  * @param {import('node:stream/web').ReadableStream<Uint8Array>} responseBody
- * @param {import("../context.js").BaseContext} context
  */
-async function injectLivereloadScript(responseBody, context) {
+async function injectLivereloadScript(responseBody) {
 	//TODO : could be optimised, passing through the stream, intercepting and modifying the final chunk
 	const body = DECODER.decode(await readableStream.readStream(responseBody));
 

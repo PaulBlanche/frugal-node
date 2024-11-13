@@ -1,4 +1,3 @@
-import { Hash } from "@frugal-node/core/utils/Hash";
 import { type HeadManager, headManagerContext } from "@frugal-node/preact";
 import Slugger from "github-slugger";
 import * as marked from "marked";

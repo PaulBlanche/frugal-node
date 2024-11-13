@@ -99,7 +99,7 @@ function handleStaticUrlMeta({ importer, transformer, node, walker }) {
 	let assetPath;
 
 	if (!node.arguments) {
-		return;
+		return undefined;
 	}
 
 	const argument = node.arguments[0];
@@ -129,7 +129,7 @@ function handleStaticUrlMeta({ importer, transformer, node, walker }) {
 		const source = walker.getSource(node);
 
 		if (source === undefined) {
-			return;
+			return undefined;
 		}
 
 		validatePath(assetPath, source.content);
@@ -144,6 +144,8 @@ function handleStaticUrlMeta({ importer, transformer, node, walker }) {
 
 		return serverAsset;
 	}
+
+	return undefined;
 }
 
 /**
@@ -211,6 +213,8 @@ function isMetaUrlProperty(node) {
 
 const example = "For example: new URL(`./foo/${bar}.js`, import.meta.url).";
 
+const OWN_DIRECTORY_STAR_EXTENSION = /^\.\/\*\.[\w]+$/;
+
 /**
  * @param {string} glob
  * @param {string} source
@@ -235,8 +239,7 @@ function validateGlob(glob, source) {
 	}
 
 	// Disallow ./*.ext
-	const ownDirectoryStarExtension = /^\.\/\*\.[\w]+$/;
-	if (ownDirectoryStarExtension.test(glob)) {
+	if (OWN_DIRECTORY_STAR_EXTENSION.test(glob)) {
 		throw new DynamicUrlError(
 			`invalid meta URL "${source}". Dynamic URLS cannot import their own directory, place assets in a separate directory or make the URL filename more specific. ${example}`,
 		);

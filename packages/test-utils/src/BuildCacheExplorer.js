@@ -17,7 +17,7 @@ export class BuildCacheExplorer {
 	static async load(config) {
 		const data = await loadData({ dir: config.buildCacheDir });
 		if (data === undefined) {
-			throw Error("error while loading cache data");
+			throw new Error("error while loading cache data");
 		}
 		return new BuildCacheExplorer(config, data.current);
 	}
@@ -36,7 +36,7 @@ export class BuildCacheExplorer {
 	 * @returns {Promise<string | undefined>}
 	 */
 	async #loadDocument(pagePath) {
-		const file = this.#data[pagePath].file;
+		const file = this.#data[pagePath]?.file;
 		if (file === undefined) {
 			return undefined;
 		}
@@ -80,8 +80,7 @@ export class BuildCacheExplorer {
 				{
 					...value,
 					headers: value.headers.filter(
-						([key, value]) =>
-							!["last-modified", "x-frugal-generation-date"].includes(key),
+						([key]) => !["last-modified", "x-frugal-generation-date"].includes(key),
 					),
 				},
 			]),

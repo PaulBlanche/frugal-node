@@ -5,11 +5,11 @@ import { pageDataContext } from "./PageDataProvider.js";
 export function useData() {
 	const context = hooks.useContext(pageDataContext);
 	if (context === null || context === undefined) {
-		throw Error("wrap in DataProvider");
+		throw new Error("wrap in DataProvider");
 	}
 
 	if (!context.embedData && typeof document !== "undefined") {
-		throw Error("data was not embeded in document");
+		throw new Error("data was not embeded in document");
 	}
 
 	return /** @type {any}*/ (context.data);

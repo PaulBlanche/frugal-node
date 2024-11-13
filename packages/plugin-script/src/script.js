@@ -5,10 +5,12 @@ import * as path from "node:path";
 import { PluginEsbuild, cleanOutDir, output } from "@frugal-node/core/plugin";
 import { Bundler } from "./Bundler.js";
 
+const DEFAULT_FILTER = /\.script.m?[tj]sx?$/;
+
 /** @type {self.script} */
 export function script(options = {}) {
 	const outdir = options?.outdir ?? "js";
-	const filter = options?.filter ?? /\.script.m?[tj]sx?$/;
+	const filter = options?.filter ?? DEFAULT_FILTER;
 
 	return {
 		name: "frugal:script",
@@ -19,7 +21,7 @@ export function script(options = {}) {
 				const metafile = result.metafile;
 				const errors = result.errors;
 
-				if (errors.length !== 0 || metafile === undefined) {
+				if (errors.length > 0 || metafile === undefined) {
 					return;
 				}
 

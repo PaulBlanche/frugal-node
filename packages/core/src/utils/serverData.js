@@ -28,7 +28,7 @@ _initGlobalState(Math.random().toString(36).toUpperCase().slice(2));
 
 /** @type {self.serialize} */
 export function serialize(serverData) {
-	process.env.NODE_ENV !== "production" && assertServerData(serverData);
+	process.env["NODE_ENV"] !== "production" && assertServerData(serverData);
 
 	if (typeof serverData === "undefined") {
 		return String(serverData);
@@ -126,6 +126,8 @@ function _serializeValue(value, values) {
 		values.push(`new Set(${serialize(Array.from(value.values()))})`);
 		return `:${GLOBAL_STATE.UID}:${values.length - 1}:`;
 	}
+
+	return undefined;
 }
 
 // Lots of @__PURE__ annotations are needed because zod function are not
@@ -135,7 +137,8 @@ function _serializeValue(value, values) {
 
 /** @type {zod.Schema<self.ServerData>} */
 const serverDataSchema = /* @__PURE__ */ zod.union([
-	/* @__PURE__ */ zod.string(),
+	/* @__PURE__ */
+	zod.string(),
 	/* @__PURE__ */ zod.number(),
 	/* @__PURE__ */ zod.nan(),
 	/* @__PURE__ */ zod.boolean(),
@@ -210,7 +213,7 @@ export function transformToSerializable(value, selector, key = "root") {
 	for (const [name, val] of Object.entries(value)) {
 		const transformedKey = transformToSerializable(name, selector, `${key}.objkey-${name}`);
 		if (!(typeof transformedKey === "string" || typeof transformedKey === "number")) {
-			throw Error(`type "${typeof transformedKey}" can't be used as an index type.`);
+			throw new Error(`type "${typeof transformedKey}" can't be used as an index type.`);
 		}
 		transformed[transformedKey] = transformToSerializable(
 			val,

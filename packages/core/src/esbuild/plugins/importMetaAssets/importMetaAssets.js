@@ -8,6 +8,8 @@ import { log } from "../../../utils/log.js";
 import { UrlMetaTransformer } from "./UrlMetaTransformer.js";
 import { collectAndReplaceMetaAssets } from "./collectAndReplaceMetaAssets.js";
 
+const FILTER = /^.*\.[tj]sx?$/;
+
 /** @type {self.importMetaAssets} */
 export function importMetaAssets(context) {
 	return {
@@ -16,7 +18,7 @@ export function importMetaAssets(context) {
 			/** @type {MetaAsset[]} */
 			const collectedAssets = [];
 
-			build.onLoad({ filter: /^.*\.[tj]sx?$/, namespace: "file" }, async (args) => {
+			build.onLoad({ filter: FILTER, namespace: "file" }, async (args) => {
 				const walker = await ModuleWalker.create(args.path);
 				const transformer = UrlMetaTransformer.create(walker.code);
 

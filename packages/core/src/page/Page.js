@@ -68,7 +68,7 @@ function staticPage(page) {
 			try {
 				const response = await page.descriptor.build(context);
 
-				process.env.NODE_ENV !== "production" && assertPageResponse(response);
+				process.env["NODE_ENV"] !== "production" && assertPageResponse(response);
 
 				return response;
 			} catch (/** @type {any} */ error) {
@@ -108,7 +108,7 @@ function staticPage(page) {
 			try {
 				const paths = await page.descriptor.getBuildPaths();
 
-				process.env.NODE_ENV !== "production" && assertPathParamList(paths);
+				process.env["NODE_ENV"] !== "production" && assertPathParamList(paths);
 
 				return paths;
 			} catch (/** @type {any} */ error) {
@@ -191,7 +191,7 @@ function basePage(page) {
 			try {
 				const response = await page.descriptor.generate(context);
 
-				process.env.NODE_ENV !== "production" && assertPageResponse(response);
+				process.env["NODE_ENV"] !== "production" && assertPageResponse(response);
 
 				return response;
 			} catch (/** @type {any} */ error) {
@@ -272,6 +272,6 @@ export class PageError extends Error {}
  */
 function assertPageResponse(response) {
 	if (response !== undefined && !isPageResponse(response)) {
-		throw Error('Page descriptor `build` method did not return a "PageResponse"');
+		throw new Error('Page descriptor `build` method did not return a "PageResponse"');
 	}
 }

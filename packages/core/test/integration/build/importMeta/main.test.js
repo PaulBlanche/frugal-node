@@ -38,6 +38,7 @@ test("inte/build/importMeta: throws when asset referenced in 'new URL(..., impor
 		},
 		(error) => {
 			assert.ok(error instanceof Error);
+			// biome-ignore lint/performance/useTopLevelRegex: what happens in tests, stays in tests
 			const match = error.message.match(/ENOENT:.*'(.*)'/);
 			if (match) {
 				const assetPath = match[1];

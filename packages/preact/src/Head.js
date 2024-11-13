@@ -61,7 +61,7 @@ export function Head({ children }) {
 	const manager = hooks.useContext(headManagerContext);
 
 	if (manager === undefined) {
-		throw Error("no head manager found");
+		throw new Error("no head manager found");
 	}
 
 	return preact.h(

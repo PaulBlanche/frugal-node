@@ -25,6 +25,7 @@ export function build({ params }: BuildContext<typeof route>) {
 			},
 		);
 	}
+
 	if (params.foo === "quux") {
 		return PageResponse.data(
 			{ foo: "Hello quux" },
@@ -36,6 +37,8 @@ export function build({ params }: BuildContext<typeof route>) {
 			},
 		);
 	}
+
+	return undefined;
 }
 
 export function render({ data }: RenderContext<typeof route, Data>) {

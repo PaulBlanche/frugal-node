@@ -43,6 +43,8 @@ export function getClosestParentNavigableAnchor(target) {
 			return anchor;
 		}
 	}
+
+	return undefined;
 }
 
 /**

@@ -12,7 +12,7 @@ export type ProcessStatus = {
 	signal?: NodeJS.Signals;
 };
 
-type StdioStream = {
+export type StdioStream = {
 	streamReadable?: stream.Readable;
 	stream: streamWeb.ReadableStream<Uint8Array>;
 	controller?: ReadableStreamDefaultController<Uint8Array>;
@@ -41,7 +41,7 @@ type ListenerDict = {
 	restart: RestartListener;
 };
 
-type Listeners = {
+export type Listeners = {
 	exit: ExitListener[];
 	error: ErrorListener[];
 	restart: RestartListener[];

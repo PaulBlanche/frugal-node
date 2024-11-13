@@ -51,5 +51,7 @@ function create(form, config) {
 		if (!utils.shouldVisit(config.defaultNavigate, form.directive)) {
 			return "form directive";
 		}
+
+		return undefined;
 	}
 }
