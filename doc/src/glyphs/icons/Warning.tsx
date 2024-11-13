@@ -1,3 +1,4 @@
+import type * as preact from "preact";
 import warning from "./warning.svg";
 
 export function Warning({

@@ -8,13 +8,15 @@ export type VersionSelectorProps = {
 	class?: string;
 };
 
+const VERSION_REGEXP = /\/doc@\d+(\.\d+)*/;
+
 export function VersionSelector({ version, class: className }: VersionSelectorProps) {
 	return (
 		<div class={clsx(versionSelector["select"], className)}>
 			<select
 				onChange={(event) => {
 					const target = location.href.replace(
-						/\/doc@\d+(\.\d+)*/,
+						VERSION_REGEXP,
 						`/doc@${event.currentTarget.value}/`,
 					);
 					Session.navigate(target);

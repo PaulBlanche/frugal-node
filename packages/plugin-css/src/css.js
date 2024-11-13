@@ -5,8 +5,6 @@
 
 import * as path from "node:path";
 import { PluginEsbuild, cleanOutDir, output } from "@frugal-node/core/plugin";
-import { Hash } from "@frugal-node/core/utils/Hash";
-import * as fs from "@frugal-node/core/utils/fs";
 import { log } from "@frugal-node/core/utils/log";
 import { Bundler } from "./Bundler.js";
 import { cssModules } from "./cssModules.js";
@@ -32,7 +30,7 @@ export function css(options = {}) {
 				const metafile = result.metafile;
 				const errors = result.errors;
 
-				if (metafile === undefined || errors.length !== 0) {
+				if (metafile === undefined || errors.length > 0) {
 					return;
 				}
 

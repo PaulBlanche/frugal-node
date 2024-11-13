@@ -115,7 +115,7 @@ export function patchNode() {
 		};
 	});
 
-	const childNodes = replaceGetter(Node.prototype, "childNodes", (childNodes) => {
+	const _childNodes = replaceGetter(Node.prototype, "childNodes", (childNodes) => {
 		return {
 			get() {
 				const rendering = getRenderingIsland();
@@ -261,7 +261,7 @@ export function patchNode() {
 		}
 	});
 
-	const removeChild = replaceValue(Node.prototype, "removeChild", (removeChild) => {
+	const _removeChild = replaceValue(Node.prototype, "removeChild", (removeChild) => {
 		return {
 			// because `removeChild` is generic in builtin types, there is a
 			// type error here, but the implementation is ok
@@ -356,7 +356,7 @@ export function patchNode() {
 		}
 	});
 
-	const contains = replaceValue(Node.prototype, "contains", (contains) => {
+	const _contains = replaceValue(Node.prototype, "contains", (contains) => {
 		return {
 			value: newContains,
 		};
@@ -491,7 +491,7 @@ export function patchNode() {
 	 * @returns {{slots:self.SlotRange[], island?:self.IslandRange}}
 	 */
 	function getChildRanges(id, node) {
-		/** @type {{slots:Record<string, Partial<self.SlotRange>>, island?:Partial<self.IslandRange>}} */
+		/** @type {{slots:Record<string, Partial<self.SlotRange>>, island?:Partial<self.IslandRange>|undefined}} */
 		const result = { slots: {} };
 
 		let current = firstChild.old(node);
@@ -625,7 +625,7 @@ function replaceGetter(object, property, descriptorMaker) {
 	const oldGet = oldDescriptor?.get;
 
 	if (oldGet === undefined) {
-		throw Error(`Object has no getter for property "${String(property)}"`);
+		throw new Error(`Object has no getter for property "${String(property)}"`);
 	}
 
 	const newGet = descriptorMaker({ old: (thisArg) => oldGet.call(thisArg) }).get;
@@ -662,7 +662,7 @@ function replaceValue(object, property, descriptorMaker) {
 	const oldValue = oldDescriptor?.value;
 
 	if (oldValue === undefined) {
-		throw Error(`Object has no value for property "${String(property)}"`);
+		throw new Error(`Object has no value for property "${String(property)}"`);
 	}
 
 	const newValue = descriptorMaker({ old: oldValue }).value;
@@ -693,6 +693,8 @@ function parseSlotPlaceholderId(node) {
 	if (isElementNode(node) && node.localName.startsWith("frugal-slot-")) {
 		return node.localName.slice(12);
 	}
+
+	return undefined;
 }
 
 /**
@@ -718,7 +720,7 @@ function getDescendantSlotRanges(node, id) {
 		current = iterator.nextNode();
 	}
 
-	const slots = Object.entries(ranges).filter(([id, range]) => {
+	const slots = Object.entries(ranges).filter(([_, range]) => {
 		return range.start !== undefined && range.end !== undefined;
 	});
 

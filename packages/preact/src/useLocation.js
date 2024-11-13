@@ -5,7 +5,7 @@ import { pageDataContext } from "./PageDataProvider.js";
 export function useLocation() {
 	const context = hooks.useContext(pageDataContext);
 	if (context === null || context === undefined) {
-		throw Error("wrap in DataProvider");
+		throw new Error("wrap in DataProvider");
 	}
 
 	return context.location;

@@ -6,6 +6,11 @@ import { Hash } from "@frugal-node/core/utils/Hash";
 import * as fs from "@frugal-node/core/utils/fs";
 import { CssModuleBundler } from "./CssModuleBundler.js";
 
+const CSS_MODULE_FILTER = /\.module.css$/;
+const COMPILED_CSS_FILTER = /\.frugal-compiled-css-module\.css$/;
+const CSS_MODULE_HELPER_RESOLVE_FILTER = /cssModuleHelper:format\.js/;
+const CSS_MODULE_HELPER_LOAD_FILTER = /format\.js/;
+
 /** @type {self.cssModules} */
 export function cssModules(cssModule) {
 	return {
@@ -30,7 +35,7 @@ export function cssModules(cssModule) {
 			/** @type {Map<string, Uint8Array>} */
 			const compiledCssModuleCache = new Map();
 
-			build.onResolve({ filter: /\.frugal-compiled-css-module\.css$/ }, (args) => {
+			build.onResolve({ filter: COMPILED_CSS_FILTER }, (args) => {
 				const relativePath = path.relative(context.buildConfig.rootDir, args.path);
 				if (compiledCssModuleCache.has(relativePath)) {
 					return {
@@ -38,37 +43,39 @@ export function cssModules(cssModule) {
 						namespace: "virtual",
 					};
 				}
+
+				return undefined;
 			});
 
-			build.onResolve({ filter: /cssModuleHelper:format\.js/ }, (args) => {
+			build.onResolve({ filter: CSS_MODULE_HELPER_RESOLVE_FILTER }, () => {
 				return { path: "format.js", namespace: "cssModuleHelper" };
 			});
 
-			build.onLoad({ filter: /format\.js/, namespace: "cssModuleHelper" }, async (args) => {
-				return {
-					loader: "js",
-					contents: await fs.readFile(
-						url.fileURLToPath(new URL("./format.js", import.meta.url)),
-					),
-				};
-			});
+			build.onLoad(
+				{ filter: CSS_MODULE_HELPER_LOAD_FILTER, namespace: "cssModuleHelper" },
+				async () => {
+					return {
+						loader: "js",
+						contents: await fs.readFile(
+							url.fileURLToPath(new URL("./format.js", import.meta.url)),
+						),
+					};
+				},
+			);
 
-			build.onResolve({ filter: /\.module.css$/ }, (args) => {
+			build.onResolve({ filter: CSS_MODULE_FILTER }, (args) => {
 				return {
 					path: path.resolve(path.dirname(args.importer), args.path),
 					namespace: args.namespace,
 				};
 			});
 
-			build.onLoad(
-				{ filter: /\.frugal-compiled-css-module\.css$/, namespace: "virtual" },
-				(args) => {
-					const contents = compiledCssModuleCache.get(args.path);
-					return { loader: cssLoader, contents, resolveDir: path.dirname(args.path) };
-				},
-			);
+			build.onLoad({ filter: COMPILED_CSS_FILTER, namespace: "virtual" }, (args) => {
+				const contents = compiledCssModuleCache.get(args.path);
+				return { loader: cssLoader, contents, resolveDir: path.dirname(args.path) };
+			});
 
-			build.onLoad({ filter: /\.module.css$/ }, async (args) => {
+			build.onLoad({ filter: CSS_MODULE_FILTER }, async (args) => {
 				const contents = await fs.readFile(args.path);
 				const contentHash = Hash.create().update(contents).digest();
 

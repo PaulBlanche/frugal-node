@@ -1,6 +1,6 @@
 import type * as swc from "@swc/core";
 
-type Entry = { node: swc.Node; type: "enter" | "exit" };
+export type Entry = { node: swc.Node; type: "enter" | "exit" };
 
 type Source = {
 	content: string;

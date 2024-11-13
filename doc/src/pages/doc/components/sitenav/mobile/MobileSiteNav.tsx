@@ -1,7 +1,6 @@
-import { Session } from "@frugal-node/session";
 import { clsx } from "clsx";
 import * as hooks from "preact/hooks";
-import { type Lang, VERSIONS, type Version } from "../../../../../data/doc/config.ts";
+import type { Lang, Version } from "../../../../../data/doc/config.ts";
 import type { Toc } from "../../../../../data/doc/toc.ts";
 import { Close } from "../../../../../glyphs/icons/Close.tsx";
 import { Toc as TocIcon } from "../../../../../glyphs/icons/Toc.tsx";

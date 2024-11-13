@@ -15,7 +15,14 @@ const config = {
 	},
 	exporter: vercel({ outdir: "../" }),
 	runtimeConfigPath: "./frugal.config.ts",
-	plugins: [css({ globalCss: "./src/global.css", cssModule: true }), script(), svg({})],
+	plugins: [
+		css({
+			globalCss: "./src/global.css",
+			cssModule: true,
+		}),
+		script({}),
+		svg({}),
+	],
 };
 
 if (process.argv[2] === "build") {

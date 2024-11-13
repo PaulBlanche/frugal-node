@@ -1,3 +1,4 @@
+import type * as preact from "preact";
 import info from "./info.svg";
 
 export function Info({

@@ -1,4 +1,5 @@
 import { clsx } from "clsx";
+import type * as preact from "preact";
 import { Bulb } from "../../glyphs/icons/Bulb.tsx";
 import { Danger } from "../../glyphs/icons/Danger.tsx";
 import { Info } from "../../glyphs/icons/Info.tsx";
@@ -12,10 +13,10 @@ type CalloutProps = {
 };
 
 const KINDS: Record<string, { title: string; icon: preact.ComponentChildren } | undefined> = {
-	warn: { title: "Warning", icon: <Warning aria-hidden class={clsx(callout["icon"])} /> },
-	error: { title: "Error", icon: <Danger aria-hidden class={clsx(callout["icon"])} /> },
-	info: { title: "Info", icon: <Info aria-hidden class={clsx(callout["icon"])} /> },
-	tip: { title: "Tip", icon: <Bulb aria-hidden class={clsx(callout["icon"])} /> },
+	warn: { title: "Warning", icon: <Warning aria-hidden={true} class={clsx(callout["icon"])} /> },
+	error: { title: "Error", icon: <Danger aria-hidden={true} class={clsx(callout["icon"])} /> },
+	info: { title: "Info", icon: <Info aria-hidden={true} class={clsx(callout["icon"])} /> },
+	tip: { title: "Tip", icon: <Bulb aria-hidden={true} class={clsx(callout["icon"])} /> },
 };
 
 export function Callout({ kind, title, content }: CalloutProps) {

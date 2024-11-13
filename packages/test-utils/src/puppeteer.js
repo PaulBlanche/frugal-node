@@ -73,7 +73,7 @@ function debugPage(page) {
 /**
  * @template SELECTED
  * @param {puppeteer.Page} page
- * @param {{ event:string, listener:(event: SELECTED) => void, selector: (event: any) => SELECTED; functionName?: string; onNewDocument?: boolean }} config
+ * @param {{ event:string, listener:(event: SELECTED) => void, selector: (event: any) => SELECTED; functionName?: string; onNewDocument?: boolean | undefined }} config
  * @returns {Promise<void>}
  */
 export async function addPageEventListener(page, config) {

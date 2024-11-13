@@ -107,7 +107,7 @@ if (typeof document !== "undefined") {
 			) {
 				const instance = window.__FRUGAL__.islands.instances[renderingIsland.id];
 				const extraSlots = count.current.filter((id) => !count.init.includes(id));
-				throw Error(
+				throw new Error(
 					`Some extra slots "${extraSlots.join(",")}" not present in first render of island "${instance.name}" with id "${renderingIsland.id}" were rendered on subsequent render. All slots must be rendered during first render.`,
 				);
 			}

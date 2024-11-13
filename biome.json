@@ -1,5 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.9.0/schema.json",
+	"$schema": "https://biomejs.dev/schemas/1.9.3/schema.json",
 	"vcs": {
 		"enabled": true,
 		"clientKind": "git",
@@ -22,23 +22,44 @@
 			"recommended": true,
 			"complexity": {
 				"useLiteralKeys": "off",
-				"useSimplifiedLogicExpression": "warn"
+				"useSimplifiedLogicExpression": "warn",
+				"useDateNow": "error"
 			},
 			"correctness": {
-				"noConstantMathMinMaxClamp": "warn"
+				"noConstantMathMinMaxClamp": "warn",
+				"noUnusedImports": "warn",
+				"noUndeclaredVariables": "warn",
+				"noUnusedFunctionParameters": "warn",
+				"noUnusedPrivateClassMembers": "warn",
+				"noUnusedVariables": "warn",
+				"useArrayLiterals": "error",
+				"useHookAtTopLevel": "error",
+				"useImportExtensions": "error"
+			},
+			"performance": {
+				"useTopLevelRegex": "error"
 			},
 			"style": {
 				"noDefaultExport": "error",
+				"noImplicitBoolean": "error",
+				"noNamespace": "error",
 				"noNegationElse": "error",
+				"noYodaExpression": "error",
 				"useBlockStatements": "error",
 				"useCollapsedElseIf": "error",
-				"useShorthandArrayType": "error",
+				"useConsistentArrayType": "error",
+				"useConsistentBuiltinInstantiation": "error",
+				"useExplicitLengthCheck": "error",
 				"useForOf": "error",
+				"useFragmentSyntax": "error",
 				"useNodeAssertStrict": "error",
-				"useSingleCaseStatement": "error"
+				"useShorthandArrayType": "error",
+				"useThrowNewError": "error",
+				"useThrowOnlyError": "error"
 			},
 			"suspicious": {
 				"noEmptyBlockStatements": "error",
+				"noEvolvingTypes": "error",
 				"noSkippedTests": "warn",
 				"useAwait": "error"
 			}
@@ -52,6 +73,7 @@
 		"lineWidth": 100
 	},
 	"javascript": {
+		"globals": ["__FRUGAL__"],
 		"formatter": {
 			"bracketSameLine": false,
 			"bracketSpacing": true,

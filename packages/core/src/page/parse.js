@@ -8,7 +8,7 @@ import { assertDynamicDescriptor, assertStaticDescriptor } from "./PageDescripto
 export function parse({ descriptor, moduleHash, entrypoint }) {
 	if (typeof descriptor === "object" && descriptor !== null && descriptor.type === "dynamic") {
 		try {
-			process.env.NODE_ENV !== "production" && assertDynamicDescriptor(descriptor);
+			process.env["NODE_ENV"] !== "production" && assertDynamicDescriptor(descriptor);
 
 			log(`compiling page descriptor "${entrypoint}" (${moduleHash}) as DynamicPage`, {
 				scope: "Page",
@@ -25,7 +25,7 @@ export function parse({ descriptor, moduleHash, entrypoint }) {
 	}
 
 	try {
-		process.env.NODE_ENV !== "production" && assertStaticDescriptor(descriptor);
+		process.env["NODE_ENV"] !== "production" && assertStaticDescriptor(descriptor);
 
 		log(`compiling page descriptor "${entrypoint}" (${moduleHash}) as StaticPage`, {
 			scope: "Page",

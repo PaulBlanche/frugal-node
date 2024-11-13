@@ -36,7 +36,7 @@ export function getHierarchy(toc: Toc, version: Version, lang: Lang) {
 
 function validate(hierarchy: TocHierarchy, current: string[] = []) {
 	if (hierarchy.entry === undefined) {
-		throw Error(`Toc slug ${current.join("/")}/${hierarchy.segment} has no entry`);
+		throw new Error(`Toc slug ${current.join("/")}/${hierarchy.segment} has no entry`);
 	}
 
 	for (const child of Object.values(hierarchy.children)) {
@@ -97,6 +97,8 @@ export function nextEntry(toc: Toc, version: Version, lang: Lang, href: string) 
 		}
 		nextIndex += 1;
 	}
+
+	return undefined;
 }
 
 export function previousEntry(toc: Toc, version: Version, lang: Lang, href: string) {
@@ -115,4 +117,6 @@ export function previousEntry(toc: Toc, version: Version, lang: Lang, href: stri
 		}
 		previousIndex -= 1;
 	}
+
+	return undefined;
 }

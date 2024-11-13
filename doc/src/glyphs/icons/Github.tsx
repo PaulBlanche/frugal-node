@@ -1,3 +1,4 @@
+import type * as preact from "preact";
 import github from "./github.svg";
 
 export function Github({

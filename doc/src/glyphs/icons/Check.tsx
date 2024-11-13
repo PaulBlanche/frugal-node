@@ -1,3 +1,4 @@
+import type * as preact from "preact";
 import check from "./check.svg";
 
 export function Check({

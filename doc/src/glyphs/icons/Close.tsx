@@ -1,3 +1,4 @@
+import type * as preact from "preact";
 import close from "./close.svg";
 
 export function Close({

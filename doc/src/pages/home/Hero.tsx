@@ -10,7 +10,7 @@ export function Hero() {
 			<p class={hero["tagline"]}>A web framework that wastes not</p>
 			<a href="/doc@latest/getting-started" class={hero["button"]}>
 				<span>Get started</span>
-				<Arrow class={hero["arrow"]} $type="right" aria-hidden width={20} />
+				<Arrow class={hero["arrow"]} $type="right" aria-hidden={true} width={20} />
 			</a>
 		</div>
 	);

@@ -1,8 +1,6 @@
 /** @import * as self from "./PluginEsbuild.js" */
 
-import * as path from "node:path";
 import * as esbuild from "esbuild";
-import * as fs from "../utils/fs.js";
 import { log } from "../utils/log.js";
 
 /** @type {self.PluginEsbuildCreator} */

@@ -77,6 +77,7 @@ test("unit/SessionManager: presist new session", async () => {
 	assert.equal(storage.update.mock.calls.length, 0);
 	assert.equal(storage.create.mock.calls.length, 1);
 
+	// biome-ignore lint/performance/useTopLevelRegex: ok in tests
 	assert.match(headers.getSetCookie()[0], /session_cookie=[^=]+/);
 });
 

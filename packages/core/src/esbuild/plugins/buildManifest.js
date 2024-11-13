@@ -12,7 +12,7 @@ export function buildManifest(context) {
 				const metafile = result.metafile;
 				const errors = result.errors;
 
-				if (errors.length !== 0 || metafile === undefined) {
+				if (errors.length > 0 || metafile === undefined) {
 					return;
 				}
 

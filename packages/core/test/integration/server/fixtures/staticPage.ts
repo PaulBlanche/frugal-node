@@ -62,6 +62,8 @@ export function generate({
 			},
 		});
 	}
+
+	return undefined;
 }
 
 export function render({ data }: RenderContext<typeof route, Data>) {

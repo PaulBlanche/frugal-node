@@ -122,8 +122,8 @@ export function InternalIsland(props) {
 function serializeProps(props) {
 	try {
 		return serialize(props);
-	} catch (error) {
-		throw Error("props passed to the island are not serializable");
+	} catch {
+		throw new Error("props passed to the island are not serializable");
 	}
 }
 
@@ -150,6 +150,8 @@ function wrapVNodesInSlots(id, props) {
 		) {
 			return () => preact.h(Slot, { slotId: key, islandId: id });
 		}
+
+		return undefined;
 	});
 }
 
@@ -166,5 +168,7 @@ function removeVNodes(props) {
 		if (preact.isValidElement(value)) {
 			return () => ({ type: "frugal-slot" });
 		}
+
+		return undefined;
 	});
 }

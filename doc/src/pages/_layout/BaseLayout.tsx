@@ -1,5 +1,5 @@
 import { Head, type PageProps } from "@frugal-node/preact";
-
+import type * as preact from "preact";
 import "./session.script.ts";
 
 export type BaseLayoutProps = PageProps & {
@@ -24,7 +24,9 @@ export function BaseLayout({ assets, children }: BaseLayoutProps) {
 				/>
 				<title>Frugal</title>
 				{scripts.map((script) => {
-					return <script key={script.path} async type="module" src={script.path} />;
+					return (
+						<script key={script.path} async={true} type="module" src={script.path} />
+					);
 				})}
 				{styles.map((style) => {
 					return <link key={style.path} rel="stylesheet" href={style.path} />;

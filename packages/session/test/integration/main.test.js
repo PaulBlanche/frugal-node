@@ -1,9 +1,9 @@
 /** @import { GlobalNavigationEvent } from "../../src/navigation/Navigation.js" */
+/** @import { Page } from "puppeteer"; */
 
 import * as assert from "node:assert/strict";
 import { mock, test } from "node:test";
 import { BuildHelper, ServerHelper, puppeteer } from "@frugal-node/test-utils";
-import { Page } from "puppeteer";
 
 const helper = await BuildHelper.setupFixtures(import.meta.dirname);
 const serverHelper = new ServerHelper(helper.runtimeConfig, helper.internalBuildConfig);
@@ -21,7 +21,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "beforeunload",
 				listener: unloadEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -35,7 +35,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "mount",
 				listener: mountEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -43,7 +43,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "unmount",
 				listener: unmountEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -219,7 +219,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "beforeunload",
 				listener: unloadEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -233,7 +233,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "mount",
 				listener: mountEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -241,7 +241,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "unmount",
 				listener: unmountEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -319,7 +319,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "beforeunload",
 				listener: unloadEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -333,7 +333,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "mount",
 				listener: mountEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -341,7 +341,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "unmount",
 				listener: unmountEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -391,7 +391,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "beforeunload",
 				listener: unloadEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -405,7 +405,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "mount",
 				listener: mountEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -413,7 +413,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "unmount",
 				listener: unmountEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -463,7 +463,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "beforeunload",
 				listener: unloadEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -477,7 +477,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "mount",
 				listener: mountEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -485,7 +485,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "unmount",
 				listener: unmountEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -547,7 +547,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "beforeunload",
 				listener: unloadEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -561,7 +561,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "mount",
 				listener: mountEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -569,7 +569,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "unmount",
 				listener: unmountEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -636,7 +636,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "beforeunload",
 				listener: unloadEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -650,7 +650,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "mount",
 				listener: mountEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -658,7 +658,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "unmount",
 				listener: unmountEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -768,7 +768,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "beforeunload",
 				listener: unloadEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -782,7 +782,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "mount",
 				listener: mountEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -790,7 +790,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "unmount",
 				listener: unmountEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -865,7 +865,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "beforeunload",
 				listener: unloadEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -879,7 +879,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "mount",
 				listener: mountEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -887,7 +887,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "unmount",
 				listener: unmountEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -913,7 +913,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 
 				await page.evaluate(() => {
 					window.fetch = () => {
-						throw Error("fetch error");
+						throw new Error("fetch error");
 					};
 				});
 
@@ -960,7 +960,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "beforeunload",
 				listener: unloadEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -974,7 +974,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "mount",
 				listener: mountEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -982,7 +982,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 			await puppeteer.addPageEventListener(page, {
 				event: "unmount",
 				listener: unmountEventSpy,
-				selector: (event) => {
+				selector: () => {
 					/* empty on purpose */
 				},
 				onNewDocument: true,
@@ -1071,7 +1071,7 @@ async function withServerAndBrowser(helper, ...args) {
  */
 async function withTimeout(promise, message) {
 	const timeout = setTimeout(() => {
-		throw Error(message);
+		throw new Error(message);
 	}, 1000);
 
 	promise.then(() => {
@@ -1084,6 +1084,7 @@ async function withTimeout(promise, message) {
 /**
  * @param {Page} page
  * @param {{predicate:(event: GlobalNavigationEvent) => boolean, onNewDocument?: boolean }} config
+ * @returns {Promise<[Promise<void>]>}
  */
 async function getNavigationDonePromise(page, config) {
 	/** @type {PromiseWithResolvers<void>} */

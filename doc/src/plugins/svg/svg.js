@@ -4,10 +4,12 @@ import * as fs from "@frugal-node/core/utils/fs";
 import { SpritesheetBundler } from "./SpritesheetBundler.js";
 import { SymbolBuilder } from "./SymbolBuilder.js";
 
+const DEFAULT_FILTER = /\.svg$/;
+
 /** @type {import('./svg.ts').svg} */
 export function svg(options = {}) {
 	const outdir = options.outdir ?? "svg/";
-	const filter = options.filter ?? /\.svg$/;
+	const filter = options.filter ?? DEFAULT_FILTER;
 	const getSpritsheetName =
 		options.getSpritesheetName ?? ((filePath) => path.basename(path.dirname(filePath)));
 
@@ -52,7 +54,7 @@ export function svg(options = {}) {
 				const metafile = result.metafile;
 				const errors = result.errors;
 
-				if (errors.length !== 0 || metafile === undefined) {
+				if (errors.length > 0 || metafile === undefined) {
 					return;
 				}
 

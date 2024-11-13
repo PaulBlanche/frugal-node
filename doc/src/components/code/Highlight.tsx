@@ -1,8 +1,8 @@
 import { clsx } from "clsx";
 import type { Element } from "hast";
+import type * as preact from "preact";
 import { createHighlighterCore } from "shiki/core";
 import { createOnigurumaEngine } from "shiki/engine/oniguruma";
-
 import type { File } from "./File.ts";
 import * as highlight from "./Highlight.module.css";
 
@@ -28,7 +28,7 @@ type HighlightProps = {
 } & preact.JSX.IntrinsicElements["div"];
 
 export function Highlight({
-	file: { code, filename, language, highlights },
+	file: { code, language, highlights },
 	noLineNumbers = true,
 	class: className,
 	...divProps
@@ -87,7 +87,7 @@ export function Highlight({
 				},
 				pre(node) {
 					this.addClassToHast(node, highlight["highlight"]);
-					node.properties.tabindex = "-1";
+					node.properties["tabindex"] = "-1";
 					if (!noLineNumbers) {
 						this.addClassToHast(node, highlight["highlightLineNumbers"]);
 					}

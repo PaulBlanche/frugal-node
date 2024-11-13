@@ -125,7 +125,7 @@ function create(event, config) {
 		state.continue = false;
 
 		if (config.fallback === "throw" && result.status === "failure") {
-			throw Error("Navigation failure", { cause: result.error });
+			throw new Error("Navigation failure", { cause: result.error });
 		}
 
 		if (config.fallback === "native") {

@@ -31,7 +31,7 @@ export async function writeManifest(config, manifest) {
 export async function loadManifest(config) {
 	const name = await getManifestName(config);
 	if (name === undefined) {
-		throw Error("No manifest found");
+		throw new Error("No manifest found");
 	}
 
 	log(`Loading manifest ${name}`, { scope: "Manifest", level: "debug" });
@@ -52,7 +52,7 @@ export async function loadManifest(config) {
 export async function getManifestPath(config) {
 	const name = await getManifestName(config);
 	if (name === undefined) {
-		throw Error("No manifest found");
+		throw new Error("No manifest found");
 	}
 
 	return path.resolve(config.outDir, name);
@@ -64,6 +64,7 @@ export async function getManifestPath(config) {
  */
 async function getManifestName(config) {
 	const manifestNamePath = path.resolve(config.outDir, "manifest");
+
 	try {
 		return await fs.readTextFile(manifestNamePath);
 	} catch (/** @type {any} */ error) {
@@ -71,6 +72,8 @@ async function getManifestName(config) {
 			throw error;
 		}
 	}
+
+	return undefined;
 }
 
 /**

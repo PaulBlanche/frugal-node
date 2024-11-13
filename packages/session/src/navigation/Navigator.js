@@ -46,5 +46,7 @@ function create(anchor, config) {
 		if (isExternal || !utils.isInternalUrl(url)) {
 			return "external url";
 		}
+
+		return undefined;
 	}
 }

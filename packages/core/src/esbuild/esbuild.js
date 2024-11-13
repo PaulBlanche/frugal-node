@@ -43,15 +43,9 @@ function getEsbuildConfig(buildConfig, context, watch, extraPlugins = []) {
 	const defaultConfig = defaultEsbuildConfig(watch);
 
 	return {
-		...buildConfig.esbuildOptions,
 		...defaultConfig,
+		...buildConfig.esbuildOptions,
 		entryPoints: [...buildConfig.pages, buildConfig.runtimeConfigPath],
-		entryNames:
-			/** @type {any} */ (buildConfig.esbuildOptions)?.entryNames ?? defaultConfig.entryNames,
-		chunkNames:
-			/** @type {any} */ (buildConfig.esbuildOptions)?.chunkNames ?? defaultConfig.chunkNames,
-		assetNames:
-			/** @type {any} */ (buildConfig.esbuildOptions)?.assetNames ?? defaultConfig.assetNames,
 		define: {
 			...buildConfig.esbuildOptions?.define,
 			...defaultConfig?.define,
@@ -96,23 +90,26 @@ export function defaultEsbuildConfig(watch) {
 		write: false,
 		splitting: true,
 		sourcemap:
-			process.env.NODE_ENV === undefined
+			process.env["NODE_ENV"] === undefined
 				? watch
 					? "linked"
 					: false
-				: process.env.NODE_ENV === "production"
+				: process.env["NODE_ENV"] === "production"
 					? false
 					: "linked",
-		minify: process.env.NODE_ENV === undefined ? !watch : process.env.NODE_ENV === "production",
+		minify:
+			process.env["NODE_ENV"] === undefined
+				? !watch
+				: process.env["NODE_ENV"] === "production",
 		define: {
 			// used to drop browser code in script assets
 			"import.meta.environment": "'server'",
 			"process.env.NODE_ENV":
-				process.env.NODE_ENV === undefined
+				process.env["NODE_ENV"] === undefined
 					? watch
 						? '"development"'
 						: '"production"'
-					: `"${process.env.NODE_ENV}"`,
+					: `"${process.env["NODE_ENV"]}"`,
 		},
 		format: "esm",
 		logLevel: "silent",

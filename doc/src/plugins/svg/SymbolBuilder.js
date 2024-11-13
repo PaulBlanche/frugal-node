@@ -1,4 +1,3 @@
-import * as path from "node:path";
 import { Hash } from "@frugal-node/core/utils/Hash";
 import * as fs from "@frugal-node/core/utils/fs";
 import { CONTINUE, EXIT, visit } from "unist-util-visit";
@@ -36,14 +35,14 @@ function create() {
 		);
 
 		if (svg === undefined) {
-			throw Error("no <svg> tag found");
+			throw new Error("no <svg> tag found");
 		}
 
 		const viewBox = svg.attributes["viewBox"] ?? undefined;
 		const width = svg.attributes["width"] ?? undefined;
 		const height = svg.attributes["height"] ?? undefined;
 		if (!(viewBox || (width && height))) {
-			throw Error("no <svg> with no viewBox or width/height");
+			throw new Error("no <svg> with no viewBox or width/height");
 		}
 
 		const defs = findAll(
@@ -104,6 +103,7 @@ function find(tree, predicate) {
 			result = node;
 			return EXIT;
 		}
+		return undefined;
 	});
 
 	return result;
@@ -124,6 +124,7 @@ function findAll(tree, predicate) {
 			result.push(node);
 			return CONTINUE;
 		}
+		return undefined;
 	});
 
 	return result;
@@ -139,6 +140,7 @@ function removeAll(tree, predicate) {
 			parent?.children.splice(index, 1);
 			return EXIT;
 		}
+		return undefined;
 	});
 }
 

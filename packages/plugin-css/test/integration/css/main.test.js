@@ -232,7 +232,7 @@ test("inte/plugin/css: one single bundle in site mode", async () => {
 	);
 });
 
-test("inte/plugin/css: esbuild options (minify)", async (context) => {
+test("inte/plugin/css: esbuild options (minify)", async () => {
 	const helper = await baseHelper.extends((config) => ({
 		...config,
 		pages: ["oneBundlePerPage/page1.ts", "oneBundlePerPage/page2.ts"],

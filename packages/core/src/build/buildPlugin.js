@@ -12,7 +12,7 @@ export function buildPlugin(buildCache) {
 			build.onEnd(async (result) => {
 				const errors = result.errors;
 
-				if (errors.length !== 0) {
+				if (errors.length > 0) {
 					return;
 				}
 

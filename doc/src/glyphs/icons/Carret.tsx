@@ -1,3 +1,4 @@
+import type * as preact from "preact";
 import carret from "./carret.svg";
 
 type CarretProps = preact.JSX.IntrinsicElements["svg"] & { $type?: keyof typeof TRANSFORM };

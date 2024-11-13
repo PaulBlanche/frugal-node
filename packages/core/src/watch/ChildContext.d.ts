@@ -1,9 +1,8 @@
 import type { InternalBuildConfig } from "../BuildConfig.js";
-import type { InternalRuntimeConfig } from "../RuntimeConfig.js";
 import type { WatchCache } from "./WatchCache.js";
 
 export interface ChildContext {
-	watch(config?: { port?: number }): Promise<void>;
+	watch(config?: { port?: number | undefined }): Promise<void>;
 	dispose(): Promise<void>;
 }
 

@@ -20,6 +20,8 @@ export async function etag(context, next) {
 	});
 }
 
+const IF_NONE_MATCH_REGEXP = /\s*,\s*/;
+
 /**
  * @param {Request} request
  * @param {Response} response
@@ -35,7 +37,7 @@ function ifNoneMatch(request, response) {
 	}
 
 	const etag = response.headers.get("Etag");
-	const tags = ifNoneMatch.split(/\s*,\s*/);
+	const tags = ifNoneMatch.split(IF_NONE_MATCH_REGEXP);
 	return etag === null || !tags.includes(etag);
 }
 

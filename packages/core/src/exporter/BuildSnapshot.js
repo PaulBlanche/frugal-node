@@ -16,7 +16,7 @@ async function load(config) {
 	const data = await loadData(config);
 
 	if (data === undefined) {
-		throw Error("error while loading build cache data");
+		throw new Error("error while loading build cache data");
 	}
 
 	return create(config, data);

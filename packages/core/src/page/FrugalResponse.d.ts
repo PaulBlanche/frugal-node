@@ -11,7 +11,7 @@ export type Init<DATA extends ServerData> = {
 export type SerializedFrugalResponse = {
 	path: string;
 	hash: string;
-	body?: string;
+	body?: string | undefined;
 	headers: [string, string][];
 	status: number;
 };

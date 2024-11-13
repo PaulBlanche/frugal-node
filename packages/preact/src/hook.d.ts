@@ -1,3 +1,5 @@
+import type * as preact from "preact";
+
 export let HOOK: {
 	HOOK: "__h";
 	DIFF: "__b";

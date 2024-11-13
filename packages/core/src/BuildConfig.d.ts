@@ -42,6 +42,7 @@ export type EsbuildOptions = Pick<
 	| "loader"
 	| "resolveExtensions"
 	| "mainFields"
+	| "minify"
 	| "conditions"
 	| "publicPath"
 	| "inject"

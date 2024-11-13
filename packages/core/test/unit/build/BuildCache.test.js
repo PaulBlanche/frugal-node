@@ -13,7 +13,7 @@ const { BuildCache, loadData } = /** @type {typeof import('../../../src/build/Bu
 	await import(`../../../src/build/BuildCache.js#${Math.random()}`)
 );
 
-await test("unit/BuildCache: response not in cache is generated", async (context) => {
+await test("unit/BuildCache: response not in cache is generated", async () => {
 	mockFs.emptyMockFs();
 
 	/** @type {SerializedFrugalResponse} */
