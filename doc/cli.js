@@ -4,6 +4,7 @@ import { build, context } from "@frugal-node/core";
 import { vercel } from "@frugal-node/exporter-vercel";
 import { css } from "@frugal-node/plugin-css";
 import { script } from "@frugal-node/plugin-script";
+import { googleFonts } from "./src/plugins/googleFonts/googleFonts.js";
 import { svg } from "./src/plugins/svg/svg.js";
 
 /** @type {BuildConfig} */
@@ -22,6 +23,7 @@ const config = {
 		}),
 		script({}),
 		svg({}),
+		googleFonts({}),
 	],
 };
 

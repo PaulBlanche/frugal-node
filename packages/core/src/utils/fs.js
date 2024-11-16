@@ -22,6 +22,16 @@ export async function createReadableStream(path) {
 	}
 }
 
+/** @type {self.createWritableStream} */
+export async function createWritableStream(path, { append = false, createNew = false } = {}) {
+	try {
+		const fd = await fs.promises.open(path, flag({ append, createNew }));
+		return await Promise.resolve(stream.Writable.toWeb(fd.createWriteStream()));
+	} catch (error) {
+		throw mapError(error);
+	}
+}
+
 /** @type {self.ensureDir} */
 export async function ensureDir(path) {
 	try {
@@ -125,10 +135,7 @@ export function flag(options) {
 	return "w";
 }
 
-/**
- * @param {any} error
- * @returns {Error}
- */
+/** @type {self.mapError} */
 export function mapError(error) {
 	if (error.code === "ENOENT") {
 		return new NotFound(error.message);

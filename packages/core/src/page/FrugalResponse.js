@@ -71,12 +71,10 @@ function create(response, init) {
 
 	function serialize() {
 		if (state.serialized === undefined) {
-			const bodyString = _body();
-
 			state.serialized = {
 				path: init.path,
 				hash: _hash(),
-				body: bodyString,
+				body: _body(),
 				headers: Array.from(headers.entries()),
 				status: response.status,
 			};

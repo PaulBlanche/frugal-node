@@ -12,7 +12,7 @@ export interface Bundler {
 	bundle(
 		modules: CollectedModule[],
 		options: Omit<esbuild.BuildOptions, "entryPoints">,
-	): Promise<Record<string, string>>;
+	): Promise<Record<string, { url: string; size: number }>>;
 }
 
 interface BundlerCreator {

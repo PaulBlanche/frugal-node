@@ -13,6 +13,7 @@
 		"@frugal-node/preact": "^1.1.0",
 		"@frugal-node/session": "^1.1.0",
 		"@preact/signals": "^1.3.0",
+		"@wooorm/starry-night": "^3.5.0",
 		"clsx": "^2.1.1",
 		"github-slugger": "^2.0.0",
 		"marked": "^14.1.3",

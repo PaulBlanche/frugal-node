@@ -27,7 +27,7 @@
 			},
 			"correctness": {
 				"noConstantMathMinMaxClamp": "warn",
-				"noUnusedImports": "warn",
+				"noUnusedImports": { "level": "error", "fix": "none" },
 				"noUndeclaredVariables": "warn",
 				"noUnusedFunctionParameters": "warn",
 				"noUnusedPrivateClassMembers": "warn",

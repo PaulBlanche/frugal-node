@@ -1,5 +1,7 @@
 /** @import * as self from "./buildPlugin.js" */
+/** @import { Page } from "../page/Page.js"; */
 
+import { PageAssets } from "../page/PageAssets.js";
 import { Producer } from "../page/Producer.js";
 import { parse } from "../page/parse.js";
 import * as manifest from "./manifest.js";
@@ -36,8 +38,9 @@ export function buildPlugin(buildCache) {
 						if (page.type === "dynamic") {
 							return;
 						}
+						const pageAssets = PageAssets.create(assets, page.entrypoint);
 
-						const pageProducer = Producer.create(assets, page, configHash);
+						const pageProducer = Producer.create(pageAssets, page, configHash);
 
 						const responses = await pageProducer.buildAll();
 

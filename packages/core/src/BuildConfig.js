@@ -9,6 +9,7 @@ import { config as configLog, log } from "./utils/log.js";
 export const BuildConfig = {
 	create,
 };
+
 /** @type {self.BuildConfigCreator['create']} */
 function create(config) {
 	configLog(config.log);

@@ -2,7 +2,6 @@
 
 import { log } from "../utils/log.js";
 import { FrugalResponse } from "./FrugalResponse.js";
-import { PageAssets } from "./PageAssets.js";
 
 /**@type {self.ProducerCreator} */
 export const Producer = {
@@ -10,9 +9,7 @@ export const Producer = {
 };
 
 /**@type {self.ProducerCreator['create']} */
-function create(manifestAssets, page, configHash) {
-	const pageAssets = PageAssets.create(manifestAssets, page.entrypoint);
-
+function create(assets, page, configHash) {
 	return {
 		buildAll,
 		build,
@@ -75,7 +72,7 @@ function create(manifestAssets, page, configHash) {
 				page.render({
 					location,
 					params,
-					assets: pageAssets,
+					assets,
 					data,
 					entrypoint: page.entrypoint,
 				}),
@@ -123,7 +120,7 @@ function create(manifestAssets, page, configHash) {
 				page.render({
 					location,
 					params,
-					assets: pageAssets,
+					assets,
 					data,
 					entrypoint: page.entrypoint,
 				}),
