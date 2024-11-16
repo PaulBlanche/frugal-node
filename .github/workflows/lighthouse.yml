@@ -2,7 +2,7 @@ name: lighthouse
 
 on: 
   workflow_run:
-    workflows: ['doc preview']
+    workflows: ['doc preview', 'doc production']
     types: [completed]
 
 jobs:
