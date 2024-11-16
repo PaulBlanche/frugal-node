@@ -1,6 +1,9 @@
 name: lighthouse
 
-on: [deployment_status]
+on: 
+  workflow_run:
+    workflows: ['doc preview']
+    types: [completed]
 
 jobs:
   lighthouse:
