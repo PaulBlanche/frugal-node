@@ -64,12 +64,12 @@ function create(compiler, config, scope) {
 	 * @param {esbuild.Metafile} metafile
 	 */
 	function _extractBundles(bundles, metafile) {
-		/** @type {Record<string, { src:string, sourceMap?:string }>} */
+		/** @type {Record<string, { src:string, sourceMap?:string, size:number }>} */
 		const stylesheets = {};
-		/** @type {{ src:string, sourceMap?:string}[]} */
+		/** @type {{ src:string, sourceMap?:string, size:number}[]} */
 		const globalStylesheets = [];
 
-		/** @type {Record<string, {src?:string, sourceMap?:string} & ({ type?:'global', entrypoint?:undefined } | { type?:'page', entrypoint?: string})>} */
+		/** @type {Record<string, {src?:string, sourceMap?:string, size:number} & ({ type?:'global', entrypoint?:undefined } | { type?:'page', entrypoint?: string})>} */
 		const styles = {};
 
 		for (const [outputPath, output] of Object.entries(metafile.outputs)) {
@@ -88,11 +88,13 @@ function create(compiler, config, scope) {
 				styles[outputPath] = styles[outputPath] ?? {};
 				styles[outputPath].type = "global";
 				styles[outputPath].src = relativeOutputPath;
+				styles[outputPath].size = output.bytes;
 			} else {
 				styles[outputPath] = styles[outputPath] ?? {};
 				styles[outputPath].type = "page";
 				styles[outputPath].src = relativeOutputPath;
 				styles[outputPath].entrypoint = bundle.entrypoint;
+				styles[outputPath].size = output.bytes;
 			}
 		}
 
@@ -101,6 +103,7 @@ function create(compiler, config, scope) {
 				globalStylesheets.push({
 					src: `/${style.src}`,
 					sourceMap: style.sourceMap && `/${style.sourceMap}`,
+					size: style.size,
 				});
 			}
 
@@ -112,6 +115,7 @@ function create(compiler, config, scope) {
 				stylesheets[style.entrypoint] = {
 					src: `/${style.src}`,
 					sourceMap: style.sourceMap && `/${style.sourceMap}`,
+					size: style.size,
 				};
 			}
 		}

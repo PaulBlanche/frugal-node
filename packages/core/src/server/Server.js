@@ -2,6 +2,7 @@
 /** @import * as middleware from "./middleware.js"; */
 /** @import * as context from "./context.js"; */
 
+import { PageAssets } from "../page/PageAssets.js";
 import { Producer } from "../page/Producer.js";
 import { parse } from "../page/parse.js";
 import { log } from "../utils/log.js";
@@ -29,7 +30,8 @@ export async function create({ config, manifest, watch, cache, publicDir }) {
 			descriptor,
 		});
 
-		const pageProducer = Producer.create(manifest.assets, compiledPage, manifest.hash);
+		const pageAssets = PageAssets.create(manifest.assets, compiledPage.entrypoint);
+		const pageProducer = Producer.create(pageAssets, compiledPage, manifest.hash);
 
 		return { page: compiledPage, producer: pageProducer };
 	});

@@ -70,7 +70,7 @@ function create(compiler, config) {
 	 * @returns
 	 */
 	async function _extractBundles(metafile) {
-		/** @type {Record<string, string>} */
+		/** @type {Record<string, { url:string, size:number}>} */
 		const generated = {};
 
 		const outputs = Object.entries(metafile.outputs);
@@ -91,7 +91,7 @@ function create(compiler, config) {
 			const jsBundlePath = path.resolve(config.rootDir, outputPath);
 			const bundleName = path.relative(config.publicDir, jsBundlePath);
 
-			generated[facade.entrypoint] = `/${bundleName}`;
+			generated[facade.entrypoint] = { url: `/${bundleName}`, size: output.bytes };
 		}
 
 		return generated;

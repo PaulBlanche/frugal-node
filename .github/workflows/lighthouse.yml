@@ -1,0 +1,27 @@
+name: lighthouse
+
+on: [deployment_status]
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' 
+
+    env:
+      URL: ${{ github.event.deployment_status.environment_url }}
+
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@v4
+
+      - name: Audit URLs using Lighthouse
+        uses: treosh/lighthouse-ci-action@v10
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+        with:
+          temporaryPublicStorage: true
+          budgetPath: ./doc/budget.json
+          urls: |
+            $URL
+            $URL/en/doc@1.0.0/getting-started/blog-posts

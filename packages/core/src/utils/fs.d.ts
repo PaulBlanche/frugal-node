@@ -33,6 +33,11 @@ export function copy(src: string, dest: string, option?: CopyOptions): Promise<v
 
 export function createReadableStream(path: string): Promise<webStream.ReadableStream<Uint8Array>>;
 
+export function createWritableStream(
+	path: string,
+	options?: WriteFileOptions,
+): Promise<webStream.WritableStream<Uint8Array>>;
+
 export function ensureDir(path: string): Promise<void>;
 
 export function ensureFile(filePath: string): Promise<void>;
@@ -58,6 +63,9 @@ export function writeTextFile(
 	data: string | webStream.ReadableStream<string>,
 	options?: WriteFileOptions,
 ): Promise<void>;
+
+// biome-ignore lint/suspicious/noExplicitAny: ok
+export function mapError(error: any): Error;
 
 export class AlreadyExists extends Error {}
 export class NotFound extends Error {}

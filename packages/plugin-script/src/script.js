@@ -68,12 +68,12 @@ export function script(options = {}) {
 					},
 				);
 
-				for (const [entrypoint, scriptPath] of Object.entries(bundleResult)) {
+				for (const [entrypoint, { url }] of Object.entries(bundleResult)) {
 					context.output("js", {
 						type: "js",
 						scope: "page",
 						entrypoint,
-						path: scriptPath,
+						path: url,
 					});
 				}
 			});

@@ -1,6 +1,6 @@
 import type { FrugalResponse } from "./FrugalResponse.js";
 import type { Page } from "./Page.js";
-import type { Asset } from "./PageAssets.js";
+import type { PageAssets } from "./PageAssets.js";
 import type { PageSession, State } from "./PageDescriptor.js";
 
 export interface Producer {
@@ -23,7 +23,7 @@ export interface Producer {
 }
 
 interface ProducerCreator {
-	create(manifestAssets: Asset[], page: Page, configHash: string): Producer;
+	create(assets: PageAssets, page: Page, configHash: string): Producer;
 }
 
 export let Producer: ProducerCreator;

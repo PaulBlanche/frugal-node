@@ -14,8 +14,8 @@ export type Bundle =
 	  };
 
 export type BundleResult = {
-	global: { src: string; sourceMap?: string }[];
-	page: Record<string, { src: string; sourceMap?: string }>;
+	global: { src: string; sourceMap?: string; size: number }[];
+	page: Record<string, { src: string; sourceMap?: string; size: number }>;
 };
 
 export interface Bundler {
