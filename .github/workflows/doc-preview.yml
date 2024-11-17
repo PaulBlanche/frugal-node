@@ -37,10 +37,10 @@ jobs:
 
       - name: Lighthouse
         run: |
-          lhci healthcheck --fatal --config=./doc/.lighthouserc.json 
-          lhci collect --config=./doc/.lighthouserc.json 
-          lhci assert --config=./doc/.lighthouserc.json 
-          lhci upload --config=./doc/.lighthouserc.json 
+          lhci healthcheck --fatal --config=./doc/.lighthouserc.cjs 
+          lhci collect --config=./doc/.lighthouserc.cjs 
+          lhci assert --config=./doc/.lighthouserc.cjs 
+          lhci upload --config=./doc/.lighthouserc.cjs 
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
           DEPLOYEMENT_URL: ${{steps.deploy.outputs.DEPLOYEMENT_URL}}
