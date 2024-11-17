@@ -36,7 +36,11 @@ jobs:
         run: npm install -g @lhci/cli
 
       - name: Lighthouse
-        run: lhci autorun --config=./doc/.lighthouserc.json 
+        run: |
+          lhci healthcheck --fatal --config=./doc/.lighthouserc.json 
+          lhci collect --config=./doc/.lighthouserc.json 
+          lhci assert --config=./doc/.lighthouserc.json 
+          lhci upload --config=./doc/.lighthouserc.json 
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
           DEPLOYEMENT_URL: ${{steps.deploy.outputs.DEPLOYEMENT_URL}}
