@@ -15,6 +15,9 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Setup node
+        uses: actions/setup-node@v4
+
       - name: Setup vercel CLI
         run: npm install --global vercel@latest
 
@@ -29,13 +32,10 @@ jobs:
         run: |
           echo "DEPLOYEMENT_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})" >> $GITHUB_OUTPUT
 
+      - name: Setup lighthouse
+        run: npm install -g @lhci/cli
+
       - name: Lighthouse
-        uses: treosh/lighthouse-ci-action@v10
+        run: lhci autorun --config=./doc/.lighthouserc.json
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-        with:
-          temporaryPublicStorage: true
-          budgetPath: ./doc/budget.json
-          urls: |
-            ${{steps.deploy.outputs.DEPLOYEMENT_URL}}
-            ${{steps.deploy.outputs.DEPLOYEMENT_URL}}/en/doc@1.0.0/getting-started/blog-posts

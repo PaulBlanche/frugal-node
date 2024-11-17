@@ -9,7 +9,7 @@ import * as esbuild from "esbuild";
 import { functionConfigContent, globalConfigContent } from "./utils.js";
 
 /** @type {import("./vercel.ts").vercel} */
-export function vercel({ outdir = undefined } = {}) {
+export function vercel({ outdir = undefined, populate = true } = {}) {
 	return {
 		name: "vercel",
 		async export(context) {
@@ -34,7 +34,9 @@ export function vercel({ outdir = undefined } = {}) {
 
 			await bundleFunction(functionDir, outputDir, context.config);
 
-			await populate(context.snapshot);
+			if (populate) {
+				await populateKv(context.snapshot);
+			}
 		},
 	};
 }
@@ -52,7 +54,7 @@ async function output(path, content) {
 /**
  * @param {BuildSnapshot} snapshot
  */
-async function populate(snapshot) {
+async function populateKv(snapshot) {
 	const { kv } = await import("@vercel/kv");
 
 	await kv.flushall();
@@ -92,24 +94,21 @@ async function bundleFunction(functionDir, outputDir, config) {
 
 				const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig);
 
-				const handlerPromise = Server.create({
+				const handler = Server.create({
 					config: internalRuntimeConfig,
 					publicDir: undefined,
 					watch: false,
 					manifest,
 					cache: ServerCache.create(KvStorage.create()),
-				}).then(server => server.nativeHandler(true))
+				}).nativeHandler(true)
 
-				export default async function handler (req, res) {
-					const handler = await handlerPromise
-					await handler(req,res)
-				}
+				export default handler
 				`,
 			resolveDir: functionDir,
 		},
 		bundle: true,
 		metafile: true,
-		//minify: true,
+		minify: true,
 		define: {
 			"process.env.NODE_ENV": '"production"',
 		},
