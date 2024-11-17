@@ -36,6 +36,6 @@ jobs:
         run: npm install -g @lhci/cli
 
       - name: Lighthouse
-        run: lhci autorun --config=./doc/.lighthouserc.json
+        run: lhci autorun --config=./doc/.lighthouserc.json --url=${{steps.deploy.outputs.DEPLOYEMENT_URL}} --url=${{steps.deploy.outputs.DEPLOYEMENT_URL}}/en/doc@latest/getting-started/blog-posts
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
