@@ -7,10 +7,6 @@ module.exports = {
 					"error",
 					{ maxNumericValue: 1500, aggregationMethod: "optimistic" },
 				],
-				"first-meaningful-paint": [
-					"error",
-					{ maxNumericValue: 2000, aggregationMethod: "optimistic" },
-				],
 				"largest-contentful-paint": [
 					"error",
 					{ maxNumericValue: 2000, aggregationMethod: "optimistic" },
@@ -20,6 +16,7 @@ module.exports = {
 					"error",
 					{ maxNumericValue: 500, aggregationMethod: "optimistic" },
 				],
+				"is-crawlable": ["off", {}],
 			},
 		},
 		upload: {

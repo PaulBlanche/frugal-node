@@ -29,8 +29,6 @@ export function MobileSiteNav({ toc, version, lang, class: className }: MobileSi
 	const [isOpen, setIsOpen] = hooks.useState(false);
 	const [isTrueOpen, { step, onTransitionEnd }] = useTransition(isOpen);
 
-	console.log({ isOpen, isTrueOpen, step });
-
 	return (
 		<div class={className}>
 			<details ref={drawerRef} class={mobileSiteNav["drawer"]} open={isTrueOpen}>
