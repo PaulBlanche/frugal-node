@@ -28,7 +28,7 @@ module.exports = {
 		collect: {
 			url: [
 				`${process.env["DEPLOYEMENT_URL"]}/`,
-				`${process.env["DEPLOYEMENT_URL"]}/en/doc@latest/getting-started/blog-posts`,
+				`${process.env["DEPLOYEMENT_URL"]}/en/doc@1.0.0/getting-started/blog-posts`,
 			],
 		},
 	},
