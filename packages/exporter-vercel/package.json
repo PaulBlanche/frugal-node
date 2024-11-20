@@ -13,5 +13,8 @@
 	},
 	"peerDependencies": {
 		"@frugal-node/core": "^1.1.0"
+	},
+	"devDependencies": {
+		"node-mocks-http": "^1.16.1"
 	}
 }

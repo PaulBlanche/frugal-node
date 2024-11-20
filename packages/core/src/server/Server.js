@@ -20,7 +20,7 @@ export const Server = {
 };
 
 /** @type {self.ServerCreator['create']} */
-export async function create({ config, manifest, watch, cache, publicDir }) {
+export function create({ config, manifest, watch, cache, publicDir }) {
 	const manager = config.session ? SessionManager.create(config.session) : undefined;
 
 	const routes = manifest.pages.map(({ moduleHash, entrypoint, descriptor }) => {

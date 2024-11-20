@@ -45,12 +45,9 @@ export function CodeWrapper(props: CodeWrapperProps) {
 								type="radio"
 								name={`tablist-${id}`}
 								ref={inputRefs[index]}
-								id={`tab-${file.filename}-${id}`}
-								role="tab"
+								id={`tabtoggle-${file.filename}-${id}`}
 								class={clsx(sr["hidden"], code["input"])}
 								checked={active === file.filename}
-								aria-selected={active === file.filename}
-								aria-controls={`tabpanel-${file.filename}-${id}`}
 								onFocus={() => {
 									labelRefs[index].current?.scrollIntoView({
 										block: "start",
@@ -60,36 +57,20 @@ export function CodeWrapper(props: CodeWrapperProps) {
 								onKeyDown={(event) => handleKeyDown(event, index)}
 								onChange={() => handleClick(file.filename)}
 							/>
+							{/* biome-ignore lint/a11y/useFocusableInteractive: label is focusable throught the matching input */}
 							<label
+								id={`tab-${file.filename}-${id}`}
+								// biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: label is interactive throught the matching input
+								role="tab"
+								aria-selected={active === file.filename}
+								aria-controls={`tabpanel-${file.filename}-${id}`}
 								ref={labelRefs[index]}
 								class={code["tab"]}
-								for={`tab-${file.filename}-${id}`}
+								for={`tabtoggle-${file.filename}-${id}`}
 							>
 								<span class={code["tabfocus"]}>{file.filename}</span>
 							</label>
 						</preact.Fragment>
-						/*<button
-							class={code["tab"]}
-							key={file.filename}
-							ref={tabRefs[index]}
-							type="button"
-							id={`tab-${file.filename}-${id}`}
-							role="tab"
-							aria-selected={active === file.filename}
-							aria-controls={`tabpanel-${file.filename}-${id}`}
-							tabIndex={active === file.filename ? 0 : -1}
-							onKeyDown={(event) => handleKeyDown(event, index)}
-							onMouseDown={() => handleClick(file.filename)}
-							onTouchStart={() => handleClick(file.filename)}
-							onFocus={(event) => {
-								tabRefs[index].current?.scrollIntoView({
-									block: "start",
-									inline: "nearest",
-								});
-							}}
-						>
-							<span class={code["tabfocus"]}>{file.filename}</span>
-						</button>*/
 					))}
 				</div>
 			)}
@@ -102,7 +83,7 @@ export function CodeWrapper(props: CodeWrapperProps) {
 						id={`tabpanel-${file.filename}-${id}`}
 						role="tabpanel"
 						aria-labelledby={`tab-${file.filename}-${id}`}
-						// biome-ignore lint/a11y/noNoninteractiveTabindex: https://www.w3.org/WAI/ARIA/apg/patterns/tabs/examples/tabs-automatic/#accessibilityfeatures
+						// biome-ignore lint/a11y/noNoninteractiveTabindex: tabpanel should be focusable
 						tabIndex={0}
 					>
 						{file.content}

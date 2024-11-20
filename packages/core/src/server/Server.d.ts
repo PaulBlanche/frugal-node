@@ -19,7 +19,7 @@ export interface Server {
 }
 
 interface ServerCreator {
-	create(config: Config): Promise<Server>;
+	create(config: Config): Server;
 }
 
 export let Server: ServerCreator;
