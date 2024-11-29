@@ -5,6 +5,7 @@ export type Init<DATA extends ServerData> = {
 	path: string;
 	moduleHash: string;
 	configHash: string;
+	cryptoKey: Promise<CryptoKey | undefined> | undefined;
 	render: (data: DATA) => string;
 };
 
@@ -26,8 +27,13 @@ export interface FrugalResponse {
 }
 
 interface FrugalResponseCreator {
-	create<DATA extends ServerData>(response: PageResponse<DATA>, init: Init<DATA>): FrugalResponse;
+	create<DATA extends ServerData>(
+		response: PageResponse<DATA>,
+		init: Init<DATA>,
+	): Promise<FrugalResponse>;
 }
+
+export let FORCE_GENERATE_COOKIE: string;
 
 export let FrugalResponse: FrugalResponseCreator;
 

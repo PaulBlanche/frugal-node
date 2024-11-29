@@ -9,6 +9,7 @@ export type ResponseInit = {
 interface BaseResponse {
 	readonly headers: Headers;
 	readonly status: number;
+	readonly forceDynamic: boolean;
 }
 
 export interface DataResponse<DATA extends ServerData> extends BaseResponse {
@@ -24,8 +25,6 @@ export interface EmptyResponse extends BaseResponse {
 }
 
 export type PageResponse<DATA extends ServerData> = EmptyResponse | DataResponse<DATA>;
-
-export let FORCE_GENERATE_COOKIE: string;
 
 interface PageResponseCreator {
 	data<DATA extends ServerData>(data: DATA, init?: ResponseInit): DataResponse<DATA>;

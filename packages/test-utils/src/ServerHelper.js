@@ -1,35 +1,40 @@
 /** @import { InternalBuildConfig } from "@frugal-node/core/config/build" */
-/** @import { InternalServerConfig } from "../../core/exports/server/index.js" */
+/** @import { InternalRuntimeConfig } from "@frugal-node/core/config/runtime" */
+/** @import { CacheStorage } from "@frugal-node/core/server" */
+/** @import * as webStream from "node:stream/web" */
 
-import { Server, ServerCache, ServerConfig } from "@frugal-node/core/server";
-import { loadManifest } from "../../core/src/build/manifest.js";
+import { RuntimeConfig } from "@frugal-node/core/config/runtime";
+import { FrugalServer, ServerCache } from "@frugal-node/core/server";
+import { loadDynamicManifest, loadStaticManifest } from "../../core/src/build/manifest.js";
 import { BuildSnapshot } from "../../core/src/exporter/BuildSnapshot.js";
+import { Hash } from "../../core/src/utils/Hash.js";
+import { readStream } from "../../core/src/utils/readableStream.js";
 import { waitForPort } from "./waitForPort.js";
 
 export class ServerHelper {
-	/** @type {ServerConfig} */
-	#serverConfig;
-	/** @type {InternalServerConfig} */
-	#internalServerConfig;
+	/** @type {RuntimeConfig} */
+	#runtimeConfig;
+	/** @type {InternalRuntimeConfig} */
+	#internalRuntimeConfig;
 	/** @type {InternalBuildConfig} */
 	#internalBuildConfig;
 
 	/**
-	 * @param {ServerConfig} serverConfig
+	 * @param {RuntimeConfig} runtimeConfig
 	 * @param {InternalBuildConfig} internalBuildConfig
 	 */
-	constructor(serverConfig, internalBuildConfig) {
-		this.#serverConfig = serverConfig;
+	constructor(runtimeConfig, internalBuildConfig) {
+		this.#runtimeConfig = runtimeConfig;
 		this.#internalBuildConfig = internalBuildConfig;
-		this.#internalServerConfig = ServerConfig.create(serverConfig);
+		this.#internalRuntimeConfig = RuntimeConfig.create(runtimeConfig);
 	}
 
-	/** @param {Partial<ServerConfig> | ((config: ServerConfig) => Partial<ServerConfig>)} [config] */
+	/** @param {Partial<RuntimeConfig> | ((config: RuntimeConfig) => Partial<RuntimeConfig>)} [config] */
 	extends(config) {
-		/** @type {ServerConfig} */
+		/** @type {RuntimeConfig} */
 		const extendedServerConfig = {
-			...this.#serverConfig,
-			...(typeof config === "function" ? config(this.#serverConfig) : config),
+			...this.#runtimeConfig,
+			...(typeof config === "function" ? config(this.#runtimeConfig) : config),
 		};
 		return new ServerHelper(extendedServerConfig, this.#internalBuildConfig);
 	}
@@ -60,51 +65,92 @@ export class ServerHelper {
 			),
 		);
 
-		/** @type {import("../../core/src/server/ServerCache.js").CacheStorage} */
+		const decoder = new TextDecoder();
+		const encoder = new TextEncoder();
+
+		/** @type {CacheStorage} */
 		const cacheStorage = {
-			get: (path) => {
-				return memory[path];
+			set: async (url, metadata, body) => {
+				const path = new URL(url).pathname;
+				memory[path] = {
+					path,
+					body:
+						body === null
+							? undefined
+							: decoder.decode(
+									await readStream(/** @type {webStream.ReadableStream}*/ (body)),
+								),
+					hash: Hash.create()
+						.update(String(Date.now()))
+						.update(String(Math.random()))
+						.digest(),
+					headers: metadata.headers,
+					status: metadata.status,
+				};
 			},
-			set: (path, content) => {
-				memory[path] = content;
-			},
-			delete: (path) => {
-				delete memory[path];
+			get: (url) => {
+				const path = new URL(url).pathname;
+				const entry = memory[path];
+				if (entry === undefined) {
+					return undefined;
+				}
+
+				const body = entry.body;
+
+				return {
+					metadata: {
+						url,
+						headers: entry.headers,
+						status: entry.status,
+						hash: entry.hash,
+						statusText: "",
+					},
+					body:
+						body === undefined
+							? null
+							: new ReadableStream({
+									start(controller) {
+										controller.enqueue(encoder.encode(body));
+										controller.close();
+									},
+								}),
+				};
 			},
 		};
 
-		await waitForPort({ port: this.#internalServerConfig.port, hostname: "0.0.0.0" });
-		const manifest = await loadManifest({
-			rootDir: this.#internalBuildConfig.rootDir,
-			outDir: this.#internalBuildConfig.outDir,
-		});
+		await waitForPort({ port: this.#internalRuntimeConfig.port, hostname: "0.0.0.0" });
+		const manifest = {
+			static: await loadStaticManifest({
+				rootDir: this.#internalBuildConfig.rootDir,
+				outDir: this.#internalBuildConfig.outDir,
+			}),
+			dynamic: await loadDynamicManifest({
+				rootDir: this.#internalBuildConfig.rootDir,
+				outDir: this.#internalBuildConfig.outDir,
+			}),
+		};
 
-		const server = await Server.create({
-			config: this.#internalServerConfig,
+		const server = FrugalServer.create({
+			config: this.#internalRuntimeConfig,
 			watch: false,
 			manifest,
-			cache: ServerCache.create(cacheStorage),
+			cacheOverride: ServerCache.create(cacheStorage),
 			publicDir: this.#internalBuildConfig.publicDir,
 		});
 
 		const controller = new AbortController();
-		/** @type {PromiseWithResolvers<void>} */
-		const servePromise = Promise.withResolvers();
+
+		const { listening, finished } = server.serve({
+			signal: controller.signal,
+			port: this.#internalRuntimeConfig.port,
+		});
 
 		try {
-			/** @type {PromiseWithResolvers<void>} */
-			const listenDeferred = Promise.withResolvers();
-			server
-				.serve({
-					signal: controller.signal,
-					onListen: () => listenDeferred.resolve(),
-				})
-				.then(() => servePromise.resolve());
-			await listenDeferred.promise;
+			await listening;
 			await callback();
 		} finally {
 			controller.abort();
-			await servePromise.promise;
+			await finished;
 		}
 	}
 }

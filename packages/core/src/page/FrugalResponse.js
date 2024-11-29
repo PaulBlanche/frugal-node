@@ -1,6 +1,10 @@
 /** @import * as self from "./FrugalResponse.js" */
 
 import { Hash } from "../utils/Hash.js";
+import * as cookies from "../utils/cookies.js";
+import { token } from "../utils/crypto.js";
+
+export const FORCE_GENERATE_COOKIE = "__frugal_force_generate";
 
 /** @type {self.FrugalResponseCreator} */
 export const FrugalResponse = {
@@ -8,7 +12,7 @@ export const FrugalResponse = {
 };
 
 /** @type {self.FrugalResponseCreator['create']} */
-function create(response, init) {
+async function create(response, init) {
 	const state = {
 		/** @type {string|undefined} */
 		hash: undefined,
@@ -24,6 +28,16 @@ function create(response, init) {
 	headers.set("X-Frugal-Generation-Date", generationDate);
 	if (headers.get("Last-Modified") === null) {
 		headers.set("Last-Modified", generationDate);
+	}
+	headers.set("x-frugal-build-hash", _hash());
+
+	const cryptoKey = await init.cryptoKey;
+	if (response.forceDynamic === true && cryptoKey !== undefined) {
+		cookies.setCookie(headers, {
+			httpOnly: true,
+			name: FORCE_GENERATE_COOKIE,
+			value: await token(cryptoKey, { op: "fg" }),
+		});
 	}
 
 	return {
@@ -59,6 +73,7 @@ function create(response, init) {
 				.update(init.configHash)
 				.digest();
 		}
+
 		return state.hash;
 	}
 

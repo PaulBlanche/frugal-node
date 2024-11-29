@@ -6,7 +6,7 @@ import * as fs from "@frugal-node/core/utils/fs";
 import { BuildConfig } from "../../core/exports/config/build.js";
 import { RuntimeConfig } from "../../core/exports/config/runtime.js";
 import { build } from "../../core/exports/index.js";
-import { loadManifest } from "../../core/src/build/manifest.js";
+import { loadDynamicManifest, loadStaticManifest } from "../../core/src/build/manifest.js";
 import { BuildCacheExplorer } from "./BuildCacheExplorer.js";
 import * as fixtures from "./fixtures.js";
 
@@ -38,7 +38,7 @@ export class BuildHelper {
 
 	/**
 	 * @param {BuildConfig} buildConfig
-	 * @param {BuildConfig} runtimeConfig
+	 * @param {RuntimeConfig} runtimeConfig
 	 * @param {InternalBuildConfig} internalBuildConfig
 	 * @param {InternalRuntimeConfig} internalRuntimeConfig
 	 */
@@ -66,7 +66,10 @@ export class BuildHelper {
 	}
 
 	get manifest() {
-		return loadManifest(this.#internalBuildConfig);
+		return {
+			static: loadStaticManifest(this.#internalBuildConfig),
+			dynamic: loadDynamicManifest(this.#internalBuildConfig),
+		};
 	}
 
 	getCacheExplorer() {
@@ -78,7 +81,7 @@ export class BuildHelper {
 	 * @returns {Promise<PageAssets>}
 	 */
 	async getAssets(entrypoint) {
-		return PageAssets.create((await this.manifest).assets, entrypoint);
+		return PageAssets.create((await this.manifest.static).assets, entrypoint);
 	}
 
 	/** @param {Partial<BuildConfig> | ((config: BuildConfig) => Partial<BuildConfig>)} [config] */

@@ -42,7 +42,7 @@ test("inte/build/pages: build with trivial static page", async () => {
 		"/": {
 			path: "/",
 			body: "Hello world",
-			headers: [],
+			headers: [["x-frugal-build-hash", "UXKP27"]],
 			status: 200,
 		},
 	});
@@ -60,7 +60,10 @@ test("inte/build/pages: build with trivial static page with build", async () => 
 		"/": {
 			path: "/",
 			body: "bar",
-			headers: [["my-header", "quux"]],
+			headers: [
+				["my-header", "quux"],
+				["x-frugal-build-hash", "43G76Z"],
+			],
 			status: 204,
 		},
 	});
@@ -78,13 +81,13 @@ test("inte/build/pages: build with trivial static page with getBuildPath", async
 		"/foo/baz": {
 			path: "/foo/baz",
 			body: "baz",
-			headers: [],
+			headers: [["x-frugal-build-hash", "1NPZNI8"]],
 			status: 200,
 		},
 		"/foo/quux": {
 			path: "/foo/quux",
 			body: "quux",
-			headers: [],
+			headers: [["x-frugal-build-hash", "IA5MX8"]],
 			status: 200,
 		},
 	});
@@ -102,13 +105,19 @@ test("inte/build/pages: build with complete static page", async () => {
 		"/bar": {
 			path: "/bar",
 			body: "Hello bar",
-			headers: [["my-header-bar", "bar"]],
+			headers: [
+				["my-header-bar", "bar"],
+				["x-frugal-build-hash", "JBCU2D"],
+			],
 			status: 201,
 		},
 		"/quux": {
 			path: "/quux",
 			body: "Hello quux",
-			headers: [["my-header-quux", "quux"]],
+			headers: [
+				["my-header-quux", "quux"],
+				["x-frugal-build-hash", "19IUUYU"],
+			],
 			status: 405,
 		},
 	});
@@ -136,7 +145,10 @@ test("inte/build/pages: build static page with empty response", async () => {
 	await cacheExplorer.assertContent({
 		"/": {
 			path: "/",
-			headers: [["my-header", "quux"]],
+			headers: [
+				["my-header", "quux"],
+				["x-frugal-build-hash", "19PZGI0"],
+			],
 			status: 204,
 			body: undefined,
 		},

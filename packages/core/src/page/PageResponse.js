@@ -1,7 +1,6 @@
 /** @import * as self from "./PageResponse.js" */
 
 import { Hash } from "../utils/Hash.js";
-import * as cookies from "../utils/cookies.js";
 import * as pageData from "../utils/serverData.js";
 
 /** @type {self.PageResponseCreator} */
@@ -70,8 +69,6 @@ function empty(init) {
 	};
 }
 
-export const FORCE_GENERATE_COOKIE = "__frugal_force_generate";
-
 /**
  *
  * @param {self.ResponseInit} [init]
@@ -80,17 +77,12 @@ export const FORCE_GENERATE_COOKIE = "__frugal_force_generate";
 function _base(init = {}) {
 	const headers = new Headers(init.headers);
 
-	if (init.forceDynamic) {
-		cookies.setCookie(headers, {
-			httpOnly: true,
-			name: FORCE_GENERATE_COOKIE,
-			value: "true",
-		});
-	}
-
 	const instance =
 		/** @type {self.BaseResponse} */
 		({
+			get forceDynamic() {
+				return init.forceDynamic ?? false;
+			},
 			get headers() {
 				return headers;
 			},

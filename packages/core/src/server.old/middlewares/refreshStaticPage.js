@@ -4,6 +4,10 @@ import { verify } from "../../utils/crypto.js";
 
 /** @type {self.refreshStaticPage} */
 export async function refreshStaticPage(context, next) {
+	if (context.request.method !== "GET" || context.cache === undefined) {
+		return next(context);
+	}
+
 	const cryptoKey = await context.config.cryptoKey;
 	if (cryptoKey === undefined) {
 		context.log("no crypto key in config. Yield.", {
@@ -11,10 +15,6 @@ export async function refreshStaticPage(context, next) {
 			scope: "refreshStaticPage",
 		});
 
-		return next(context);
-	}
-
-	if (context.request.method !== "GET") {
 		return next(context);
 	}
 

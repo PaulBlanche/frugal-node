@@ -4,7 +4,7 @@ import { toResponse } from "../../page/FrugalResponse.js";
 
 /** @type {self.watchModeStaticPage} */
 export async function watchModeStaticPage(context, next) {
-	if (!context.watch) {
+	if (!context.watch || context.cache === undefined) {
 		return next(context);
 	}
 

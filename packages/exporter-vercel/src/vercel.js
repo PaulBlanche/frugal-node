@@ -3,7 +3,7 @@
 
 import * as path from "node:path";
 import * as url from "node:url";
-import { getManifestPath, loadManifest } from "@frugal-node/core/exporter";
+//import { getManifestPath, loadManifest } from "@frugal-node/core/exporter";
 import * as fs from "@frugal-node/core/utils/fs";
 import * as esbuild from "esbuild";
 import { functionConfigContent, globalConfigContent } from "./utils.js";

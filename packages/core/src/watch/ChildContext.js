@@ -5,7 +5,7 @@ import { RuntimeConfig } from "../RuntimeConfig.js";
 import { buildPlugin } from "../build/buildPlugin.js";
 import * as manifest from "../build/manifest.js";
 import * as bundler from "../esbuild/esbuild.js";
-import { Server } from "../server/Server.js";
+import { FrugalServer } from "../server/FrugalServer.js";
 import { WATCH_MESSAGE_SYMBOL } from "./watchPlugin.js";
 import { watchPlugin } from "./watchPlugin.js";
 
@@ -22,7 +22,7 @@ function create(buildConfig, watchCache) {
 	};
 
 	const contextPromise = bundler.context(buildConfig, [
-		buildPlugin(watchCache),
+		buildPlugin(watchCache.build),
 		watchPlugin({
 			startServer: async (config) => {
 				await _startServer(config);
@@ -74,41 +74,37 @@ function create(buildConfig, watchCache) {
 	 * @param {{  onListen: () => void}} config
 	 */
 	async function _startServer({ onListen }) {
-		const instanceManifest = await manifest.loadManifest({
+		const dynamicManifest = await manifest.loadDynamicManifest({
+			rootDir: buildConfig.rootDir,
+			outDir: buildConfig.outDir,
+		});
+		const staticManifest = await manifest.loadStaticManifest({
 			rootDir: buildConfig.rootDir,
 			outDir: buildConfig.outDir,
 		});
 
 		const runtimeConfig = (
-			await import(path.resolve(buildConfig.outDir, instanceManifest.runtimeConfig))
+			await import(path.resolve(buildConfig.outDir, staticManifest.runtimeConfig))
 		).default;
 		const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig);
 
-		const instance = await Server.create({
+		const instance = FrugalServer.create({
 			config: internalRuntimeConfig,
 			publicDir: buildConfig.publicDir,
-			manifest: instanceManifest,
+			manifest: { static: staticManifest, dynamic: dynamicManifest },
 			watch: true,
-			cache: watchCache,
+			cacheOverride: watchCache.server,
 		});
 
 		state.serverController.abort();
 		state.serverController = new AbortController();
 
-		/** @type {PromiseWithResolvers<void>} */
-		const deferred = Promise.withResolvers();
-
-		setTimeout(() => {
-			instance.serve({
-				port: state.port,
-				signal: state.serverController.signal,
-				onListen: () => {
-					deferred.resolve();
-					onListen();
-				},
-			});
+		const { listening } = instance.serve({
+			port: state.port,
+			signal: state.serverController.signal,
 		});
 
-		await deferred.promise;
+		await listening;
+		onListen();
 	}
 }

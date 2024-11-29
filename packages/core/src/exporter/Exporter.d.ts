@@ -4,7 +4,8 @@ import type { BuildSnapshot } from "./BuildSnapshot.js";
 export type ExporterContext = {
 	config: InternalBuildConfig;
 	readonly snapshot: BuildSnapshot;
-	readonly manifestPath: string;
+	readonly staticManifestPath: string;
+	readonly dynamicManifestPath: string;
 };
 
 export type Exporter = {

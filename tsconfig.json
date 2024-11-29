@@ -14,7 +14,8 @@
 		"allowImportingTsExtensions": true,
 		"forceConsistentCasingInFileNames": false,
 		"jsx": "react-jsx",
-		"jsxImportSource": "preact"
+		"jsxImportSource": "preact",
+		"incremental": true
 	},
 	"include": ["packages/**/*", "playground/**/*", "doc/**/*"],
 	"exclude": [

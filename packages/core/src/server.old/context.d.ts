@@ -12,7 +12,7 @@ export type BaseContext = {
 	config: { cryptoKey: Promise<CryptoKey | undefined>; publicDir?: string };
 	state: Record<string, unknown>;
 	session?: Session;
-	cache: ServerCache;
+	cache?: ServerCache;
 	watch: boolean;
 	log: typeof log;
 	info: HandlerInfo;

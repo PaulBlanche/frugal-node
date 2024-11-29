@@ -1,25 +1,25 @@
 import type * as http from "node:http";
-import type { Manifest } from "../build/manifest.js";
-import type { Handler, ServeOptions } from "../utils/serve.js";
-import type { ServerCache } from "./ServerCache.js";
-import type { InternalServerConfig } from "./ServerConfig.js";
+import type { Level, log } from "../utils/log.js";
+import type * as server from "../utils/serve.js";
 
-export type Config = {
-	config: InternalServerConfig;
-	publicDir?: string;
-	watch: boolean;
-	manifest: Manifest;
-	cache: ServerCache;
-};
+export type Context = { info: server.HandlerInfo; log: typeof log; secure: boolean };
+
+type Handler = (
+	request: Request,
+	context: Context,
+) => Response | server.EventStreamResponse | Promise<Response | server.EventStreamResponse>;
 
 export interface Server {
 	nativeHandler(secure?: boolean): http.RequestListener;
-	handler(secure?: boolean): Handler;
-	serve(config?: ServeOptions): Promise<void>;
+	handler(secure?: boolean): server.Handler;
+	serve(config?: server.ServeOptions & { secure?: boolean }): {
+		listening: Promise<{ hostname: string; port: number }>;
+		finished: Promise<void>;
+	};
 }
 
 interface ServerCreator {
-	create(config: Config): Server;
+	create(handler: Handler, config?: { logScope?: string }): Server;
 }
 
 export let Server: ServerCreator;

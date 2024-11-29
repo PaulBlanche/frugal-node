@@ -20,18 +20,32 @@ export function serve(handler, options = {}) {
 			)
 		: http.createServer(nativeHandler(handler));
 
+	options.signal?.addEventListener("abort", () => {
+		server.close();
+	});
+
 	const port = options.port ?? 8000;
 	const hostname = options.hostname ?? "0.0.0.0";
 
-	server.listen(port, hostname, () => {
-		options.onListen?.({ hostname, port });
+	/** @type {PromiseWithResolvers<{ hostname:string, port:number }>} */
+	const listeningDeferred = Promise.withResolvers();
+	/** @type {PromiseWithResolvers<void>} */
+	const finishedDeferred = Promise.withResolvers();
+
+	server.on("close", () => {
+		finishedDeferred.resolve();
 	});
 
-	return new Promise((res) => {
-		options.signal?.addEventListener("abort", () => {
-			server.close(() => setTimeout(res, 100));
+	try {
+		server.listen(port, hostname, () => {
+			listeningDeferred.resolve({ hostname, port });
 		});
-	});
+	} catch (error) {
+		listeningDeferred.reject(error);
+		finishedDeferred.resolve();
+	}
+
+	return { listening: listeningDeferred.promise, finished: finishedDeferred.promise };
 }
 
 /** @type {self.nativeHandler} */

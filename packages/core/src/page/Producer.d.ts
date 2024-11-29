@@ -4,7 +4,7 @@ import type { PageAssets } from "./PageAssets.js";
 import type { PageSession, State } from "./PageDescriptor.js";
 
 export interface Producer {
-	buildAll(): Promise<FrugalResponse[]>;
+	getPathParams(): Promise<Partial<Record<string, string | string[]>>[]>;
 	build(context: { params: Partial<Record<string, string | string[]>> }): Promise<
 		FrugalResponse | undefined
 	>;
@@ -15,15 +15,15 @@ export interface Producer {
 		state: State;
 		session?: PageSession;
 	}): Promise<FrugalResponse | undefined>;
-	refresh(context: {
-		request: Request;
-		params: Partial<Record<string, string | string[]>>;
-		jit: boolean;
-	}): Promise<FrugalResponse | undefined>;
 }
 
 interface ProducerCreator {
-	create(assets: PageAssets, page: Page, configHash: string): Producer;
+	create(
+		assets: PageAssets,
+		page: Page,
+		configHash: string,
+		cryptoKey: Promise<CryptoKey | undefined> | undefined,
+	): Producer;
 }
 
 export let Producer: ProducerCreator;

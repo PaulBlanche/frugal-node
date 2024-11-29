@@ -1,10 +1,17 @@
 import type { BuildCache } from "../build/BuildCache.js";
-import type { ServerCache } from "../server/ServerCache.js";
+import type { SerializedFrugalResponse } from "../page/FrugalResponse.js";
+import type { ServerCache } from "../server/proxy/ServerCache.js";
 
-interface WatchCache extends BuildCache, ServerCache {}
+interface WatchCache {
+	build: BuildCache;
+	server: ServerCache;
+}
 
 interface WatchCacheCreator {
-	create(): WatchCache;
+	create(config?: {
+		file?: string;
+		data?: Record<string, SerializedFrugalResponse>;
+	}): WatchCache;
 }
 
 export let WatchCache: WatchCacheCreator;

@@ -4,7 +4,7 @@ import { serveFromCacheStaticPage } from "./serveFromCacheStaticPage.js";
 
 /** @type {self.refreshJitStaticPage} */
 export async function refreshJitStaticPage(context, next) {
-	if (context.request.method !== "GET") {
+	if (context.request.method !== "GET" || context.cache === undefined) {
 		return next(context);
 	}
 

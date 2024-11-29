@@ -2,7 +2,7 @@
 
 /** @type {self.serveFromCacheStaticPage} */
 export async function serveFromCacheStaticPage(context, next) {
-	if (context.request.method !== "GET") {
+	if (context.request.method !== "GET" || context.cache === undefined) {
 		return next(context);
 	}
 

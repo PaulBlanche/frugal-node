@@ -4,6 +4,7 @@ import { test } from "node:test";
 import * as url from "node:url";
 import { BuildHelper, ServerHelper, puppeteer } from "@frugal-node/test-utils";
 import { crypto, CookieSessionStorage } from "../../../exports/server/index.js";
+import { token } from "../../../src/utils/crypto.js";
 
 const helper = await BuildHelper.setupFixtures(import.meta.dirname);
 const serverHelper = new ServerHelper(helper.runtimeConfig, helper.internalBuildConfig);
@@ -74,12 +75,11 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 	await puppeteer.withPage(
 		async ({ page }) => {
 			await test("inte/server: serving basic static page with force refresh", async () => {
-				const timestamp = Date.now();
-				const signature = await crypto.sign(
+				const refreshToken = await token(
 					await crypto.importKey(
 						"eyJrdHkiOiJvY3QiLCJrIjoieENtNHc2TDNmZDBrTm8wN3FLckFnZUg4OWhYQldzWkhsalZJYjc2YkpkWjdja2ZPWXpub1gwbXE3aHZFMlZGbHlPOHlVNGhaS29FQUo4cmY3WmstMjF4SjNTRTZ3RDRURF8wdHVvQm9TM2VNZThuUy1pOFA4QVQxcnVFT05tNVJ3N01FaUtJX0xMOWZWaEkyN1BCRTJrbmUxcm80M19wZ2tZWXdSREZ6NFhNIiwiYWxnIjoiSFM1MTIiLCJrZXlfb3BzIjpbInNpZ24iLCJ2ZXJpZnkiXSwiZXh0Ijp0cnVlfQ==",
 					),
-					String(timestamp),
+					{ op: "rf" },
 				);
 
 				// modify data.json but only data used by page1/1
@@ -92,7 +92,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 				});
 
 				const response = await page.goto(
-					`http://localhost:8000/static/5?timestamp=${timestamp}&sign=${signature}`,
+					`http://localhost:8000/static/1?token=${refreshToken}`,
 				);
 
 				if (response === null) {
@@ -103,7 +103,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 
 				assert.strictEqual(response?.headers()["content-type"], "application/json");
 				assert.deepEqual(body, {
-					params: { slug: "5" },
+					params: { slug: "1" },
 					count: 0,
 					store: "bar",
 					searchParams: {},
@@ -119,7 +119,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 
 	await puppeteer.withPage(
 		async ({ page }) => {
-			await test("inte/server: fail force refresh (timestamp too old)", async () => {
+			await test("inte/server: fail force refresh (timestamp too old)", async (context) => {
 				// modify data.json but only data used by page1/1
 				const dataURL = import.meta.resolve("./project/data.json");
 				const originalData = await fs.promises.readFile(url.fileURLToPath(dataURL), {
@@ -129,16 +129,19 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 					encoding: "utf-8",
 				});
 
-				const timestampToOld = Date.now() - 20 * 1000;
-				const signatureToOld = await crypto.sign(
+				context.mock.timers.enable({ apis: ["Date"], now: Date.now() });
+
+				const refreshToken = await token(
 					await crypto.importKey(
 						"eyJrdHkiOiJvY3QiLCJrIjoieENtNHc2TDNmZDBrTm8wN3FLckFnZUg4OWhYQldzWkhsalZJYjc2YkpkWjdja2ZPWXpub1gwbXE3aHZFMlZGbHlPOHlVNGhaS29FQUo4cmY3WmstMjF4SjNTRTZ3RDRURF8wdHVvQm9TM2VNZThuUy1pOFA4QVQxcnVFT05tNVJ3N01FaUtJX0xMOWZWaEkyN1BCRTJrbmUxcm80M19wZ2tZWXdSREZ6NFhNIiwiYWxnIjoiSFM1MTIiLCJrZXlfb3BzIjpbInNpZ24iLCJ2ZXJpZnkiXSwiZXh0Ijp0cnVlfQ==",
 					),
-					String(timestampToOld),
+					{ op: "rf" },
 				);
 
+				context.mock.timers.tick(20 * 1000);
+
 				const response = await page.goto(
-					`http://localhost:8000/static/5?timestamp=${timestampToOld}&sign=${signatureToOld}`,
+					`http://localhost:8000/static/1?token=${refreshToken}`,
 				);
 
 				if (response === null) {
@@ -149,7 +152,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 
 				assert.strictEqual(response?.headers()["content-type"], "application/json");
 				assert.deepEqual(body, {
-					params: { slug: "5" },
+					params: { slug: "1" },
 					count: 0,
 					store: "bar",
 					searchParams: {},
@@ -175,16 +178,12 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 					encoding: "utf-8",
 				});
 
-				const timestamp = Date.now();
-				const signatureInvalid = await crypto.sign(
-					await crypto.importKey(
-						"eyJrZXlfb3BzIjpbInNpZ24iLCJ2ZXJpZnkiXSwiZXh0Ijp0cnVlLCJrdHkiOiJvY3QiLCJrIjoibGJsdlZnV0daLXVHa1VNOW5lZERUalhZOFJ0dk9oZ2g2MW5wUDE5R2hnTE5zNDNMTDMzWmIxdlYySUlqNE11UEQzSHBGZWk0R09PblZuX0VtcFdYengyWHcxNmhvdjZpdmZXVm5heTh5TDczQWxXNnVPRG9ZUjZMNVpUUUNUWW45QmNUSWZjYWhnb1RoWnJQTXFwbldFSjBlTnQxMUhLT2d0M2tfc2dLeThvIiwiYWxnIjoiSFM1MTIifQ==",
-					),
-					String(timestamp),
-				);
+				const refreshToken = await token(await crypto.importKey(await crypto.exportKey()), {
+					op: "rf",
+				});
 
 				const response = await page.goto(
-					`http://localhost:8000/static/5?timestamp=${timestamp}&sign=${signatureInvalid}`,
+					`http://localhost:8000/static/1?token=${refreshToken}`,
 				);
 
 				if (response === null) {
@@ -195,7 +194,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 
 				assert.strictEqual(response?.headers()["content-type"], "application/json");
 				assert.deepEqual(body, {
-					params: { slug: "5" },
+					params: { slug: "1" },
 					count: 0,
 					store: "bar",
 					searchParams: {},
@@ -280,7 +279,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 					});
 				});
 
-				const response = await page.goto("http://localhost:8000/static/4?foo=bar");
+				const response = await page.goto("http://localhost:8000/static/1?foo=bar");
 
 				if (response === null) {
 					assert.fail("response should not be null");
@@ -289,7 +288,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 				const body = await response.json();
 
 				assert.deepEqual(body, {
-					params: { slug: "4" },
+					params: { slug: "1" },
 					count: 1,
 					store: "foo",
 					searchParams: { foo: "bar" },
@@ -330,7 +329,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 				assert.strictEqual(response.status(), 200);
 				assert.strictEqual(
 					response.headers()["cache-control"],
-					"max-age=31536000, immutable",
+					"public, max-age=31536000, immutable",
 				);
 				assert.deepEqual(body, "foo");
 			});

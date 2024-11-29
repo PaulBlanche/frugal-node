@@ -2,7 +2,7 @@
 
 import { BuildConfig } from "./BuildConfig.js";
 import * as builder from "./build/build.js";
-import { getManifestPath } from "./build/manifest.js";
+import { getDynamicManifestPath, getStaticManifestPath } from "./build/manifest.js";
 import { BuildSnapshot } from "./exporter/BuildSnapshot.js";
 import { WatchCache } from "./watch/WatchCache.js";
 import { WatchContext } from "./watch/WatchContext.js";
@@ -16,7 +16,8 @@ export async function build(buildConfig) {
 
 	if (internalBuildConfig.exporter) {
 		const snapshot = await BuildSnapshot.load({ dir: internalBuildConfig.buildCacheDir });
-		const manifestPath = await getManifestPath(internalBuildConfig);
+		const staticManifestPath = await getStaticManifestPath(internalBuildConfig);
+		const dynamicManifestPath = await getDynamicManifestPath(internalBuildConfig);
 
 		await internalBuildConfig.exporter.export({
 			config: internalBuildConfig,
@@ -25,8 +26,12 @@ export async function build(buildConfig) {
 				return snapshot;
 			},
 
-			get manifestPath() {
-				return manifestPath;
+			get staticManifestPath() {
+				return staticManifestPath;
+			},
+
+			get dynamicManifestPath() {
+				return dynamicManifestPath;
 			},
 		});
 	}
