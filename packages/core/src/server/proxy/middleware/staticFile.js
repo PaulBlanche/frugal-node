@@ -16,12 +16,27 @@ export function staticFile({ rootDir }) {
 		});
 
 		if (sendResponse === undefined) {
+			context.log("No static file found. Yield.", {
+				scope: "staticFile",
+				level: "debug",
+			});
+
 			return next(context);
 		}
 
 		if (!sendResponse.ok) {
+			context.log(`Error while serving static file "${context.url.pathname}".`, {
+				scope: "staticFile",
+				level: "debug",
+			});
+
 			return sendResponse;
 		}
+
+		context.log(`Serving static file "${context.url.pathname}".`, {
+			scope: "staticFile",
+			level: "debug",
+		});
 
 		const headers = new Headers(sendResponse.headers);
 		headers.set("Cache-Control", `public, max-age=${ONE_YEAR_IN_SECONDS}, immutable`);

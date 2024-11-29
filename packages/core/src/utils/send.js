@@ -19,9 +19,7 @@ export async function send(request, options) {
 	const filePath = `.${decodedPathname}`;
 
 	if (!isValidPath(filePath)) {
-		return new Response("", {
-			status: 404,
-		});
+		return undefined;
 	}
 
 	const resolvedFilePath = path.resolve(options.rootDir, filePath);
@@ -37,9 +35,7 @@ export async function send(request, options) {
 			const stats = await fs.stat(filePath);
 
 			if (stats.isDirectory()) {
-				return new Response("", {
-					status: 404,
-				});
+				return undefined;
 			}
 
 			const headers = new Headers();
