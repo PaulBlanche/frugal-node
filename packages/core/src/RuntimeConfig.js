@@ -3,6 +3,7 @@
 import * as url from "node:url";
 import { ServerCache } from "./server/proxy/ServerCache.js";
 import { importKey } from "./utils/crypto.js";
+import { config as configLog } from "./utils/log.js";
 
 /** @type {self.RuntimeConfigCreator} */
 export const RuntimeConfig = {
@@ -19,6 +20,8 @@ const DEFAULT_COMPRESS_OPTIONS =
 
 /** @type {self.RuntimeConfigCreator['create']} */
 function create(config) {
+	configLog(config.log);
+
 	const self = url.fileURLToPath(config.self);
 
 	const state = {

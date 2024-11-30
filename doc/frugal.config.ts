@@ -18,4 +18,7 @@ export default {
 	self: import.meta.url,
 	middlewares: [docLatestRewrite],
 	cryptoKey,
+	log: {
+		level: "verbose",
+	},
 } satisfies RuntimeConfig;

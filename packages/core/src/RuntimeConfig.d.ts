@@ -4,6 +4,7 @@ import type { ServerCache } from "./server/proxy/ServerCache.js";
 import type { CacheStorage } from "./server/proxy/ServerCache.js";
 import type { SessionStorage } from "./server/session/SessionStorage.js";
 import type { CookieConfig } from "./utils/cookies.js";
+import type { LogConfig } from "./utils/log.js";
 
 export type CompressMethodsObject = {
 	gzip: boolean;
@@ -22,6 +23,7 @@ export type RuntimeConfig = {
 		storage: SessionStorage;
 		cookie?: CookieConfig;
 	};
+	log?: Partial<LogConfig>;
 	middlewares?: Middleware<Context>[];
 	cacheStorage?: CacheStorage;
 	compress?: { method?: CompressMethods; threshold?: number };
