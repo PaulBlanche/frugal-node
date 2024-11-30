@@ -1,5 +1,5 @@
 import type * as http from "node:http";
-import type { Level, log } from "../utils/log.js";
+import type { log } from "../utils/log.js";
 import type * as server from "../utils/serve.js";
 
 export type Context = { info: server.HandlerInfo; log: typeof log; secure: boolean };
