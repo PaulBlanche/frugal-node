@@ -111,6 +111,7 @@ async function bundleFunctions(functionsDir, outputDir, config) {
 				"vercel://static.js": `
 					import * as staticManifest from "${staticManifestPath}";
 					import { InternalServer } from '@frugal-node/core/server';
+					import { RuntimeConfig } from '@frugal-node/core/config/runtime';
 					import runtimeConfig from "${runtimeConfigPath}";
 
 					const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig);
@@ -126,6 +127,7 @@ async function bundleFunctions(functionsDir, outputDir, config) {
 				"vercel://dynamic.js": `
 					import * as dynamicManifest from "${dynamicManifestPath}";
 					import { InternalServer } from '@frugal-node/core/server';
+					import { RuntimeConfig } from '@frugal-node/core/config/runtime';
 					import runtimeConfig from "${runtimeConfigPath}";
 
 					const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig);
@@ -143,6 +145,7 @@ async function bundleFunctions(functionsDir, outputDir, config) {
 					import * as staticManifest from "${dynamicManifestPath}";
 					import { ProxyServer } from '@frugal-node/core/server';
 					import * as crypto from '@frugal-node/core/utils/crypto';
+					import { RuntimeConfig } from '@frugal-node/core/config/runtime';
 					import runtimeConfig from "${path.resolve(config.outDir, staticManifest.runtimeConfig)}";
 
 					const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig);
@@ -150,7 +153,7 @@ async function bundleFunctions(functionsDir, outputDir, config) {
 					const handler = ProxyServer.create({
 						manifest: { static: staticManifest, dynamic: dynamicManifest },
 						publicDir: undefined,
-						watch: fale,
+						watch: false,
 						internal: async (context, action) => {
 							if (action.type === "static") {
 								const frugalToken = await crypto.token(await internalRuntimeConfig.cryptoKey, {
