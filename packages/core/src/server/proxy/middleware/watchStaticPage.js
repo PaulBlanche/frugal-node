@@ -40,7 +40,5 @@ export async function watchStaticPage(context, next) {
 		compressedResponse.headers.set("X-Frugal-Generation-Date", generationDate);
 	}
 
-	compressedResponse.headers.delete("x-frugal-build-hash");
-
 	return compressedResponse;
 }

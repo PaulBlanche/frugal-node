@@ -47,7 +47,5 @@ export async function forceGenerateStaticPage(context, next) {
 		});
 	}
 
-	response.headers.delete("x-frugal-build-hash");
-
 	return compress(context, response);
 }
