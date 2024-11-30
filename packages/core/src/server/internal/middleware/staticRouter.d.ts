@@ -1,7 +1,7 @@
 import type { Page } from "../../../page/Page.js";
 import type { Producer } from "../../../page/Producer.js";
 import type { Middleware } from "../../middleware.js";
-import type { Context } from "../context.js";
+import type { AuthContext } from "./auth.js";
 
 export function staticRouter(
 	routes: {
@@ -9,4 +9,4 @@ export function staticRouter(
 		page: Page;
 		paramList?: Partial<Record<string, string | string[]>>[];
 	}[],
-): Middleware<Context>;
+): Middleware<AuthContext>;

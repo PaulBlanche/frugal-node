@@ -69,11 +69,11 @@ function create({ manifest, config, watch }) {
 				});
 
 	const serverMiddleware = composeMiddleware([
-		auth(),
-		...config.middlewares,
-		watchModeResponseModification,
-		staticRouter(staticRoutes),
-		dynamicRouter(dynamicRoutes),
+		auth([
+			watchModeResponseModification,
+			staticRouter(staticRoutes),
+			dynamicRouter(dynamicRoutes),
+		]),
 	]);
 
 	return Server.create(

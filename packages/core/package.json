@@ -31,6 +31,10 @@
 			"types": "./exports/utils/cookies/index.d.ts",
 			"import": "./exports/utils/cookies/index.js"
 		},
+		"./utils/crypto": {
+			"types": "./exports/utils/crypto/index.d.ts",
+			"import": "./exports/utils/crypto/index.js"
+		},
 		"./utils/fs": {
 			"types": "./exports/utils/fs/index.d.ts",
 			"import": "./exports/utils/fs/index.js"

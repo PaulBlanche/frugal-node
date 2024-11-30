@@ -5,20 +5,28 @@ import { compress } from "../compress.js";
 import { forceGenerateStaticPage } from "./forceGenerateStaticPage.js";
 import { refreshStaticPage } from "./refreshStaticPage.js";
 import { serveStaticPage } from "./serveStaticPage.js";
+import { watchStaticPage } from "./watchStaticPage.js";
 
 /** @type {self.router} */
 export function router(routes) {
 	return async (context, next) => {
-		for (const { type, page } of routes) {
+		for (const { type, page, index } of routes) {
 			const match = page.match(context.url.pathname);
 
 			if (match) {
 				if (type === "dynamic") {
-					const response = await context.internal(context, "generate");
+					const response = await context.internal(context, {
+						type: "dynamic",
+						index,
+						params: { ...match.params },
+					});
 					return compress(context, response);
 				}
 				if (type === "static") {
-					return staticMiddleware(context, next);
+					return staticMiddleware(
+						{ ...context, index, params: { ...match.params } },
+						next,
+					);
 				}
 			}
 		}
@@ -30,5 +38,6 @@ export function router(routes) {
 const staticMiddleware = composeMiddleware([
 	forceGenerateStaticPage,
 	refreshStaticPage,
+	watchStaticPage,
 	serveStaticPage,
 ]);

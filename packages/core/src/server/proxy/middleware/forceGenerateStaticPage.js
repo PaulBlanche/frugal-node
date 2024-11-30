@@ -30,7 +30,12 @@ export async function forceGenerateStaticPage(context, next) {
 		level: "debug",
 	});
 
-	const response = await context.internal(context, "generate");
+	const response = await context.internal(context, {
+		type: "static",
+		op: "generate",
+		index: context.index,
+		params: context.params,
+	});
 
 	if (clearCookie) {
 		setCookie(response.headers, {

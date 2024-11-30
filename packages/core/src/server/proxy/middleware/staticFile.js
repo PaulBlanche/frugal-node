@@ -8,6 +8,10 @@ const ONE_YEAR_IN_SECONDS = 31536000;
 /** @type {self.staticFile} */
 export function staticFile({ rootDir }) {
 	return async (context, next) => {
+		if (rootDir === undefined) {
+			return next(context);
+		}
+
 		const sendResponse = await send(context.request, {
 			rootDir,
 			compressionExt: (context.compress?.encodings ?? []).filter(

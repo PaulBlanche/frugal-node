@@ -19,28 +19,24 @@ export const ProxyServer = {
 
 /** @type {self.ProxyServerCreator['create']} */
 function create({ config, watch, internal, manifest, publicDir, cacheOverride }) {
-	/** @type {{type:'static'|"dynamic", page: Page}[]} */
+	/** @type {{type:'static'|"dynamic", page:Page, index:number }[]} */
 	const routes = [];
 
-	for (const { moduleHash, entrypoint, descriptor } of manifest.static.pages) {
+	const staticPages = manifest.static.pages;
+	for (const [index, { moduleHash, entrypoint, descriptor }] of staticPages.entries()) {
 		routes.push({
 			type: "static",
-			page: parse({
-				moduleHash,
-				entrypoint,
-				descriptor,
-			}),
+			index,
+			page: parse({ moduleHash, entrypoint, descriptor }),
 		});
 	}
 
-	for (const { moduleHash, entrypoint, descriptor } of manifest.dynamic.pages) {
+	const dynamicPages = manifest.dynamic.pages;
+	for (const [index, { moduleHash, entrypoint, descriptor }] of dynamicPages.entries()) {
 		routes.push({
 			type: "dynamic",
-			page: parse({
-				moduleHash,
-				entrypoint,
-				descriptor,
-			}),
+			index,
+			page: parse({ moduleHash, entrypoint, descriptor }),
 		});
 	}
 

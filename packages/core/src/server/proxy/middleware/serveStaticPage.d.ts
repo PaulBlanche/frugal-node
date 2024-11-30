@@ -1,4 +1,7 @@
 import type { Next } from "../../middleware.js";
-import type { Context } from "../context.js";
+import type { RouterContext } from "./router.js";
 
-export function serveStaticPage(context: Context, next: Next<Context>): Promise<Response>;
+export function serveStaticPage(
+	context: RouterContext,
+	next: Next<RouterContext>,
+): Promise<Response>;

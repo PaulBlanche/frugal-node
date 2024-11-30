@@ -7,7 +7,7 @@
 	"scripts": {
 		"test": "node  ./packages/test-utils/src/runner.js",
 		"lint": "npx biome check .",
-		"typecheck": "tsc -p .",
+		"typecheck": "tsc -p . && tsc -p ./doc",
 		"doc:dev": "npm -w @frugal-node/doc run dev",
 		"doc:build": "NODE_ENV=production npm -w @frugal-node/doc run build"
 	},

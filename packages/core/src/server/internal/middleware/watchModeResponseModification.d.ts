@@ -1,7 +1,7 @@
 import type { Next } from "../../middleware.js";
-import type { Context } from "../context.js";
+import type { AuthContext } from "./auth.js";
 
 export function watchModeResponseModification(
-	context: Context,
-	next: Next<Context>,
+	context: AuthContext,
+	next: Next<AuthContext>,
 ): Promise<Response>;

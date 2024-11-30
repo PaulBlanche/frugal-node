@@ -1,19 +1,5 @@
 {
-	"compilerOptions": {
-		"noEmit": true,
-		"checkJs": true,
-		"strict": true,
-		"allowJs": true,
-		"target": "ESNext",
-		"moduleResolution": "NodeNext",
-		"resolveJsonModule": true,
-		"module": "NodeNext",
-		"lib": ["DOM", "DOM.Iterable", "ESNext"],
-		"allowImportingTsExtensions": true,
-		"forceConsistentCasingInFileNames": false,
-		"jsx": "react-jsx",
-		"jsxImportSource": "preact"
-	},
+	"extends": "../tsconfig.base.json",
 	"include": ["src/**/*", "cli.js", "frugal.config.ts"],
 	"exclude": ["node_modules"]
 }

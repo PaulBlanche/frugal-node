@@ -16,7 +16,12 @@ export async function serveStaticPage(context, next) {
 
 		const cachedResponse = await context.cache?.get(context.request.url);
 
-		const response = await context.internal(context, "serve");
+		const response = await context.internal(context, {
+			type: "static",
+			op: "serve",
+			index: context.index,
+			params: context.params,
+		});
 		const compressedResponse = compress(context, response);
 
 		if (
@@ -56,7 +61,12 @@ export async function serveStaticPage(context, next) {
 		level: "debug",
 	});
 
-	const response = await context.internal(context, "serve");
+	const response = await context.internal(context, {
+		type: "static",
+		op: "serve",
+		index: context.index,
+		params: context.params,
+	});
 	const compressedResponse = compress(context, response);
 
 	if (context.cache) {

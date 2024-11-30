@@ -1,27 +1,11 @@
 {
-	"compilerOptions": {
-		"noEmit": true,
-		"checkJs": true,
-		"strict": true,
-		"noImplicitReturns": true,
-		"noPropertyAccessFromIndexSignature": true,
-		"allowJs": true,
-		"target": "ESNext",
-		"moduleResolution": "NodeNext",
-		"resolveJsonModule": true,
-		"module": "NodeNext",
-		"lib": ["DOM", "DOM.Iterable", "ESNext"],
-		"allowImportingTsExtensions": true,
-		"forceConsistentCasingInFileNames": false,
-		"jsx": "react-jsx",
-		"jsxImportSource": "preact",
-		"incremental": true
-	},
+	"extends": "./tsconfig.base.json",
 	"include": ["packages/**/*", "playground/**/*", "doc/**/*"],
 	"exclude": [
 		"node_modules/**/*",
 		"packages/**/test/integration/**/project/**/*",
 		"playground/dist/**/*",
-		"**/dist/**/*"
+		"**/dist/**/*",
+		"doc/**"
 	]
 }

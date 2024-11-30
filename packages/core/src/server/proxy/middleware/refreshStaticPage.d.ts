@@ -1,4 +1,7 @@
 import type { Next } from "../../middleware.js";
-import type { Context } from "../context.js";
+import type { RouterContext } from "./router.js";
 
-export function refreshStaticPage(context: Context, next: Next<Context>): Promise<Response>;
+export function refreshStaticPage(
+	context: RouterContext,
+	next: Next<RouterContext>,
+): Promise<Response>;

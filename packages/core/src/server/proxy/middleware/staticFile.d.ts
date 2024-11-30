@@ -6,7 +6,7 @@ export type Encoding = "br" | "gzip" | "deflate" | "identity";
 export type CompressValue = boolean;
 
 type Config = {
-	rootDir: string;
+	rootDir?: string;
 };
 
 export function staticFile(config: Config): Middleware<Context>;

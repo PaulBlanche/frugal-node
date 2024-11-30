@@ -32,7 +32,12 @@ export async function refreshStaticPage(context, next) {
 		level: "debug",
 	});
 
-	const response = await context.internal(context, "refresh");
+	const response = await context.internal(context, {
+		type: "static",
+		op: "refresh",
+		index: context.index,
+		params: context.params,
+	});
 	const compressedResponse = compress(context, response);
 	await context.cache.add(context.request.url, compressedResponse);
 

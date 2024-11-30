@@ -1,4 +1,5 @@
 import type * as server from "../Server.js";
+import type { Internal } from "./ProxyServer.js";
 import type { ServerCache } from "./ServerCache.js";
 
 export type Context = server.Context & {
@@ -12,8 +13,5 @@ export type Context = server.Context & {
 		encodings: string[];
 		threshold: number;
 	};
-	internal: (
-		context: Context,
-		type: "generate" | "refresh" | "serve",
-	) => Promise<Response> | Response;
+	internal: Internal;
 };
