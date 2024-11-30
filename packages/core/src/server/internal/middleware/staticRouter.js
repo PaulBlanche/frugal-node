@@ -32,9 +32,8 @@ export function staticRouter(routes) {
 			return next(context);
 		}
 
-		const type = context.state["_frugal_type"];
 		const generationResponse =
-			type === "generate"
+			context.op === "generate"
 				? await producer.generate({
 						params,
 						request: context.request,
@@ -49,6 +48,8 @@ export function staticRouter(routes) {
 		if (generationResponse === undefined) {
 			return next(context);
 		}
+
+		console.log(generationResponse);
 
 		return toResponse(generationResponse);
 	};
