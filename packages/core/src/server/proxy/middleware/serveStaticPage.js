@@ -37,7 +37,5 @@ export async function serveStaticPage(context, next) {
 		await context.cache.add(context.request.url, compressedResponse.clone());
 	}
 
-	compressedResponse.headers.delete("x-frugal-build-hash");
-
 	return compressedResponse;
 }
