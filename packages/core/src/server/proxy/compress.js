@@ -9,6 +9,8 @@ import * as zlib from "node:zlib";
  * @param {Response} response
  */
 export function compress(context, response) {
+	return response;
+
 	if (context.compress === undefined) {
 		return response;
 	}
