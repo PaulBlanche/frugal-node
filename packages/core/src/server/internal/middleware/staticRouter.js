@@ -49,7 +49,7 @@ export function staticRouter(routes) {
 			return next(context);
 		}
 
-		console.log(generationResponse);
+		console.log(generationResponse.serialize());
 
 		return toResponse(generationResponse);
 	};
