@@ -74,6 +74,8 @@ function create({ config, watch, internal, manifest, publicDir, cacheOverride })
 				},
 			};
 
+			console.log("coucou");
+
 			const response = await serverMiddleware(context, _mostInternalMiddleware);
 
 			return response;

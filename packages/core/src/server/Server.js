@@ -53,7 +53,13 @@ export function create(handler, serverConfig) {
 			});
 
 			try {
-				return handler(request, { info, secure: secure ?? false, log: identifiedLog });
+				const response = await handler(request, {
+					info,
+					secure: secure ?? false,
+					log: identifiedLog,
+				});
+
+				return response;
 			} catch (/** @type {any} */ error) {
 				identifiedLog(error, { scope: logScope });
 				return new Response(null, {
