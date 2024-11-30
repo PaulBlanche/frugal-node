@@ -101,6 +101,8 @@ function create({ manifest, config, watch }) {
 				await sessionManager?.persist(session, response.headers);
 			}
 
+			console.log(Array.from(response.headers.entries()));
+
 			return response;
 		},
 		{ logScope: "InternalServer" },

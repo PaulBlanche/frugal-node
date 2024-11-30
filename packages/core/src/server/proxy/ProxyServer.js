@@ -40,8 +40,6 @@ function create({ config, watch, internal, manifest, publicDir, cacheOverride })
 		});
 	}
 
-	console.log(manifest, routes);
-
 	const availableEncodings = _getAvailableEncoding(config.compress.method);
 
 	const serverMiddleware = composeMiddleware([
@@ -77,6 +75,8 @@ function create({ config, watch, internal, manifest, publicDir, cacheOverride })
 			};
 
 			const response = await serverMiddleware(context, _mostInternalMiddleware);
+
+			console.log(Array.from(response.headers.entries()));
 
 			return response;
 		},
