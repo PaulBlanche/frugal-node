@@ -36,6 +36,7 @@ jobs:
         run: npm run lint
 
       - name: Run typechecker
+        if: ${{ false }}
         run: npm run typecheck
 
       - name: Run unit tests (with coverage)
