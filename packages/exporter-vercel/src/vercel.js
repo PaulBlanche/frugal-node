@@ -96,9 +96,9 @@ async function bundleFunctions(functionsDir, outputDir, config) {
 
 	const result = await esbuild.build({
 		entryPoints: [
-			{ in: "vercel://index.js", out: path.resolve(functionsDir.index, "index.mjs") },
-			{ in: "vercel://static.js", out: path.resolve(functionsDir.static, "index.mjs") },
-			{ in: "vercel://dynamic.js", out: path.resolve(functionsDir.dynamic, "index.mjs") },
+			{ in: "vercel://index.js", out: path.resolve(functionsDir.index, "index") },
+			{ in: "vercel://static.js", out: path.resolve(functionsDir.static, "index") },
+			{ in: "vercel://dynamic.js", out: path.resolve(functionsDir.dynamic, "index") },
 		],
 		bundle: true,
 		metafile: true,
@@ -223,6 +223,7 @@ async function bundleFunctions(functionsDir, outputDir, config) {
 		logOverride: {
 			"empty-import-meta": "silent",
 		},
+		outExtension: { ".js": ".mjs" },
 		absWorkingDir: config.rootDir,
 		outdir: outputDir,
 	});
