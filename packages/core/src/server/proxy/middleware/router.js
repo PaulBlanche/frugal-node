@@ -12,6 +12,7 @@ export function router(routes) {
 	return async (context, next) => {
 		for (const { type, page, index } of routes) {
 			const match = page.match(context.url.pathname);
+			console.log(page.route, context.url.pathname, match);
 
 			if (match) {
 				if (type === "dynamic") {
@@ -31,6 +32,7 @@ export function router(routes) {
 			}
 		}
 
+		console.log("no match");
 		return next(context);
 	};
 }

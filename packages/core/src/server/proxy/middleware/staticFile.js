@@ -9,6 +9,7 @@ const ONE_YEAR_IN_SECONDS = 31536000;
 export function staticFile({ rootDir }) {
 	return async (context, next) => {
 		if (rootDir === undefined) {
+			console.log("skip staticFile");
 			return next(context);
 		}
 

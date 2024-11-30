@@ -13,5 +13,6 @@ export function trailingSlashRedirect(context, next) {
 		});
 	}
 
+	console.log("skip trailingSlashRedirect");
 	return next(context);
 }
