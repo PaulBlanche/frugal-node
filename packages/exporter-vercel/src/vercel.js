@@ -19,8 +19,8 @@ export function vercel({ outdir = undefined } = {}) {
 			const outputDir = path.resolve(vercelDir, "output");
 
 			const indexFuncDir = await createServerlessFunction(outputDir, "index");
-			const staticFuncDir = await createServerlessFunction(outputDir, "_static/index");
-			const dynamicFuncDir = await createServerlessFunction(outputDir, "_dynamic/index");
+			const staticFuncDir = await createServerlessFunction(outputDir, "_static");
+			const dynamicFuncDir = await createServerlessFunction(outputDir, "_dynamic");
 
 			await output(
 				path.resolve(outputDir, "config.json"),
