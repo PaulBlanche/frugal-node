@@ -120,7 +120,7 @@ async function bundleFunctions(functionsDir, outputDir, config) {
 						manifest: { static: staticManifest },
 						config: internalRuntimeConfig,
 						watch: false
-					})
+					}).nativeHandler(true)
 
 					export default handler
 				`,
@@ -136,7 +136,7 @@ async function bundleFunctions(functionsDir, outputDir, config) {
 						manifest: { dynamic: dynamicManifest },
 						config: internalRuntimeConfig,
 						watch: false
-					})
+					}).nativeHandler(true)
 
 					export default handler
 				`,
@@ -187,7 +187,7 @@ async function bundleFunctions(functionsDir, outputDir, config) {
 							}
 						},
 						config: internalRuntimeConfig,
-					})
+					}).nativeHandler(true)
 
 					export default handler
 				`,
