@@ -102,7 +102,7 @@ async function bundleFunctions(functionsDir, outputDir, config) {
 		],
 		bundle: true,
 		metafile: true,
-		minify: true,
+		//minify: true,
 		define: {
 			"process.env.NODE_ENV": '"production"',
 		},
@@ -142,7 +142,7 @@ async function bundleFunctions(functionsDir, outputDir, config) {
 				`,
 				"vercel://index.js": `
 					import * as dynamicManifest from "${dynamicManifestPath}";
-					import * as staticManifest from "${dynamicManifestPath}";
+					import * as staticManifest from "${staticManifestPath}";
 					import { ProxyServer } from '@frugal-node/core/server';
 					import * as crypto from '@frugal-node/core/utils/crypto';
 					import { RuntimeConfig } from '@frugal-node/core/config/runtime';
