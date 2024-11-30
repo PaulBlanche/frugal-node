@@ -10,6 +10,7 @@ import { watchStaticPage } from "./watchStaticPage.js";
 /** @type {self.router} */
 export function router(routes) {
 	return async (context, next) => {
+		console.log(routes);
 		for (const { type, page, index } of routes) {
 			const match = page.match(context.url.pathname);
 			console.log(page.route, context.url.pathname, match);

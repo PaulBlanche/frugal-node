@@ -40,6 +40,8 @@ function create({ config, watch, internal, manifest, publicDir, cacheOverride })
 		});
 	}
 
+	console.log(manifest, routes);
+
 	const availableEncodings = _getAvailableEncoding(config.compress.method);
 
 	const serverMiddleware = composeMiddleware([
