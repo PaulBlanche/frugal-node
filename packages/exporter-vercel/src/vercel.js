@@ -195,12 +195,18 @@ async function bundleFunctions(functionsDir, outputDir, config) {
 
 								requestOptions.path = \`_dynamic?token=\${frugalToken}\`
 							}
+							
+							console.log({
+								...requestOptions,
+								headers: Object.fromEntries(requestHeaders.entries())
+							})
 
 							return new Promise((res) => {
 								http.request({
 									...requestOptions,
 									headers: Object.fromEntries(requestHeaders.entries())
 								}, (httpResponse) => {
+									console.log("coucou")
 									const response = new Response(stream.Readable.toWeb(httpResponse), {
 										status: httpResponse.statusCode,
 										statusText: httpResponse.statusMessage,
