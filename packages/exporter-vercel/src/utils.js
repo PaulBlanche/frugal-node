@@ -67,7 +67,7 @@ export function getProxyHandler(staticManifest, dynamicManifest, runtimeConfig) 
 					params: JSON.stringify(action.params),
 				});
 
-				requestOptions.path = `_static?token=${frugalToken}`;
+				requestOptions.path = `/_static?token=${frugalToken}`;
 				if (action.op === "refresh") {
 					requestHeaders.set("x-prerender-revalidate", "bypass");
 				}
@@ -85,13 +85,15 @@ export function getProxyHandler(staticManifest, dynamicManifest, runtimeConfig) 
 					params: JSON.stringify(action.params),
 				});
 
-				requestOptions.path = `_dynamic?token=${frugalToken}`;
+				requestOptions.path = `/_dynamic?token=${frugalToken}`;
 			}
 
 			const fullRequestOptions = {
 				...requestOptions,
 				headers: Object.fromEntries(requestHeaders.entries()),
 			};
+
+			console.log(fullRequestOptions);
 
 			return new Promise((res) => {
 				http.request(fullRequestOptions, (httpResponse) => {
