@@ -149,7 +149,7 @@ async function bundleFunctions(functionsDir, outputDir, config) {
 					import { RuntimeConfig } from '@frugal-node/core/config/runtime';
 					import runtimeConfig from "${path.resolve(config.outDir, staticManifest.runtimeConfig)}";
 					import * as stream from "node:stream";
-					import * http from "node:http"
+					import * as http from "node:http"
 
 					const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig);
 
