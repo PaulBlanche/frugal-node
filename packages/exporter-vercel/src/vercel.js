@@ -158,6 +158,7 @@ async function bundleFunctions(functionsDir, outputDir, config) {
 						publicDir: undefined,
 						watch: false,
 						internal: async (context, action) => {
+							console.log("internal")
 							const requestOptions = {
 								host: context.request.headers.get('host'),
 								port: 443,
