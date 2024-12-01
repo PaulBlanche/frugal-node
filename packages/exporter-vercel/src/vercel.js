@@ -147,6 +147,8 @@ async function bundleFunctions(functionsDir, outputDir, config) {
 					import * as crypto from '@frugal-node/core/utils/crypto';
 					import { RuntimeConfig } from '@frugal-node/core/config/runtime';
 					import runtimeConfig from "${path.resolve(config.outDir, staticManifest.runtimeConfig)}";
+					import * as undici from "undici"
+					import * as stream from "node:stream";
 
 					const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig);
 
@@ -155,6 +157,7 @@ async function bundleFunctions(functionsDir, outputDir, config) {
 						publicDir: undefined,
 						watch: false,
 						internal: async (context, action) => {
+							let url
 							if (action.type === "static") {
 								const frugalToken = await crypto.token(await internalRuntimeConfig.cryptoKey, {
 									type: action.type,
@@ -164,12 +167,10 @@ async function bundleFunctions(functionsDir, outputDir, config) {
 									params: JSON.stringify(action.params),
 								});
 
-								const url = new URL(context.request.url);
+								url = new URL(context.request.url);
 								url.pathname = "/_static";
 								url.searchParams.set("token", frugalToken);
-								const request = new Request(url.toString(), context.request);
 
-								return fetch(request)
 							} else {
 								const frugalToken = await crypto.token(await internalRuntimeConfig.cryptoKey, {
 									type: action.type,
@@ -178,13 +179,22 @@ async function bundleFunctions(functionsDir, outputDir, config) {
 									params: JSON.stringify(action.params),
 								});
 
-								const url = new URL(context.request.url);
+								url = new URL(context.request.url);
 								url.pathname = "/_dynamic";
 								url.searchParams.set("token", frugalToken);
-								const request = new Request(url.toString(), context.request);
-
-								return fetch(request)
 							}
+
+							const undiciResponse = await undici.request(url, {
+								method: context.request.method,
+								body: context.request.body,
+								headers: context.request.headers,
+							})
+
+							return new Response(stream.Readable.toWeb(undiciResponse.body), {
+								status: undiciResponse.statusCode
+								headers: undiciResponse.headers
+							})
+
 						},
 						config: internalRuntimeConfig,
 					}).nativeHandler(true)
