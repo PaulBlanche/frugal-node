@@ -109,7 +109,10 @@ export function getProxyHandler(staticManifest, dynamicManifest, runtimeConfig) 
 										/** @return {entry is [string, string[]]} */ (entry) =>
 											entry[1] !== undefined,
 									)
-									.map(([key, value]) => [key, value?.join(",")]),
+									.map((/** @return {[string, string]}*/ [key, value]) => [
+										key,
+										value?.join(","),
+									]),
 							),
 						},
 					);
