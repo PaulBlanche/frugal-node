@@ -145,10 +145,11 @@ async function bundleFunctions(functionsDir, outputDir, config) {
 					import * as staticManifest from "${staticManifestPath}";
 					import { ProxyServer } from '@frugal-node/core/server';
 					import * as crypto from '@frugal-node/core/utils/crypto';
+					import * as cookies from '@frugal-node/core/utils/cookies';
 					import { RuntimeConfig } from '@frugal-node/core/config/runtime';
 					import runtimeConfig from "${path.resolve(config.outDir, staticManifest.runtimeConfig)}";
-					import * as undici from "undici"
 					import * as stream from "node:stream";
+					import * http from "node:http"
 
 					const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig);
 
@@ -157,7 +158,13 @@ async function bundleFunctions(functionsDir, outputDir, config) {
 						publicDir: undefined,
 						watch: false,
 						internal: async (context, action) => {
-							let url
+							const requestOptions = {
+								host: context.request.headers.get('host'),
+								port: 443,
+								method: context.request.method
+							}
+							const requestHeaders = new Headers(context.request.headers)
+
 							if (action.type === "static") {
 								const frugalToken = await crypto.token(await internalRuntimeConfig.cryptoKey, {
 									type: action.type,
@@ -167,9 +174,16 @@ async function bundleFunctions(functionsDir, outputDir, config) {
 									params: JSON.stringify(action.params),
 								});
 
-								url = new URL(context.request.url);
-								url.pathname = "/_static";
-								url.searchParams.set("token", frugalToken);
+								requestOptions.path = \`_static?token=\${frugalToken}\`
+								if (action.op === 'refresh') {
+									requestOptions.headers['x-prerender-revalidate'] = "bypass"
+								}
+								if (action.op === 'generate') {
+									cookies.setCookie(requestHeaders, {
+										name: "__prerender_bypass",
+										value: "bypass",
+									})
+								} 
 
 							} else {
 								const frugalToken = await crypto.token(await internalRuntimeConfig.cryptoKey, {
@@ -179,21 +193,25 @@ async function bundleFunctions(functionsDir, outputDir, config) {
 									params: JSON.stringify(action.params),
 								});
 
-								url = new URL(context.request.url);
-								url.pathname = "/_dynamic";
-								url.searchParams.set("token", frugalToken);
+								requestOptions.path = \`_dynamic?token=\${frugalToken}\`
 							}
 
-							const undiciResponse = await undici.request(url, {
-								method: context.request.method,
-								body: context.request.body,
-								headers: context.request.headers,
+							return new Promise((res) => {
+								http.request({
+									...requestOptions,
+									headers: Object.fromEntries(requestHeaders.entries())
+								}, (httpResponse) => {
+									const response = new Response(stream.Readable.toWeb(httpResponse), {
+										status: httpResponse.statusCode,
+										statusText: httpResponse.statusMessage,
+										headers: new Headers(httpResponse.headersDistinct)
+									})
+
+									res(response)
+								})
 							})
 
-							return new Response(stream.Readable.toWeb(undiciResponse.body), {
-								status: undiciResponse.statusCode,
-								headers: undiciResponse.headers
-							})
+
 
 						},
 						config: internalRuntimeConfig,
