@@ -191,7 +191,7 @@ async function bundleFunctions(functionsDir, outputDir, config) {
 							})
 
 							return new Response(stream.Readable.toWeb(undiciResponse.body), {
-								status: undiciResponse.statusCode
+								status: undiciResponse.statusCode,
 								headers: undiciResponse.headers
 							})
 
