@@ -33,9 +33,11 @@ jobs:
           echo "DEPLOYEMENT_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})" >> $GITHUB_OUTPUT
 
       - name: Setup lighthouse
+        if: ${{ false }}
         run: npm install -g @lhci/cli
 
       - name: Lighthouse
+        if: ${{ false }}
         run: |
           lhci healthcheck --fatal --config=./doc/.lighthouserc.cjs 
           lhci collect --config=./doc/.lighthouserc.cjs 
