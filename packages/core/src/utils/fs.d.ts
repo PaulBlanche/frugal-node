@@ -1,3 +1,5 @@
+import type { PathLike } from "node:fs";
+import type { FileHandle } from "node:fs/promises";
 import type * as webStream from "node:stream/web";
 
 export type CopyOptions = {
@@ -44,22 +46,22 @@ export function ensureFile(filePath: string): Promise<void>;
 
 export function readDir(path: string): Promise<AsyncIterable<DirEntry>>;
 
-export function readFile(path: string): Promise<Uint8Array>;
+export function readFile(path: PathLike | FileHandle): Promise<Uint8Array>;
 
-export function readTextFile(path: string): Promise<string>;
+export function readTextFile(path: PathLike | FileHandle): Promise<string>;
 
 export function remove(path: string, options?: RemoveOptions): Promise<void>;
 
 export function stat(path: string): Promise<FileInfo>;
 
 export function writeFile(
-	path: string,
+	path: PathLike | FileHandle,
 	data: Uint8Array | webStream.ReadableStream<Uint8Array>,
 	options?: WriteFileOptions,
 ): Promise<void>;
 
 export function writeTextFile(
-	path: string,
+	path: PathLike | FileHandle,
 	data: string | webStream.ReadableStream<string>,
 	options?: WriteFileOptions,
 ): Promise<void>;

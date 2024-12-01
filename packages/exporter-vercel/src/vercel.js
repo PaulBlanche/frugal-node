@@ -110,122 +110,35 @@ async function bundleFunctions(functionsDir, outputDir, config) {
 			virtual({
 				"vercel://static.js": `
 					import * as staticManifest from "${staticManifestPath}";
-					import { InternalServer } from '@frugal-node/core/server';
-					import { RuntimeConfig } from '@frugal-node/core/config/runtime';
 					import runtimeConfig from "${runtimeConfigPath}";
+					import { getStaticHandler } from "vercel://utils.js"
 
-					const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig);
-
-					const handler = InternalServer.create({
-						manifest: { static: staticManifest },
-						config: internalRuntimeConfig,
-						watch: false
-					}).nativeHandler(true)
+					const handler = getStaticHandler(staticManifest, runtimeConfig)
 
 					export default handler
 				`,
 				"vercel://dynamic.js": `
 					import * as dynamicManifest from "${dynamicManifestPath}";
-					import { InternalServer } from '@frugal-node/core/server';
-					import { RuntimeConfig } from '@frugal-node/core/config/runtime';
 					import runtimeConfig from "${runtimeConfigPath}";
+					import { getDynamicHandler } from "vercel://utils.js"
 
-					const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig);
-
-					const handler = InternalServer.create({
-						manifest: { dynamic: dynamicManifest },
-						config: internalRuntimeConfig,
-						watch: false
-					}).nativeHandler(true)
+					const handler = getDynamicHandler(dynamicManifest, runtimeConfig)
 
 					export default handler
 				`,
 				"vercel://index.js": `
-					import * as dynamicManifest from "${dynamicManifestPath}";
 					import * as staticManifest from "${staticManifestPath}";
-					import { ProxyServer } from '@frugal-node/core/server';
-					import * as crypto from '@frugal-node/core/utils/crypto';
-					import * as cookies from '@frugal-node/core/utils/cookies';
-					import { RuntimeConfig } from '@frugal-node/core/config/runtime';
-					import runtimeConfig from "${path.resolve(config.outDir, staticManifest.runtimeConfig)}";
-					import * as stream from "node:stream";
-					import * as http from "node:http"
+					import * as dynamicManifest from "${dynamicManifestPath}";
+					import runtimeConfig from "${runtimeConfigPath}";
+					import { getProxyHandler } from "vercel://utils.js"
 
-					const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig);
-
-					const handler = ProxyServer.create({
-						manifest: { static: staticManifest, dynamic: dynamicManifest },
-						publicDir: undefined,
-						watch: false,
-						internal: async (context, action) => {
-							console.log("internal")
-							const requestOptions = {
-								host: context.request.headers.get('host'),
-								port: 443,
-								method: context.request.method
-							}
-							const requestHeaders = new Headers(context.request.headers)
-
-							if (action.type === "static") {
-								const frugalToken = await crypto.token(await internalRuntimeConfig.cryptoKey, {
-									type: action.type,
-									op: action.op,
-									index: String(action.index),
-									url: context.request.url,
-									params: JSON.stringify(action.params),
-								});
-
-								requestOptions.path = \`_static?token=\${frugalToken}\`
-								if (action.op === 'refresh') {
-									requestOptions.headers['x-prerender-revalidate'] = "bypass"
-								}
-								if (action.op === 'generate') {
-									cookies.setCookie(requestHeaders, {
-										name: "__prerender_bypass",
-										value: "bypass",
-									})
-								} 
-
-							} else {
-								const frugalToken = await crypto.token(await internalRuntimeConfig.cryptoKey, {
-									type: action.type,
-									index: String(action.index),
-									url: context.request.url,
-									params: JSON.stringify(action.params),
-								});
-
-								requestOptions.path = \`_dynamic?token=\${frugalToken}\`
-							}
-							
-							console.log({
-								...requestOptions,
-								headers: Object.fromEntries(requestHeaders.entries())
-							})
-
-							return new Promise((res) => {
-								http.request({
-									...requestOptions,
-									headers: Object.fromEntries(requestHeaders.entries())
-								}, (httpResponse) => {
-									console.log("coucou")
-									const response = new Response(stream.Readable.toWeb(httpResponse), {
-										status: httpResponse.statusCode,
-										statusText: httpResponse.statusMessage,
-										headers: new Headers(httpResponse.headersDistinct)
-									})
-
-									res(response)
-								})
-							})
-
-
-
-						},
-						config: internalRuntimeConfig,
-					}).nativeHandler(true)
+					const handler = getProxyHandler(staticManifest, dynamicManifest, runtimeConfig)
 
 					export default handler
 				`,
+				"vercel://utils.js": await fs.readTextFile(
+					new URL(import.meta.resolve("./utils.js")),
+				),
 			}),
 			copy([
 				{
