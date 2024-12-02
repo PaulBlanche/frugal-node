@@ -1,12 +1,13 @@
 /** @import { StaticManifest, DynamicManifest } from "@frugal-node/core/exporter" */
+/** @import * as webstream from "node:stream/web" */
 
-import * as http from "node:http";
 import * as stream from "node:stream";
 import { RuntimeConfig } from "@frugal-node/core/config/runtime";
 import { InternalServer } from "@frugal-node/core/server";
 import { ProxyServer } from "@frugal-node/core/server";
 import * as cookies from "@frugal-node/core/utils/cookies";
 import * as crypto from "@frugal-node/core/utils/crypto";
+import nodeFetch from "node-fetch";
 
 /**
  * @param {StaticManifest} staticManifest
@@ -49,13 +50,7 @@ export function getProxyHandler(staticManifest, dynamicManifest, runtimeConfig) 
 		publicDir: undefined,
 		watch: false,
 		internal: async (context, action) => {
-			console.log("internal");
-			/** @type {http.RequestOptions} */
-			const requestOptions = {
-				host: context.request.headers.get("host"),
-				port: 443,
-				method: context.request.method,
-			};
+			let requestUrl;
 			const requestHeaders = new Headers(context.request.headers);
 
 			if (action.type === "static") {
@@ -67,7 +62,7 @@ export function getProxyHandler(staticManifest, dynamicManifest, runtimeConfig) 
 					params: JSON.stringify(action.params),
 				});
 
-				requestOptions.path = `/_static?token=${frugalToken}`;
+				requestUrl = new URL(`/_static?token=${frugalToken}`, context.request.url);
 				if (action.op === "refresh") {
 					requestHeaders.set("x-prerender-revalidate", "bypass");
 				}
@@ -85,43 +80,36 @@ export function getProxyHandler(staticManifest, dynamicManifest, runtimeConfig) 
 					params: JSON.stringify(action.params),
 				});
 
-				requestOptions.path = `/_dynamic?token=${frugalToken}`;
+				requestUrl = new URL(`/_dynamic?token=${frugalToken}`, context.request.url);
 			}
 
-			const fullRequestOptions = {
-				...requestOptions,
-				headers: Object.fromEntries(requestHeaders.entries()),
-			};
-
-			console.log(fullRequestOptions);
-
-			return new Promise((res) => {
-				http.request(fullRequestOptions, (httpResponse) => {
-					console.log("coucou");
-					const response = new Response(
-						/** @type {ReadableStream<Uint8Array>} */ (
-							stream.Readable.toWeb(httpResponse)
-						),
-						{
-							status: httpResponse.statusCode,
-							statusText: httpResponse.statusMessage,
-							headers: new Headers(
-								Object.entries(httpResponse.headersDistinct)
-									.filter(
-										/** @return {entry is [string, string[]]} */ (entry) =>
-											entry[1] !== undefined,
-									)
-									.map((/** @return {[string, string]}*/ [key, value]) => [
-										key,
-										value?.join(","),
-									]),
+			const nodeResponse = await nodeFetch(requestUrl, {
+				headers: requestHeaders,
+				body:
+					context.request.body === null
+						? null
+						: stream.Readable.fromWeb(
+								/** @type {webstream.ReadableStream<Uint8Array>}*/ (
+									context.request.body
+								),
 							),
-						},
-					);
-
-					res(response);
-				});
+				method: context.request.method,
+				compress: false,
 			});
+
+			const response = new Response(
+				nodeResponse.body === null
+					? null
+					: /** @type {ReadableStream<Uint8Array>}*/ (
+							stream.Readable.toWeb(new stream.Readable().wrap(nodeResponse.body))
+						),
+				{
+					headers: new Headers(Object.fromEntries(nodeResponse.headers.entries())),
+					status: nodeResponse.status,
+				},
+			);
+
+			return response;
 		},
 		config: internalRuntimeConfig,
 	}).nativeHandler(true);
