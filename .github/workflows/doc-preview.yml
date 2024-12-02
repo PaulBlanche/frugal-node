@@ -32,7 +32,7 @@ jobs:
       - name: Deploy project
         id: deploy
         run: |
-          echo "DEPLOYEMENT_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})" >> $GITHUB_OUTPUT
+          echo "DEPLOYEMENT_URL=$(vercel deploy --prebuilt --archive=tgz --token=${{ secrets.VERCEL_TOKEN }})" >> $GITHUB_OUTPUT
 
       - name: Setup lighthouse
         if: ${{ false }}
