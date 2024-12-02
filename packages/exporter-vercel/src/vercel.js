@@ -48,8 +48,8 @@ async function createRootConfig(outputDir) {
 				version: 3,
 				routes: [
 					{ handle: "filesystem" },
-					{ src: "^/_static/(?:/(.*))$", dest: "/_static/" },
-					{ src: "^/_dynamic/(?:/(.*))$", dest: "/_dynamic/" },
+					{ src: "^/_static(?:/(.*))$", dest: "/_static/" },
+					{ src: "^/_dynamic(?:/(.*))$", dest: "/_dynamic/" },
 					{ src: "^(?:/(.*))$", dest: "/" },
 				],
 			},
