@@ -79,7 +79,6 @@ function create({ manifest, config, watch }) {
 	return Server.create(
 		async (request, serverContext) => {
 			const session = await sessionManager?.get(request.headers);
-			console.log(request.url);
 			const url = new URL(request.url);
 
 			const context = {

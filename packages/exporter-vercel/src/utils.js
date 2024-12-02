@@ -58,6 +58,7 @@ export function getProxyHandler(staticManifest, dynamicManifest, runtimeConfig) 
 					type: action.type,
 					op: action.op,
 					index: String(action.index),
+					url: context.request.url,
 					params: JSON.stringify(action.params),
 				});
 
@@ -78,6 +79,7 @@ export function getProxyHandler(staticManifest, dynamicManifest, runtimeConfig) 
 				const frugalToken = await crypto.token(await internalRuntimeConfig.cryptoKey, {
 					type: action.type,
 					index: String(action.index),
+					url: context.request.url,
 					params: JSON.stringify(action.params),
 				});
 
