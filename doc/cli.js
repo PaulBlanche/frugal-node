@@ -1,6 +1,6 @@
 /** @import { BuildConfig } from "@frugal-node/core/config/build";*/
 
-import { parseArgs, parseEnv } from "node:util";
+import { parseArgs } from "node:util";
 import { build, context } from "@frugal-node/core";
 import { vercel } from "@frugal-node/exporter-vercel";
 import { css } from "@frugal-node/plugin-css";
