@@ -18,34 +18,45 @@ export function vercel({ outdir = undefined } = {}) {
 			const vercelDir = path.resolve(outdir ?? context.config.rootDir, ".vercel");
 			const outputDir = path.resolve(vercelDir, "output");
 
+			await createRootConfig(outputDir);
+
 			const indexFuncDir = await createServerlessFunction(outputDir, "index");
 			const staticFuncDir = await createServerlessFunction(outputDir, "_static");
 			const dynamicFuncDir = await createServerlessFunction(outputDir, "_dynamic");
-
-			await output(
-				path.resolve(outputDir, "config.json"),
-				JSON.stringify(
-					{
-						version: 3,
-						routes: [
-							{ handle: "filesystem" },
-							{ src: "^_static$", dest: "/_static/" },
-							{ src: "^_dynamic$", dest: "/_dynamic/" },
-							{ src: "^(?:/(.*))$", dest: "/" },
-						],
-					},
-					null,
-					2,
-				),
-			);
 
 			await bundleFunctions(
 				{ index: indexFuncDir, static: staticFuncDir, dynamic: dynamicFuncDir },
 				outputDir,
 				context.config,
 			);
+
+			/*context.snapshot.current.map(entry => {
+				await output(staticFuncDir, path.resolve(entry.path))
+			})*/
 		},
 	};
+}
+
+/**
+ * @param {string} outputDir
+ */
+async function createRootConfig(outputDir) {
+	await output(
+		path.resolve(outputDir, "config.json"),
+		JSON.stringify(
+			{
+				version: 3,
+				routes: [
+					{ handle: "filesystem" },
+					{ src: "^_static$", dest: "/_static/" },
+					{ src: "^_dynamic$", dest: "/_dynamic/" },
+					{ src: "^(?:/(.*))$", dest: "/" },
+				],
+			},
+			null,
+			2,
+		),
+	);
 }
 
 /**

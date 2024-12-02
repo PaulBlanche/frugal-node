@@ -58,11 +58,13 @@ export function getProxyHandler(staticManifest, dynamicManifest, runtimeConfig) 
 					type: action.type,
 					op: action.op,
 					index: String(action.index),
-					url: context.request.url,
 					params: JSON.stringify(action.params),
 				});
 
-				requestUrl = new URL(`/_static?token=${frugalToken}`, context.request.url);
+				requestUrl = new URL(
+					`/_static/${context.url.pathname}?token=${frugalToken}`,
+					context.url,
+				);
 				if (action.op === "refresh") {
 					requestHeaders.set("x-prerender-revalidate", "bypass");
 				}
@@ -76,11 +78,13 @@ export function getProxyHandler(staticManifest, dynamicManifest, runtimeConfig) 
 				const frugalToken = await crypto.token(await internalRuntimeConfig.cryptoKey, {
 					type: action.type,
 					index: String(action.index),
-					url: context.request.url,
 					params: JSON.stringify(action.params),
 				});
 
-				requestUrl = new URL(`/_dynamic?token=${frugalToken}`, context.request.url);
+				requestUrl = new URL(
+					`/_dynamic/${context.url.pathname}?token=${frugalToken}`,
+					context.url,
+				);
 			}
 
 			const nodeResponse = await nodeFetch(requestUrl, {
