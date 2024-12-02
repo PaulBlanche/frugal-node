@@ -50,9 +50,11 @@ export function readFile(path: PathLike | FileHandle): Promise<Uint8Array>;
 
 export function readTextFile(path: PathLike | FileHandle): Promise<string>;
 
-export function remove(path: string, options?: RemoveOptions): Promise<void>;
+export function remove(path: PathLike, options?: RemoveOptions): Promise<void>;
 
-export function stat(path: string): Promise<FileInfo>;
+export function stat(path: PathLike): Promise<FileInfo>;
+
+export function symlink(target: PathLike, path: PathLike): Promise<void>;
 
 export function writeFile(
 	path: PathLike | FileHandle,

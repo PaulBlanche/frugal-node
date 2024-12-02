@@ -17,7 +17,7 @@ export type BuildConfig = {
 };
 
 export type InternalBuildConfig = {
-	readonly runtimeConfig: Promise<InternalRuntimeConfig | undefined>;
+	readonly runtimeConfig: Promise<InternalRuntimeConfig>;
 	readonly runtimeConfigPath: string;
 	readonly pages: string[];
 	readonly outDir: string;

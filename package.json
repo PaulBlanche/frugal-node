@@ -9,7 +9,7 @@
 		"lint": "npx biome check .",
 		"typecheck": "tsc -p . && tsc -p ./doc",
 		"doc:dev": "npm -w @frugal-node/doc run dev",
-		"doc:build": "NODE_ENV=production npm -w @frugal-node/doc run build"
+		"doc:build": "NODE_ENV=${NODE_ENV:=production} npm -w @frugal-node/doc run build"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.0",

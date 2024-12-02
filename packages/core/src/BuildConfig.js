@@ -38,16 +38,11 @@ function create(config) {
 		},
 
 		get runtimeConfig() {
-			return import(runtimeConfigPath).then(
-				(module) => {
-					const runtimeConfig = module.default;
+			return import(runtimeConfigPath).then((module) => {
+				const runtimeConfig = module.default;
 
-					return RuntimeConfig.create(runtimeConfig);
-				},
-				() => {
-					return undefined;
-				},
-			);
+				return RuntimeConfig.create(runtimeConfig);
+			});
 		},
 
 		get runtimeConfigPath() {

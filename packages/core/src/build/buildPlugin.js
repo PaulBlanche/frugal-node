@@ -19,8 +19,6 @@ export function buildPlugin(buildCache) {
 					return;
 				}
 
-				const cryptoKey = (await context.buildConfig.runtimeConfig)?.cryptoKey;
-
 				await Promise.all(
 					context.manifest.pages.map(async (manifestPage) => {
 						const pagePath = path.resolve(
@@ -49,7 +47,7 @@ export function buildPlugin(buildCache) {
 							pageAssets,
 							page,
 							context.manifest.hash,
-							cryptoKey,
+							undefined,
 						);
 
 						const pathParams = await pageProducer.getPathParams();

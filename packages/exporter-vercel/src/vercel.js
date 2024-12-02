@@ -2,11 +2,13 @@
 /** @import { BuildSnapshot } from "@frugal-node/core/exporter" */
 
 import * as path from "node:path";
+import { RuntimeConfig } from "@frugal-node/core/config/runtime";
 import {
 	getDynamicManifestPath,
 	getStaticManifestPath,
 	loadStaticManifest,
 } from "@frugal-node/core/exporter";
+import { token } from "@frugal-node/core/utils/crypto";
 import * as fs from "@frugal-node/core/utils/fs";
 import * as esbuild from "esbuild";
 
@@ -21,18 +23,72 @@ export function vercel({ outdir = undefined } = {}) {
 			await createRootConfig(outputDir);
 
 			const indexFuncDir = await createServerlessFunction(outputDir, "index");
-			const staticFuncDir = await createServerlessFunction(outputDir, "_static");
-			const dynamicFuncDir = await createServerlessFunction(outputDir, "_dynamic");
+			const staticFuncDir = await createServerlessFunction(outputDir, "_static/index");
+			const dynamicFuncDir = await createServerlessFunction(outputDir, "_dynamic/index");
+
+			const staticManifest = await loadStaticManifest(context.config);
+			const runtimeConfigPath = path.resolve(
+				context.config.outDir,
+				staticManifest.runtimeConfig,
+			);
+			/** @type {RuntimeConfig} */
+			const runtimeConfig = (await import(runtimeConfigPath)).default;
+			const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig);
+
+			const bypassToken = token(await internalRuntimeConfig.cryptoKey, { t: "bypass" });
 
 			await bundleFunctions(
 				{ index: indexFuncDir, static: staticFuncDir, dynamic: dynamicFuncDir },
 				outputDir,
+				runtimeConfigPath,
 				context.config,
 			);
 
-			/*context.snapshot.current.map(entry => {
-				await output(staticFuncDir, path.resolve(entry.path))
-			})*/
+			context.snapshot.current.map(async (entry) => {
+				const body = await context.snapshot.getBody(entry);
+
+				if (body === undefined) {
+					return;
+				}
+
+				const absolutePath = path.join(entry.path, "index");
+				const fallbackPath = path.resolve(
+					path.dirname(staticFuncDir),
+					`.${absolutePath}.prerender-fallback.html`,
+				);
+				const configPath = path.resolve(
+					path.dirname(staticFuncDir),
+					`.${absolutePath}.prerender-config.json`,
+				);
+
+				await output(fallbackPath, body);
+
+				await output(
+					configPath,
+					JSON.stringify({
+						expiration: false,
+						bypassToken,
+						fallback: path.basename(fallbackPath),
+					}),
+				);
+
+				try {
+					console.log(
+						"link",
+						staticFuncDir,
+						"<-",
+						path.resolve(path.dirname(staticFuncDir), `.${absolutePath}.func`),
+					);
+					await fs.symlink(
+						staticFuncDir,
+						path.resolve(path.dirname(staticFuncDir), `.${absolutePath}.func`),
+					);
+				} catch (error) {
+					if (!(error instanceof fs.AlreadyExists)) {
+						throw error;
+					}
+				}
+			});
 		},
 	};
 }
@@ -97,13 +153,12 @@ async function output(path, content) {
 /**
  * @param {{ index:string, static:string, dynamic:string}} functionsDir
  * @param {string} outputDir
+ * @param {string} runtimeConfigPath
  * @param {InternalBuildConfig} config
  */
-async function bundleFunctions(functionsDir, outputDir, config) {
+async function bundleFunctions(functionsDir, outputDir, runtimeConfigPath, config) {
 	const staticManifestPath = await getStaticManifestPath(config);
-	const staticManifest = await loadStaticManifest(config);
 	const dynamicManifestPath = await getDynamicManifestPath(config);
-	const runtimeConfigPath = path.resolve(config.outDir, staticManifest.runtimeConfig);
 
 	const result = await esbuild.build({
 		entryPoints: [
