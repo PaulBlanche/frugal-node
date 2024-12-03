@@ -35,10 +35,11 @@ export function vercel({ outdir = undefined } = {}) {
 			const runtimeConfig = (await import(runtimeConfigPath)).default;
 			const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig);
 
-			const bypassToken = token(await internalRuntimeConfig.cryptoKey, { t: "bypass" });
+			const bypassToken = await token(await internalRuntimeConfig.cryptoKey, { t: "bypass" });
 
 			await bundleFunctions(
 				{ index: indexFuncDir, static: staticFuncDir, dynamic: dynamicFuncDir },
+				bypassToken,
 				outputDir,
 				runtimeConfigPath,
 				context.config,
@@ -154,11 +155,12 @@ async function output(path, content) {
 
 /**
  * @param {{ index:string, static:string, dynamic:string}} functionsDir
+ * @param {string} bypassToken
  * @param {string} outputDir
  * @param {string} runtimeConfigPath
  * @param {InternalBuildConfig} config
  */
-async function bundleFunctions(functionsDir, outputDir, runtimeConfigPath, config) {
+async function bundleFunctions(functionsDir, bypassToken, outputDir, runtimeConfigPath, config) {
 	const staticManifestPath = await getStaticManifestPath(config);
 	const dynamicManifestPath = await getDynamicManifestPath(config);
 
@@ -200,7 +202,7 @@ async function bundleFunctions(functionsDir, outputDir, runtimeConfigPath, confi
 					import runtimeConfig from "${runtimeConfigPath}";
 					import { getProxyHandler } from "vercel://utils.js"
 
-					const handler = getProxyHandler(staticManifest, dynamicManifest, runtimeConfig)
+					const handler = getProxyHandler(staticManifest, dynamicManifest, runtimeConfig, "${bypassToken}")
 
 					export default handler
 				`,

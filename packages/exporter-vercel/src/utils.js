@@ -41,8 +41,9 @@ export function getDynamicHandler(dynamicManifest, runtimeConfig) {
  * @param {StaticManifest} staticManifest
  * @param {DynamicManifest} dynamicManifest
  * @param {RuntimeConfig} runtimeConfig
+ * @param {string} bypassToken
  */
-export function getProxyHandler(staticManifest, dynamicManifest, runtimeConfig) {
+export function getProxyHandler(staticManifest, dynamicManifest, runtimeConfig, bypassToken) {
 	const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig);
 
 	return ProxyServer.create({
@@ -67,12 +68,12 @@ export function getProxyHandler(staticManifest, dynamicManifest, runtimeConfig) 
 					context.url,
 				);
 				if (action.op === "refresh") {
-					requestHeaders.set("x-prerender-revalidate", "bypass");
+					requestHeaders.set("x-prerender-revalidate", bypassToken);
 				}
 				if (action.op === "generate") {
 					cookies.setCookie(requestHeaders, {
 						name: "__prerender_bypass",
-						value: "bypass",
+						value: bypassToken,
 					});
 				}
 			} else {
