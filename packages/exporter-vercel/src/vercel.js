@@ -44,51 +44,53 @@ export function vercel({ outdir = undefined } = {}) {
 				context.config,
 			);
 
-			context.snapshot.current.map(async (entry) => {
-				const body = await context.snapshot.getBody(entry);
+			await Promise.all(
+				context.snapshot.current.map(async (entry) => {
+					const body = await context.snapshot.getBody(entry);
 
-				if (body === undefined) {
-					return;
-				}
-
-				const absolutePath = path.join(entry.path, "index");
-				const fallbackPath = path.resolve(
-					path.dirname(staticFuncDir),
-					`.${absolutePath}.prerender-fallback.html`,
-				);
-				const configPath = path.resolve(
-					path.dirname(staticFuncDir),
-					`.${absolutePath}.prerender-config.json`,
-				);
-
-				await output(fallbackPath, body);
-
-				await output(
-					configPath,
-					JSON.stringify({
-						expiration: false,
-						bypassToken,
-						fallback: path.basename(fallbackPath),
-					}),
-				);
-
-				try {
-					console.log(
-						"link",
-						staticFuncDir,
-						"<-",
-						path.resolve(path.dirname(staticFuncDir), `.${absolutePath}.func`),
-					);
-					await fs.symlink(
-						staticFuncDir,
-						path.resolve(path.dirname(staticFuncDir), `.${absolutePath}.func`),
-					);
-				} catch (error) {
-					if (!(error instanceof fs.AlreadyExists)) {
-						throw error;
+					if (body === undefined) {
+						return;
 					}
-				}
-			});
+
+					const absolutePath = path.join(entry.path, "index");
+					const fallbackPath = path.resolve(
+						path.dirname(staticFuncDir),
+						`.${absolutePath}.prerender-fallback.html`,
+					);
+					const configPath = path.resolve(
+						path.dirname(staticFuncDir),
+						`.${absolutePath}.prerender-config.json`,
+					);
+
+					await output(fallbackPath, body);
+
+					await output(
+						configPath,
+						JSON.stringify({
+							expiration: false,
+							bypassToken,
+							fallback: path.basename(fallbackPath),
+						}),
+					);
+
+					try {
+						const absoluteLinkPath = path.resolve(
+							path.dirname(staticFuncDir),
+							`.${absolutePath}.func`,
+						);
+						const absoluteTarget = staticFuncDir;
+						const relativeTarget = path.relative(absoluteLinkPath, absoluteTarget);
+						if (relativeTarget === "") {
+							return;
+						}
+						await fs.symlink(relativeTarget, absoluteLinkPath);
+					} catch (error) {
+						if (!(error instanceof fs.AlreadyExists)) {
+							throw error;
+						}
+					}
+				}),
+			);
 		},
 	};
 }
