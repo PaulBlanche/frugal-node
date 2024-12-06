@@ -5,7 +5,7 @@ import { Page } from "./Page.tsx";
 export const route = "/";
 
 export function build() {
-	return PageResponse.data({ foo: "bar" });
+	return PageResponse.data({ foo: "bar" }, { maxAge: 5 });
 }
 
 export const render = getRenderFrom(Page);

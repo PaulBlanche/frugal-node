@@ -72,7 +72,7 @@ export function vercel({ outdir = undefined } = {}) {
 					await output(
 						configPath,
 						JSON.stringify({
-							expiration: false,
+							expiration: entry.maxAge < 0 ? false : entry.maxAge,
 							bypassToken,
 							fallback: path.basename(fallbackPath),
 						}),
