@@ -50,6 +50,7 @@ export async function build({
 			markdown,
 		},
 		{
+			maxAge: 5,
 			headers: {
 				"Cache-Control": "public, max-age=300, must-revalidate", // cached for 5min
 			},
