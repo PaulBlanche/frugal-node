@@ -139,6 +139,10 @@ async function createRootConfig(outputDir, staticManifest) {
 						dest: "/index",
 					}, // true server: middleware, router static (force generate if cookie, refresh if token, serve static, generate dynamic ...)
 				],
+				framework: {
+					slug: "frugal",
+					version: "1.0.0",
+				},
 			},
 			null,
 			2,
@@ -160,6 +164,10 @@ async function createServerlessFunction(outputDir, funcPath) {
 				handler: "index.mjs",
 				runtime: "nodejs20.x",
 				launcherType: "Nodejs",
+				framework: {
+					slug: "frugale",
+					version: "1.0.0",
+				},
 			},
 			null,
 			2,
