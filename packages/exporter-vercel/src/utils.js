@@ -24,7 +24,7 @@ export function getFrugalHandler(manifest, runtimeConfig) {
 	return Server.create((request, serverContext) => {
 		console.log(request.headers.get("x-now-route-matches"));
 		return frugalServer(request, serverContext.info);
-	});
+	}).nativeHandler(true);
 }
 
 /**
