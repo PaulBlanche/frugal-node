@@ -58,6 +58,8 @@ function from(serialized) {
 	};
 }
 
+const ONE_YEAR_IN_SECONDS = 31536000;
+
 /** @type {self.FrugalResponseCreator['create']} */
 async function create(response, init) {
 	const state = {
@@ -75,6 +77,18 @@ async function create(response, init) {
 
 	if (headers.get("Last-Modified") === null) {
 		headers.set("Last-Modified", state.date);
+	}
+
+	if (headers.get("Cache-Control") === null) {
+		const maxAge = response.maxAge;
+		headers.set(
+			"Cache-Control",
+			maxAge < 0
+				? `s-maxage=${ONE_YEAR_IN_SECONDS}, stale-while-revalidate`
+				: maxAge === 0
+					? "private, no-cache, no-store, max-age=0, must-revalidate"
+					: `s-maxage=${maxAge}, stale-while-revalidate`,
+		);
 	}
 
 	const cryptoKey = await init.cryptoKey;
