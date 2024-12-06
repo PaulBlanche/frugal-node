@@ -22,7 +22,15 @@ export function getFrugalHandler(manifest, runtimeConfig) {
 	}).handler(true);
 
 	return Server.create((request, serverContext) => {
-		console.log(Array.from(request.headers.entries()), request.url);
+		const url = new URL(request.url);
+
+		if (url.pathname.endsWith("/index")) {
+			const rewritePath = url.pathname.slice(0, -6);
+			url.pathname = rewritePath === "" ? "/" : rewritePath;
+
+			const rewriteRequest = new Request(url, request);
+			return frugalServer(rewriteRequest, serverContext.info);
+		}
 		return frugalServer(request, serverContext.info);
 	}).nativeHandler(true);
 }
