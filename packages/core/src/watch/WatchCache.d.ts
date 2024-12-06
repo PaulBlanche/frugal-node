@@ -1,6 +1,6 @@
 import type { BuildCache } from "../build/BuildCache.js";
 import type { SerializedFrugalResponse } from "../page/FrugalResponse.js";
-import type { ServerCache } from "../server/proxy/ServerCache.js";
+import type { ServerCache } from "../server/ServerCache.js";
 
 interface WatchCache {
 	build: BuildCache;

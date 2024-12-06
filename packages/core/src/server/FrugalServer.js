@@ -1,61 +1,142 @@
 /** @import * as self from "./FrugalServer.js" */
+/** @import { Route } from "./middleware/router.js" */
+/** @import { CompressMethodsObject } from "../RuntimeConfig.js" */
+/** @import { Context } from "./context.ts" */
 
-import { token } from "../utils/crypto.js";
-import { InternalServer } from "./internal/InternalServer.js";
-import { ProxyServer } from "./proxy/ProxyServer.js";
+import Negotiator from "negotiator";
+import { PageAssets } from "../page/PageAssets.js";
+import { Producer } from "../page/Producer.js";
+import { parse } from "../page/parse.js";
+import { Server } from "./Server.js";
+import { composeMiddleware } from "./middleware.js";
+import { compress } from "./middleware/compress.js";
+import { etag } from "./middleware/etag.js";
+import { router } from "./middleware/router.js";
+import { staticFile } from "./middleware/staticFile.js";
+import { trailingSlashRedirect } from "./middleware/trailingSlashRedirect.js";
+import { watchModeResponseModification } from "./middleware/watchModeResponseModification.js";
+import { SessionManager } from "./session/SessionManager.js";
 
 /** @type {self.FrugalServerCreator} */
 export const FrugalServer = {
 	create,
 };
 
-/*
-
-/foo/static
-
-/_static?path=/foo/static
-
-*/
-
 /** @type {self.FrugalServerCreator['create']} */
 function create({ config, manifest, watch, publicDir, cacheOverride }) {
-	const internalHandler = InternalServer.create({
-		manifest,
-		config,
-		watch,
-	}).handler(config.secure);
+	/** @type {Route[]} */
+	const routes = [];
 
-	return ProxyServer.create({
-		manifest,
-		publicDir,
-		config,
-		watch,
-		cacheOverride,
-		internal: async (context, action) => {
-			let frugalToken;
-			if (action.type === "static") {
-				frugalToken = await token(await config.cryptoKey, {
-					type: action.type,
-					op: action.op,
-					index: String(action.index),
-					url: context.request.url,
-					params: JSON.stringify(action.params),
-				});
-			} else {
-				frugalToken = await token(await config.cryptoKey, {
-					type: action.type,
-					index: String(action.index),
-					url: context.request.url,
-					params: JSON.stringify(action.params),
-				});
+	if (manifest.static !== undefined) {
+		for (const { moduleHash, entrypoint, descriptor, params } of manifest.static.pages) {
+			const page = parse({ moduleHash, entrypoint, descriptor });
+			const pageAssets = PageAssets.create(manifest.static.assets, page.entrypoint);
+			const producer = Producer.create(
+				pageAssets,
+				page,
+				manifest.static.hash,
+				config.cryptoKey,
+			);
+			routes.push({
+				page,
+				producer,
+				paramList: params,
+			});
+		}
+	}
+
+	if (manifest.dynamic !== undefined) {
+		for (const { moduleHash, entrypoint, descriptor } of manifest.dynamic.pages) {
+			const page = parse({ moduleHash, entrypoint, descriptor });
+			const pageAssets = PageAssets.create(manifest.dynamic.assets, page.entrypoint);
+			const producer = Producer.create(
+				pageAssets,
+				page,
+				manifest.dynamic.hash,
+				config.cryptoKey,
+			);
+			routes.push({
+				page,
+				producer,
+			});
+		}
+	}
+
+	const availableEncodings = _getAvailableEncoding(config.compress.method);
+
+	const serverMiddleware = composeMiddleware([
+		//custom error pages
+		//csrf,
+		etag,
+		trailingSlashRedirect,
+		compress,
+		...config.middlewares,
+		staticFile({ rootDir: publicDir }),
+		watchModeResponseModification,
+		router(routes),
+	]);
+
+	const sessionManager = config.session ? SessionManager.create(config.session) : undefined;
+
+	return Server.create(
+		async (request, serverContext) => {
+			const url = new URL(request.url);
+			const session = await sessionManager?.get(request.headers);
+
+			const negotiator = new Negotiator({
+				headers: Object.fromEntries(request.headers.entries()),
+			});
+			const encodings = negotiator.encodings(availableEncodings);
+
+			/** @type {Context} */
+			const context = {
+				...serverContext,
+				url,
+				watch,
+				request,
+				cache: cacheOverride ?? config.serverCache,
+				state: {},
+				session,
+				cryptoKey: config.cryptoKey,
+				compress: {
+					encodings,
+					threshold: config.compress.threshold,
+				},
+			};
+
+			const response = await serverMiddleware(context, _mostInternalMiddleware);
+
+			if (response.headers.get("Date") === null) {
+				response.headers.set("Date", new Date().toUTCString());
 			}
 
-			const url = new URL(context.request.url);
-			url.pathname = "/";
-			url.searchParams.set("token", frugalToken);
-			const request = new Request(url.toString(), context.request);
+			if (session) {
+				await sessionManager?.persist(session, response.headers);
+			}
 
-			return internalHandler(request, context.info);
+			return response;
 		},
-	});
+		{ logScope: "FrugalServer" },
+	);
+}
+
+function _mostInternalMiddleware() {
+	return Promise.resolve(
+		new Response(null, {
+			status: 404,
+		}),
+	);
+}
+
+/**
+ * @param {CompressMethodsObject} compress
+ * @returns {string[]}
+ */
+function _getAvailableEncoding(compress) {
+	return [
+		compress.brotli !== false && "br",
+		compress.gzip !== false && "gzip",
+		compress.deflate !== false && "deflate",
+		"identity",
+	].filter(/** @return {encoding is string}*/ (encoding) => typeof encoding === "string");
 }

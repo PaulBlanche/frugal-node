@@ -2,14 +2,61 @@
 
 import { Hash } from "../utils/Hash.js";
 import * as cookies from "../utils/cookies.js";
-import { token } from "../utils/crypto.js";
+import { forceGenerateToken } from "../utils/crypto.js";
 
 export const FORCE_GENERATE_COOKIE = "__frugal_force_generate";
 
 /** @type {self.FrugalResponseCreator} */
 export const FrugalResponse = {
 	create,
+	from,
 };
+
+/** @type {self.FrugalResponseCreator['from']} */
+function from(serialized) {
+	const headers = new Headers(serialized.headers);
+
+	const state = {
+		date: serialized.date,
+	};
+
+	return {
+		get path() {
+			return serialized.path;
+		},
+
+		get hash() {
+			return serialized.hash;
+		},
+
+		get body() {
+			return serialized.body;
+		},
+
+		get headers() {
+			return headers;
+		},
+
+		get status() {
+			return serialized.status;
+		},
+
+		get date() {
+			return state.date;
+		},
+
+		get maxAge() {
+			return serialized.maxAge;
+		},
+
+		setDateFrom(response) {
+			state.date = response.date;
+		},
+		serialize() {
+			return { ...serialized, headers: Array.from(headers.entries()) };
+		},
+	};
+}
 
 /** @type {self.FrugalResponseCreator['create']} */
 async function create(response, init) {
@@ -20,23 +67,22 @@ async function create(response, init) {
 		body: undefined,
 		/** @type {self.SerializedFrugalResponse | undefined} */
 		serialized: undefined,
+		/** @type {string} */
+		date: new Date().toUTCString(),
 	};
 
 	const headers = new Headers(response.headers);
 
-	const generationDate = new Date().toUTCString();
-	headers.set("X-Frugal-Generation-Date", generationDate);
 	if (headers.get("Last-Modified") === null) {
-		headers.set("Last-Modified", generationDate);
+		headers.set("Last-Modified", state.date);
 	}
-	headers.set("x-frugal-build-hash", _hash());
 
 	const cryptoKey = await init.cryptoKey;
 	if (response.forceDynamic === true && cryptoKey !== undefined) {
 		cookies.setCookie(headers, {
 			httpOnly: true,
 			name: FORCE_GENERATE_COOKIE,
-			value: await token(cryptoKey, { op: "fg" }),
+			value: await forceGenerateToken(cryptoKey),
 		});
 	}
 
@@ -61,8 +107,22 @@ async function create(response, init) {
 			return response.status;
 		},
 
+		get date() {
+			return state.date;
+		},
+
+		get maxAge() {
+			return response.maxAge;
+		},
+
+		setDateFrom,
 		serialize,
 	};
+
+	/** @type {self.FrugalResponse['setDateFrom']} */
+	function setDateFrom(response) {
+		state.date = response.date;
+	}
 
 	function _hash() {
 		if (state.hash === undefined) {
@@ -84,6 +144,7 @@ async function create(response, init) {
 		return state.body;
 	}
 
+	/** @type {self.FrugalResponse['serialize']} */
 	function serialize() {
 		if (state.serialized === undefined) {
 			state.serialized = {
@@ -92,6 +153,8 @@ async function create(response, init) {
 				body: _body(),
 				headers: Array.from(headers.entries()),
 				status: response.status,
+				date: state.date,
+				maxAge: response.maxAge,
 			};
 		}
 
@@ -114,6 +177,7 @@ export function toResponse(response) {
 		headers.set("Etag", `W/"${Hash.create().update(body).digest()}"`);
 	}
 
+	headers.set("X-Frugal-Generation-Date", response.date);
 	return new Response(body, {
 		headers,
 		status: response.status,

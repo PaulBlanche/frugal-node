@@ -15,6 +15,8 @@ export type SerializedFrugalResponse = {
 	body?: string | undefined;
 	headers: [string, string][];
 	status: number;
+	date: string;
+	maxAge: number;
 };
 
 export interface FrugalResponse {
@@ -23,6 +25,9 @@ export interface FrugalResponse {
 	readonly body: string | undefined;
 	readonly headers: Headers;
 	readonly status: number;
+	readonly date: string;
+	readonly maxAge: number;
+	setDateFrom(response: FrugalResponse): void;
 	serialize(): SerializedFrugalResponse;
 }
 
@@ -31,6 +36,7 @@ interface FrugalResponseCreator {
 		response: PageResponse<DATA>,
 		init: Init<DATA>,
 	): Promise<FrugalResponse>;
+	from(serialized: SerializedFrugalResponse): FrugalResponse;
 }
 
 export let FORCE_GENERATE_COOKIE: string;

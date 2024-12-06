@@ -1,7 +1,6 @@
-import type { Context } from "./server/internal/context.js";
+import type { CacheStorage, ServerCache } from "./server/ServerCache.js";
+import type { Context } from "./server/context.js";
 import type { Middleware } from "./server/middleware.js";
-import type { ServerCache } from "./server/proxy/ServerCache.js";
-import type { CacheStorage } from "./server/proxy/ServerCache.js";
 import type { SessionStorage } from "./server/session/SessionStorage.js";
 import type { CookieConfig } from "./utils/cookies.js";
 import type { LogConfig } from "./utils/log.js";

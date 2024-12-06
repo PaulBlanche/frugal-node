@@ -1,14 +1,11 @@
 /** @import { InternalBuildConfig } from "@frugal-node/core/config/build" */
 /** @import { InternalRuntimeConfig } from "@frugal-node/core/config/runtime" */
 /** @import { CacheStorage } from "@frugal-node/core/server" */
-/** @import * as webStream from "node:stream/web" */
 
 import { RuntimeConfig } from "@frugal-node/core/config/runtime";
 import { FrugalServer, ServerCache } from "@frugal-node/core/server";
 import { loadDynamicManifest, loadStaticManifest } from "../../core/src/build/manifest.js";
 import { BuildSnapshot } from "../../core/src/exporter/BuildSnapshot.js";
-import { Hash } from "../../core/src/utils/Hash.js";
-import { readStream } from "../../core/src/utils/readableStream.js";
 import { waitForPort } from "./waitForPort.js";
 
 export class ServerHelper {
@@ -57,6 +54,8 @@ export class ServerHelper {
 					hash: entry.hash,
 					headers: entry.headers,
 					status: entry.status,
+					maxAge: entry.maxAge,
+					date: entry.date,
 				};
 				return memory;
 			},
@@ -65,56 +64,13 @@ export class ServerHelper {
 			),
 		);
 
-		const decoder = new TextDecoder();
-		const encoder = new TextEncoder();
-
 		/** @type {CacheStorage} */
 		const cacheStorage = {
-			set: async (url, metadata, body) => {
-				const path = new URL(url).pathname;
-				memory[path] = {
-					path,
-					body:
-						body === null
-							? undefined
-							: decoder.decode(
-									await readStream(/** @type {webStream.ReadableStream}*/ (body)),
-								),
-					hash: Hash.create()
-						.update(String(Date.now()))
-						.update(String(Math.random()))
-						.digest(),
-					headers: metadata.headers,
-					status: metadata.status,
-				};
+			set: (path, response) => {
+				memory[path] = response;
 			},
-			get: (url) => {
-				const path = new URL(url).pathname;
-				const entry = memory[path];
-				if (entry === undefined) {
-					return undefined;
-				}
-
-				const body = entry.body;
-
-				return {
-					metadata: {
-						url,
-						headers: entry.headers,
-						status: entry.status,
-						hash: entry.hash,
-						statusText: "",
-					},
-					body:
-						body === undefined
-							? null
-							: new ReadableStream({
-									start(controller) {
-										controller.enqueue(encoder.encode(body));
-										controller.close();
-									},
-								}),
-				};
+			get: (path) => {
+				return memory[path];
 			},
 		};
 

@@ -80,7 +80,6 @@ function getEsbuildConfig(buildConfig, context, watch, extraPlugins = []) {
 
 /** @type {self.defaultEsbuildConfig} */
 export function defaultEsbuildConfig(watch) {
-	console.log("######################################", process.env["NODE_ENV"]);
 	return {
 		target: ["esnext"],
 		entryNames: "[name]-[hash]",

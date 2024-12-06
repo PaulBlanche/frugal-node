@@ -30,7 +30,8 @@ function create(config) {
 				return;
 			}
 
-			const expires = cookie.expires !== undefined ? Number(cookie.expires) : undefined;
+			const expires =
+				cookie.maxAge !== undefined ? Date.now() + cookie.maxAge * 1000 : undefined;
 
 			let id = session.id;
 			const data = session.data;

@@ -23,7 +23,7 @@ export function getCookies(headers) {
  * @param {self.Cookie} cookie
  * @returns {string}
  */
-function cookieToString(cookie) {
+export function cookieToString(cookie) {
 	return serialize(cookie.name, cookie.value, {
 		...cookie,
 		expires: cookie.expires === undefined ? undefined : new Date(cookie.expires),

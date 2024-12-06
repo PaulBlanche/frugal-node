@@ -2,11 +2,11 @@ import type * as http from "node:http";
 import type { log } from "../utils/log.js";
 import type * as server from "../utils/serve.js";
 
-export type Context = { info: server.HandlerInfo; log: typeof log; secure: boolean };
+export type ServerContext = { info: server.HandlerInfo; log: typeof log; secure: boolean };
 
 type Handler = (
 	request: Request,
-	context: Context,
+	context: ServerContext,
 ) => Response | server.EventStreamResponse | Promise<Response | server.EventStreamResponse>;
 
 export interface Server {

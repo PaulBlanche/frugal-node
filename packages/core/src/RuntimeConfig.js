@@ -1,7 +1,7 @@
 /** @import * as self from "./RuntimeConfig.js" */
 
 import * as url from "node:url";
-import { ServerCache } from "./server/proxy/ServerCache.js";
+import { ServerCache } from "./server/ServerCache.js";
 import { importKey } from "./utils/crypto.js";
 import { config as configLog } from "./utils/log.js";
 

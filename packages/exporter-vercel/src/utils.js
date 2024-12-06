@@ -1,110 +1,58 @@
-/** @import { StaticManifest, DynamicManifest } from "@frugal-node/core/exporter" */
 /** @import * as webstream from "node:stream/web" */
+/** @import { FrugalServerConfig } from "@frugal-node/core/server"; */
 
 import * as stream from "node:stream";
 import { RuntimeConfig } from "@frugal-node/core/config/runtime";
-import { InternalServer } from "@frugal-node/core/server";
-import { ProxyServer } from "@frugal-node/core/server";
+import { FrugalServer, Server } from "@frugal-node/core/server";
 import * as cookies from "@frugal-node/core/utils/cookies";
-import * as crypto from "@frugal-node/core/utils/crypto";
 import nodeFetch from "node-fetch";
 
 /**
- * @param {StaticManifest} staticManifest
+ * @param {FrugalServerConfig['manifest']} manifest
  * @param {RuntimeConfig} runtimeConfig
  */
-export function getStaticHandler(staticManifest, runtimeConfig) {
+export function getFrugalHandler(manifest, runtimeConfig) {
 	const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig);
 
-	return InternalServer.create({
-		manifest: { static: staticManifest },
+	return FrugalServer.create({
+		manifest,
+		publicDir: undefined,
 		config: internalRuntimeConfig,
 		watch: false,
 	}).nativeHandler(true);
 }
 
 /**
- * @param {DynamicManifest} dynamicManifest
- * @param {RuntimeConfig} runtimeConfig
- */
-export function getDynamicHandler(dynamicManifest, runtimeConfig) {
-	const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig);
-
-	return InternalServer.create({
-		manifest: { dynamic: dynamicManifest },
-		config: internalRuntimeConfig,
-		watch: false,
-	}).nativeHandler(true);
-}
-
-/**
- * @param {StaticManifest} staticManifest
- * @param {DynamicManifest} dynamicManifest
- * @param {RuntimeConfig} runtimeConfig
  * @param {string} bypassToken
  */
-export function getProxyHandler(staticManifest, dynamicManifest, runtimeConfig, bypassToken) {
-	const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig);
+export function getProxyGenerateHandler(bypassToken) {
+	return Server.create(
+		async (request) => {
+			const url = new URL(request.url);
 
-	return ProxyServer.create({
-		manifest: { static: staticManifest, dynamic: dynamicManifest },
-		publicDir: undefined,
-		watch: false,
-		internal: async (context, action) => {
-			let requestUrl;
-			const requestHeaders = new Headers(context.request.headers);
+			const headers = new Headers(request.headers);
 
-			if (action.type === "static") {
-				const frugalToken = await crypto.token(await internalRuntimeConfig.cryptoKey, {
-					type: action.type,
-					op: action.op,
-					index: String(action.index),
-					url: context.request.url,
-					params: JSON.stringify(action.params),
-				});
+			headers.append(
+				"cookie",
+				cookies.cookieToString({
+					name: "__prerender_bypass",
+					value: bypassToken,
+				}),
+			);
 
-				requestUrl = new URL(
-					`/_static/${context.url.pathname}?token=${frugalToken}`,
-					context.url,
-				);
-				if (action.op === "refresh") {
-					requestHeaders.set("x-prerender-revalidate", bypassToken);
-				}
-				if (action.op === "generate") {
-					cookies.setCookie(requestHeaders, {
-						name: "__prerender_bypass",
-						value: bypassToken,
-					});
-				}
-			} else {
-				const frugalToken = await crypto.token(await internalRuntimeConfig.cryptoKey, {
-					type: action.type,
-					index: String(action.index),
-					url: context.request.url,
-					params: JSON.stringify(action.params),
-				});
-
-				requestUrl = new URL(
-					`/_dynamic/${context.url.pathname}?token=${frugalToken}`,
-					context.url,
-				);
-			}
-
-			const nodeResponse = await nodeFetch(requestUrl, {
-				headers: requestHeaders,
+			const nodeResponse = await nodeFetch(url, {
+				headers,
 				body:
-					context.request.body === null
+					request.body === null
 						? null
 						: stream.Readable.fromWeb(
-								/** @type {webstream.ReadableStream<Uint8Array>}*/ (
-									context.request.body
-								),
+								/** @type {webstream.ReadableStream<Uint8Array>}*/ (request.body),
 							),
-				method: context.request.method,
+				method: request.method,
 				compress: false,
 			});
 
-			const response = new Response(
+			return new Response(
 				nodeResponse.body === null
 					? null
 					: /** @type {ReadableStream<Uint8Array>}*/ (
@@ -115,9 +63,52 @@ export function getProxyHandler(staticManifest, dynamicManifest, runtimeConfig, 
 					status: nodeResponse.status,
 				},
 			);
-
-			return response;
 		},
-		config: internalRuntimeConfig,
-	}).nativeHandler(true);
+		{
+			logScope: "proxyGenerate",
+		},
+	).nativeHandler(true);
+}
+
+/**
+ * @param {string} bypassToken
+ */
+export function getProxyRefreshHandler(bypassToken) {
+	return Server.create(
+		async (request) => {
+			const url = new URL(request.url);
+
+			const headers = new Headers(request.headers);
+
+			headers.append(
+				"cookie",
+				cookies.cookieToString({
+					name: "__prerender_bypass",
+					value: bypassToken,
+				}),
+			);
+
+			await nodeFetch(url, {
+				headers,
+				body:
+					request.body === null
+						? null
+						: stream.Readable.fromWeb(
+								/** @type {webstream.ReadableStream<Uint8Array>}*/ (request.body),
+							),
+				method: request.method,
+				compress: false,
+			});
+
+			return new Response(null, {
+				status: 307,
+				headers: {
+					Location: url.pathname,
+				},
+			});
+		},
+		{
+			logScope: "proxyGenerate",
+		},
+	).nativeHandler(true);
 }

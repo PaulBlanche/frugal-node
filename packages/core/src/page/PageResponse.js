@@ -37,6 +37,9 @@ function data(data, init) {
 
 			return hash.digest();
 		},
+		get maxAge() {
+			return init?.maxAge ?? -1;
+		},
 	};
 }
 
@@ -65,6 +68,9 @@ function empty(init) {
 			hash.update(String(baseResponse.status));
 
 			return hash.digest();
+		},
+		get maxAge() {
+			return /** @type {const} */ (0);
 		},
 	};
 }

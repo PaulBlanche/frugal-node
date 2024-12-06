@@ -3,6 +3,18 @@ export function exportKey(): Promise<string>;
 export function sign(cryptoKey: CryptoKey, data: string): Promise<Uint8Array>;
 export function verify(cryptoKey: CryptoKey, signature: Uint8Array, data: string): Promise<boolean>;
 export function token(cryptoKey: CryptoKey, data: Record<string, string>): Promise<string>;
+export function forceGenerateToken(cryptoKey: CryptoKey): Promise<string>;
+export function isForceGenerateTokenValid(
+	cryptoKey: CryptoKey,
+	token: string,
+	msTimeout?: number,
+): Promise<boolean>;
+export function refreshToken(cryptoKey: CryptoKey): Promise<string>;
+export function isRefreshTokenValid(
+	cryptoKey: CryptoKey,
+	token: string,
+	msTimeout?: number,
+): Promise<boolean>;
 export function decode(
 	token: string,
 ):

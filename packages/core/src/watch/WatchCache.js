@@ -1,6 +1,7 @@
 /** @import * as self from "./WatchCache.js" */
 /** @import { SerializedFrugalResponse } from "../page/FrugalResponse.js" */
 
+import { FrugalResponse } from "../page/FrugalResponse.js";
 import * as fs from "../utils/fs.js";
 
 /** @type {self.WatchCacheCreator} */
@@ -30,15 +31,8 @@ function create(config) {
 			save: _save,
 		},
 		server: {
-			async add(url, response) {
-				const path = new URL(url).pathname;
-				data[path] = {
-					path,
-					hash: response.headers.get("x-frugal-build-hash") ?? "",
-					body: await response.text(),
-					headers: Array.from(response.headers.entries()),
-					status: response.status,
-				};
+			async add(response) {
+				data[response.path] = response.serialize();
 
 				await _save();
 			},
@@ -47,12 +41,7 @@ function create(config) {
 				const path = new URL(url).pathname;
 				const serializedResponse = data[path];
 
-				const response = new Response(serializedResponse.body, {
-					headers: new Headers(serializedResponse.headers),
-					status: serializedResponse.status,
-				});
-
-				return Promise.resolve(response);
+				return Promise.resolve(FrugalResponse.from(serializedResponse));
 			},
 		},
 	};

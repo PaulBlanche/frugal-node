@@ -48,6 +48,28 @@ export async function token(cryptoKey, data) {
 	return `${Buffer.from(payload, "utf8").toString("base64url")}.${Buffer.from(await sign(cryptoKey, payload)).toString("base64url")}`;
 }
 
+/** @type {self.forceGenerateToken} */
+export function forceGenerateToken(cryptoKey) {
+	return token(cryptoKey, { __fg: "true" });
+}
+
+/** @type {self.isForceGenerateTokenValid} */
+export async function isForceGenerateTokenValid(cryptoKey, token, msTimeout) {
+	const payload = await parseToken(cryptoKey, token, msTimeout);
+	return payload !== undefined && payload["__fg"] === "true";
+}
+
+/** @type {self.refreshToken} */
+export function refreshToken(cryptoKey) {
+	return token(cryptoKey, { __rf: "true" });
+}
+
+/** @type {self.isRefreshTokenValid} */
+export async function isRefreshTokenValid(cryptoKey, token, msTimeout) {
+	const payload = await parseToken(cryptoKey, token, msTimeout);
+	return payload !== undefined && payload["__rf"] === "true";
+}
+
 /** @type {self.decode} */
 export function decode(token) {
 	try {

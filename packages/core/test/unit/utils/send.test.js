@@ -67,7 +67,6 @@ test.todo("unit/send.js: send compressed static file from a directory", async ()
 		assert.deepEqual(headers["content-encoding"], "br");
 
 		const responseGzip = await fetch("http://0.0.0.0:8001/foogz.txt");
-		console.log(Object.fromEntries(responseGzip.headers.entries()));
 		assert.deepEqual(await responseGzip.text(), "foo");
 		const headers2 = Object.fromEntries(responseGzip.headers.entries());
 		assert.deepEqual(headers2["content-type"], "text/plain");

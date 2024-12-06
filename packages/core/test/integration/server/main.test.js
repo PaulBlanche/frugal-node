@@ -1,13 +1,16 @@
 import * as assert from "node:assert/strict";
 import * as fs from "node:fs";
-import { test } from "node:test";
+import { mock, test } from "node:test";
 import * as url from "node:url";
 import { BuildHelper, ServerHelper, puppeteer } from "@frugal-node/test-utils";
 import { crypto, CookieSessionStorage } from "../../../exports/server/index.js";
-import { token } from "../../../src/utils/crypto.js";
+import { refreshToken } from "../../../src/utils/crypto.js";
 
 const helper = await BuildHelper.setupFixtures(import.meta.dirname);
 const serverHelper = new ServerHelper(helper.runtimeConfig, helper.internalBuildConfig);
+
+const now = Math.floor(Math.random() * 1000 * 60 * 60 * 24 * 365 * 10);
+mock.timers.enable({ apis: ["Date"], now });
 
 await helper.build();
 
@@ -75,11 +78,10 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 	await puppeteer.withPage(
 		async ({ page }) => {
 			await test("inte/server: serving basic static page with force refresh", async () => {
-				const refreshToken = await token(
+				const token = await refreshToken(
 					await crypto.importKey(
 						"eyJrdHkiOiJvY3QiLCJrIjoieENtNHc2TDNmZDBrTm8wN3FLckFnZUg4OWhYQldzWkhsalZJYjc2YkpkWjdja2ZPWXpub1gwbXE3aHZFMlZGbHlPOHlVNGhaS29FQUo4cmY3WmstMjF4SjNTRTZ3RDRURF8wdHVvQm9TM2VNZThuUy1pOFA4QVQxcnVFT05tNVJ3N01FaUtJX0xMOWZWaEkyN1BCRTJrbmUxcm80M19wZ2tZWXdSREZ6NFhNIiwiYWxnIjoiSFM1MTIiLCJrZXlfb3BzIjpbInNpZ24iLCJ2ZXJpZnkiXSwiZXh0Ijp0cnVlfQ==",
 					),
-					{ op: "rf" },
 				);
 
 				// modify data.json but only data used by page1/1
@@ -92,7 +94,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 				});
 
 				const response = await page.goto(
-					`http://localhost:8000/static/1?token=${refreshToken}`,
+					`http://localhost:8000/static/1?frugal_refresh_token=${token}`,
 				);
 
 				if (response === null) {
@@ -119,7 +121,7 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 
 	await puppeteer.withPage(
 		async ({ page }) => {
-			await test("inte/server: fail force refresh (timestamp too old)", async (context) => {
+			await test("inte/server: fail force refresh (timestamp too old)", async () => {
 				// modify data.json but only data used by page1/1
 				const dataURL = import.meta.resolve("./project/data.json");
 				const originalData = await fs.promises.readFile(url.fileURLToPath(dataURL), {
@@ -129,19 +131,16 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 					encoding: "utf-8",
 				});
 
-				context.mock.timers.enable({ apis: ["Date"], now: Date.now() });
-
-				const refreshToken = await token(
+				const token = await refreshToken(
 					await crypto.importKey(
 						"eyJrdHkiOiJvY3QiLCJrIjoieENtNHc2TDNmZDBrTm8wN3FLckFnZUg4OWhYQldzWkhsalZJYjc2YkpkWjdja2ZPWXpub1gwbXE3aHZFMlZGbHlPOHlVNGhaS29FQUo4cmY3WmstMjF4SjNTRTZ3RDRURF8wdHVvQm9TM2VNZThuUy1pOFA4QVQxcnVFT05tNVJ3N01FaUtJX0xMOWZWaEkyN1BCRTJrbmUxcm80M19wZ2tZWXdSREZ6NFhNIiwiYWxnIjoiSFM1MTIiLCJrZXlfb3BzIjpbInNpZ24iLCJ2ZXJpZnkiXSwiZXh0Ijp0cnVlfQ==",
 					),
-					{ op: "rf" },
 				);
 
-				context.mock.timers.tick(20 * 1000);
+				mock.timers.tick(10 * 1000 + 1);
 
 				const response = await page.goto(
-					`http://localhost:8000/static/1?token=${refreshToken}`,
+					`http://localhost:8000/static/1?frugal_refresh_token=${token}`,
 				);
 
 				if (response === null) {
@@ -161,6 +160,8 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 				await fs.promises.writeFile(url.fileURLToPath(dataURL), originalData, {
 					encoding: "utf-8",
 				});
+
+				mock.timers.setTime(now);
 			});
 		},
 		{ browser },
@@ -178,12 +179,10 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 					encoding: "utf-8",
 				});
 
-				const refreshToken = await token(await crypto.importKey(await crypto.exportKey()), {
-					op: "rf",
-				});
+				const token = await refreshToken(await crypto.importKey(await crypto.exportKey()));
 
 				const response = await page.goto(
-					`http://localhost:8000/static/1?token=${refreshToken}`,
+					`http://localhost:8000/static/1?frugal_refresh_token=${token}`,
 				);
 
 				if (response === null) {
@@ -332,6 +331,74 @@ await withServerAndBrowser(serverHelper, async (browser) => {
 					"public, max-age=31536000, immutable",
 				);
 				assert.deepEqual(body, "foo");
+			});
+		},
+		{ browser },
+	);
+});
+
+await withServerAndBrowser(serverHelper, async (browser) => {
+	await puppeteer.withPage(
+		async ({ page }) => {
+			await test("inte/server: timed refresh", async () => {
+				const response1 = await page.goto("http://localhost:8000/static-revalidate/1");
+
+				if (response1 === null) {
+					assert.fail("response should not be null");
+				}
+				const body1 = await response1.json();
+				assert.strictEqual(response1.headers()["content-type"], "application/json");
+				assert.deepEqual(body1, {
+					params: { slug: "1" },
+					count: 0,
+					store: "foo",
+					searchParams: {},
+				});
+
+				// modify data.json but only data used by page1/1
+				const dataURL = import.meta.resolve("./project/data.json");
+				const originalData = await fs.promises.readFile(url.fileURLToPath(dataURL), {
+					encoding: "utf-8",
+				});
+				await fs.promises.writeFile(url.fileURLToPath(dataURL), '"bar"', {
+					encoding: "utf-8",
+				});
+
+				mock.timers.tick(2 * 1000);
+
+				const response2 = await page.goto("http://localhost:8000/static-revalidate/1");
+
+				if (response2 === null) {
+					assert.fail("response should not be null");
+				}
+
+				const body2 = await response2.json();
+				assert.deepEqual(body2, {
+					params: { slug: "1" },
+					count: 0,
+					store: "foo",
+					searchParams: {},
+				});
+
+				mock.timers.tick(3 * 1000 + 1);
+
+				const response3 = await page.goto("http://localhost:8000/static-revalidate/1");
+
+				if (response3 === null) {
+					assert.fail("response should not be null");
+				}
+
+				const body3 = await response3.json();
+				assert.deepEqual(body3, {
+					params: { slug: "1" },
+					count: 0,
+					store: "bar",
+					searchParams: {},
+				});
+
+				await fs.promises.writeFile(url.fileURLToPath(dataURL), originalData, {
+					encoding: "utf-8",
+				});
 			});
 		},
 		{ browser },

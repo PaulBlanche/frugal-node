@@ -142,6 +142,10 @@ function basePage(page) {
 			return page.descriptor.route;
 		},
 
+		get regexpRoute() {
+			return pathToRegexp.pathToRegexp(page.descriptor.route).regexp;
+		},
+
 		render(context) {
 			log(
 				`Rendering page "${this.entrypoint}" (${this.moduleHash}) with route "${
