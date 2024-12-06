@@ -14,12 +14,17 @@ import nodeFetch from "node-fetch";
 export function getFrugalHandler(manifest, runtimeConfig) {
 	const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig);
 
-	return FrugalServer.create({
+	const frugalServer = FrugalServer.create({
 		manifest,
 		publicDir: undefined,
 		config: internalRuntimeConfig,
 		watch: false,
-	}).nativeHandler(true);
+	}).handler(true);
+
+	return Server.create((request, serverContext) => {
+		console.log(request.headers.get("x-now-route-matches"));
+		return frugalServer(request, serverContext.info);
+	});
 }
 
 /**
