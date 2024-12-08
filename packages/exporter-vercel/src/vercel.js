@@ -127,11 +127,6 @@ async function createRootConfig(outputDir, staticManifest) {
 				routes: [
 					{ handle: "filesystem" }, // static files
 					{
-						methods: ["POST", "PUT", "HEAD", "DELETE", "CONNECT", "PATCH", "TRACE"],
-						src: "^(?:/(.*))$",
-						dest: "/index",
-					}, // handle non GET requests as normal function (dynamic)
-					{
 						methods: ["GET"],
 						has: [{ type: "cookie", key: FORCE_GENERATE_COOKIE }],
 						missing: [{ type: "cookie", key: "__prerender_bypass" }],
