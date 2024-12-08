@@ -63,7 +63,9 @@ const args = [
 	).join(" "),
 ].filter(/** @return {flag is string} */ (flag) => flag !== undefined);
 
-console.log(chalk.gray(`${chalk.bold("Running tests with command")}\n> node ${args.join(" ")}`));
+console.log(
+	chalk.gray(`${chalk.bold("Running tests with command")}\nnode\n  ${args.join("\n  ")}`),
+);
 
 spawn(process.execPath, args, {
 	env: {

@@ -1,7 +1,8 @@
 /** @import * as self from "./Producer.js" */
 
+import { forceRefreshToken } from "../utils/crypto.js";
 import { log } from "../utils/log.js";
-import { FrugalResponse } from "./FrugalResponse.js";
+import { FORCE_REFRESH_HEADER, FrugalResponse } from "./FrugalResponse.js";
 
 /**@type {self.ProducerCreator} */
 export const Producer = {
@@ -9,16 +10,15 @@ export const Producer = {
 };
 
 /**@type {self.ProducerCreator['create']} */
-function create(assets, page, configHash) {
+function create(assets, page, configHash, cryptoKey) {
 	return {
-		buildAll,
+		getPathParams,
 		build,
 		generate,
-		refresh,
 	};
 
-	/** @type {self.Producer['buildAll']} */
-	async function buildAll() {
+	/** @type {self.Producer['getPathParams']} */
+	async function getPathParams() {
 		if (page.type === "dynamic") {
 			throw new ProducerError("Can't build dynamic page");
 		}
@@ -33,13 +33,7 @@ function create(assets, page, configHash) {
 			},
 		);
 
-		const responses = await Promise.all(pathList.map((params) => build({ params })));
-
-		if (responses.some((response) => response === undefined)) {
-			throw new ProducerError(`No response returned while building route "${page.route}"`);
-		}
-
-		return /** @type {FrugalResponse[]} */ (responses);
+		return pathList;
 	}
 
 	/** @type {self.Producer['build']} */
@@ -79,6 +73,7 @@ function create(assets, page, configHash) {
 			path,
 			moduleHash: page.moduleHash,
 			configHash: configHash,
+			cryptoKey,
 		});
 	}
 
@@ -95,6 +90,7 @@ function create(assets, page, configHash) {
 						state: state,
 						request: request,
 						session: session,
+						forceRefresh: (path) => forceRefresh(request, path ?? "", cryptoKey),
 					})
 				: await page.generate({
 						params,
@@ -102,6 +98,7 @@ function create(assets, page, configHash) {
 						state: state,
 						request: request,
 						session: session,
+						forceRefresh: (path) => forceRefresh(request, path ?? "", cryptoKey),
 					});
 
 		if (response === undefined) {
@@ -127,30 +124,26 @@ function create(assets, page, configHash) {
 			path,
 			moduleHash: page.moduleHash,
 			configHash: configHash,
+			cryptoKey,
 		});
 	}
+}
 
-	/** @type {self.Producer['refresh']} */
-	async function refresh({ request, params, jit }) {
-		if (page.type === "dynamic") {
-			throw new ProducerError("Can't refresh dynamic page");
-		}
+/**
+ * @param {Request} request
+ * @param {string} path
+ * @param {CryptoKey} cryptoKey
+ */
+async function forceRefresh(request, path, cryptoKey) {
+	const url = new URL(path, request.url);
+	const response = await fetch(url, {
+		headers: {
+			[FORCE_REFRESH_HEADER]: await forceRefreshToken(cryptoKey),
+		},
+		redirect: "manual",
+	});
 
-		if (jit && page.strictPaths) {
-			const url = new URL(request.url);
-			const pathList = await page.getBuildPaths();
-
-			const hasMatchingPath = pathList.some((path) => {
-				return page.compile(path) === url.pathname;
-			});
-
-			if (!hasMatchingPath) {
-				return undefined;
-			}
-		}
-
-		return build({ params });
-	}
+	return response.ok;
 }
 
 class ProducerError extends Error {}

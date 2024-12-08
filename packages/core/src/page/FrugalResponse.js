@@ -1,14 +1,68 @@
 /** @import * as self from "./FrugalResponse.js" */
 
 import { Hash } from "../utils/Hash.js";
+import * as cookies from "../utils/cookies.js";
+import { forceGenerateToken } from "../utils/crypto.js";
+
+export const FORCE_GENERATE_COOKIE = "__frugal_force_generate";
+export const FORCE_REFRESH_HEADER = "x-frugal-force-refresh";
 
 /** @type {self.FrugalResponseCreator} */
 export const FrugalResponse = {
 	create,
+	from,
 };
 
+/** @type {self.FrugalResponseCreator['from']} */
+function from(serialized) {
+	const headers = new Headers(serialized.headers);
+
+	const state = {
+		date: serialized.date,
+	};
+
+	return {
+		get path() {
+			return serialized.path;
+		},
+
+		get hash() {
+			return serialized.hash;
+		},
+
+		get body() {
+			return serialized.body;
+		},
+
+		get headers() {
+			return headers;
+		},
+
+		get status() {
+			return serialized.status;
+		},
+
+		get date() {
+			return state.date;
+		},
+
+		get maxAge() {
+			return serialized.maxAge;
+		},
+
+		setDateFrom(response) {
+			state.date = response.date;
+		},
+		serialize() {
+			return { ...serialized, headers: Array.from(headers.entries()) };
+		},
+	};
+}
+
+const ONE_YEAR_IN_SECONDS = 31536000;
+
 /** @type {self.FrugalResponseCreator['create']} */
-function create(response, init) {
+async function create(response, init) {
 	const state = {
 		/** @type {string|undefined} */
 		hash: undefined,
@@ -16,14 +70,35 @@ function create(response, init) {
 		body: undefined,
 		/** @type {self.SerializedFrugalResponse | undefined} */
 		serialized: undefined,
+		/** @type {string} */
+		date: new Date().toUTCString(),
 	};
 
 	const headers = new Headers(response.headers);
 
-	const generationDate = new Date().toUTCString();
-	headers.set("X-Frugal-Generation-Date", generationDate);
 	if (headers.get("Last-Modified") === null) {
-		headers.set("Last-Modified", generationDate);
+		headers.set("Last-Modified", state.date);
+	}
+
+	if (headers.get("Cache-Control") === null) {
+		const maxAge = response.maxAge;
+		headers.set(
+			"Cache-Control",
+			maxAge < 0
+				? `s-maxage=${ONE_YEAR_IN_SECONDS}, stale-while-revalidate`
+				: maxAge === 0
+					? "private, no-cache, no-store, max-age=0, must-revalidate"
+					: `s-maxage=${maxAge}, stale-while-revalidate`,
+		);
+	}
+
+	if (response.forceDynamic && init.cryptoKey) {
+		cookies.setCookie(headers, {
+			httpOnly: true,
+			name: FORCE_GENERATE_COOKIE,
+			value: await forceGenerateToken(init.cryptoKey),
+			path: "/",
+		});
 	}
 
 	return {
@@ -47,8 +122,22 @@ function create(response, init) {
 			return response.status;
 		},
 
+		get date() {
+			return state.date;
+		},
+
+		get maxAge() {
+			return response.maxAge;
+		},
+
+		setDateFrom,
 		serialize,
 	};
+
+	/** @type {self.FrugalResponse['setDateFrom']} */
+	function setDateFrom(response) {
+		state.date = response.date;
+	}
 
 	function _hash() {
 		if (state.hash === undefined) {
@@ -59,6 +148,7 @@ function create(response, init) {
 				.update(init.configHash)
 				.digest();
 		}
+
 		return state.hash;
 	}
 
@@ -69,6 +159,7 @@ function create(response, init) {
 		return state.body;
 	}
 
+	/** @type {self.FrugalResponse['serialize']} */
 	function serialize() {
 		if (state.serialized === undefined) {
 			state.serialized = {
@@ -77,6 +168,8 @@ function create(response, init) {
 				body: _body(),
 				headers: Array.from(headers.entries()),
 				status: response.status,
+				date: state.date,
+				maxAge: response.maxAge,
 			};
 		}
 
@@ -99,6 +192,7 @@ export function toResponse(response) {
 		headers.set("Etag", `W/"${Hash.create().update(body).digest()}"`);
 	}
 
+	headers.set("X-Frugal-Generation-Date", response.date);
 	return new Response(body, {
 		headers,
 		status: response.status,

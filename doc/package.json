@@ -7,6 +7,7 @@
 		"build": "node cli.js build"
 	},
 	"dependencies": {
+		"@dotenvx/dotenvx": "^1.25.1",
 		"@frugal-node/core": "^1.1.0",
 		"@frugal-node/plugin-css": "^1.1.0",
 		"@frugal-node/plugin-script": "^1.1.0",

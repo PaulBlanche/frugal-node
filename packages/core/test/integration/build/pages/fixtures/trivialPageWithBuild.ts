@@ -12,6 +12,7 @@ export function build() {
 			headers: {
 				"my-header": "quux",
 			},
+			maxAge: 10,
 		},
 	);
 }

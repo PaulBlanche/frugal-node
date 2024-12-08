@@ -2,6 +2,7 @@
 
 import * as path from "node:path";
 import * as url from "node:url";
+import { RuntimeConfig } from "./RuntimeConfig.js";
 import * as fs from "./utils/fs.js";
 import { config as configLog, log } from "./utils/log.js";
 
@@ -34,6 +35,14 @@ function create(config) {
 	const frugalConfig = {
 		get rootDir() {
 			return rootDir;
+		},
+
+		get runtimeConfig() {
+			return import(runtimeConfigPath).then((module) => {
+				const runtimeConfig = module.default;
+
+				return RuntimeConfig.create(runtimeConfig);
+			});
 		},
 
 		get runtimeConfigPath() {

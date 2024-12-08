@@ -4,7 +4,7 @@ import type { SessionStorage } from "./SessionStorage.js";
 
 export type SessionManagerConfig = {
 	storage: SessionStorage;
-	cookie: CookieConfig;
+	cookie: Omit<CookieConfig, "expires">;
 };
 
 export interface SessionManager {

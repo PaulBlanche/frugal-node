@@ -5,13 +5,11 @@ export type CacheStorage = {
 	get(
 		path: string,
 	): Promise<SerializedFrugalResponse | undefined> | SerializedFrugalResponse | undefined;
-	delete(path: string): Promise<void> | void;
 };
 
 export interface ServerCache {
 	add(response: FrugalResponse): Promise<void>;
-	has(path: string): Promise<boolean>;
-	get(path: string): Promise<Response | undefined>;
+	get(path: string): Promise<FrugalResponse | undefined>;
 }
 
 interface ServerCacheCreator {

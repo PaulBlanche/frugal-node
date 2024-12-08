@@ -1,14 +1,121 @@
-export function functionConfigContent() {
-	return {
-		handler: "index.mjs",
-		runtime: "nodejs20.x",
-		launcherType: "Nodejs",
-	};
+/** @import * as webstream from "node:stream/web" */
+/** @import { FrugalServerConfig } from "@frugal-node/core/server"; */
+
+import * as stream from "node:stream";
+import { RuntimeConfig } from "@frugal-node/core/config/runtime";
+import { FrugalServer, Server } from "@frugal-node/core/server";
+import * as cookies from "@frugal-node/core/utils/cookies";
+import nodeFetch from "node-fetch";
+
+/**
+ * @param {FrugalServerConfig['manifest']} manifest
+ * @param {RuntimeConfig} runtimeConfig
+ */
+export function getFrugalHandler(manifest, runtimeConfig) {
+	const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig);
+
+	const frugalHandlerPromise = FrugalServer.create({
+		manifest,
+		publicDir: undefined,
+		config: internalRuntimeConfig,
+		watch: false,
+	}).then((server) => server.handler(true));
+
+	return Server.create(async (request, serverContext) => {
+		const url = new URL(request.url);
+
+		if (url.pathname.endsWith("/index")) {
+			const rewritePath = url.pathname.slice(0, -6);
+			url.pathname = rewritePath === "" ? "/" : rewritePath;
+
+			const rewriteRequest = new Request(url, request);
+			return (await frugalHandlerPromise)(rewriteRequest, serverContext.info);
+		}
+		return (await frugalHandlerPromise)(request, serverContext.info);
+	}).nativeHandler(true);
 }
 
-export function globalConfigContent() {
-	return {
-		version: 3,
-		routes: [{ handle: "filesystem" }, { src: "^(?:/(.*))$", dest: "/", check: true }],
-	};
+/**
+ * @param {string} bypassToken
+ */
+export function getProxyGenerateHandler(bypassToken) {
+	return Server.create(
+		async (request) => {
+			const url = new URL(request.url);
+
+			const headers = new Headers(request.headers);
+
+			headers.append(
+				"cookie",
+				cookies.cookieToString({
+					name: "__prerender_bypass",
+					value: bypassToken,
+				}),
+			);
+
+			const nodeResponse = await nodeFetch(url, {
+				headers,
+				body:
+					request.body === null
+						? null
+						: stream.Readable.fromWeb(
+								/** @type {webstream.ReadableStream<Uint8Array>}*/ (request.body),
+							),
+				method: request.method,
+				compress: false,
+			});
+
+			return new Response(
+				nodeResponse.body === null
+					? null
+					: /** @type {ReadableStream<Uint8Array>}*/ (
+							stream.Readable.toWeb(new stream.Readable().wrap(nodeResponse.body))
+						),
+				{
+					headers: new Headers(Object.fromEntries(nodeResponse.headers.entries())),
+					status: nodeResponse.status,
+				},
+			);
+		},
+		{
+			logScope: "proxyGenerate",
+		},
+	).nativeHandler(true);
+}
+
+/**
+ * @param {string} bypassToken
+ */
+export function getProxyRefreshHandler(bypassToken) {
+	return Server.create(
+		async (request) => {
+			const url = new URL(request.url);
+
+			const headers = new Headers(request.headers);
+
+			headers.set("x-prerender-revalidate", bypassToken);
+
+			await nodeFetch(url, {
+				headers,
+				body:
+					request.body === null
+						? null
+						: stream.Readable.fromWeb(
+								/** @type {webstream.ReadableStream<Uint8Array>}*/ (request.body),
+							),
+				method: request.method,
+				compress: false,
+			});
+
+			return new Response(null, {
+				status: 307,
+				headers: {
+					Location: url.pathname,
+				},
+			});
+		},
+		{
+			logScope: "proxyGenerate",
+		},
+	).nativeHandler(true);
 }

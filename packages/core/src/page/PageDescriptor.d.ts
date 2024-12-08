@@ -38,7 +38,7 @@ export type DynamicPageDescriptor<
 
 type BasePageDescriptor<PATH extends string, DATA extends ServerData> = {
 	route: PATH;
-	render: Render<PATH, DATA>;
+	render?: Render<PATH, DATA>;
 	generate?: Generate<PATH, DATA>;
 };
 
@@ -55,11 +55,14 @@ export type Render<PATH extends string, DATA extends ServerData = ServerData> = 
 	context: RenderContext<PATH, DATA>,
 ) => string;
 
-export type GenerateContext<PATH extends string> = BaseContext<PATH> & {
+type ExtraGenerateContext = {
 	state: State;
 	request: Request;
 	session?: PageSession;
+	forceRefresh(path?: string): Promise<boolean>;
 };
+
+export type GenerateContext<PATH extends string> = BaseContext<PATH> & ExtraGenerateContext;
 
 export type Generate<PATH extends string, DATA extends ServerData> = (
 	context: GenerateContext<PATH>,
@@ -76,18 +79,7 @@ export type Build<PATH extends string, DATA extends ServerData> = (
 ) => Promise<PageResponse<DATA> | undefined> | PageResponse<DATA> | undefined;
 
 export type BuildContext<PATH extends string> = BaseContext<PATH> &
-	(
-		| {
-				state: State;
-				request: Request;
-				session?: PageSession;
-		  }
-		| {
-				state?: undefined;
-				request?: undefined;
-				session?: undefined;
-		  }
-	);
+	(ExtraGenerateContext | Partial<Record<keyof ExtraGenerateContext, undefined>>);
 
 type BaseContext<PATH extends string> = {
 	params: PathParams<PATH>;

@@ -13,7 +13,7 @@ await test("inte/watch: stable 'X-Frugal-Generation-Date' header when page did n
 	await watchHelper.awaitNextBuild();
 
 	const response1 = await fetch("http://0.0.0.0:3001/page1/1");
-	await new Promise((res) => setTimeout(res, 1000));
+	await new Promise((res) => setTimeout(res, 1500));
 	const response2 = await fetch("http://0.0.0.0:3001/page1/1");
 
 	// generation date did not change, because underlying data did not change
@@ -34,7 +34,7 @@ await test("inte/watch: files are regenerated if page code changes", async () =>
 
 	const watchCache1 = await getData();
 
-	await new Promise((res) => setTimeout(res, 1000));
+	await new Promise((res) => setTimeout(res, 1500));
 
 	// add a comment at the top of page1.ts
 	const page1ModuleURL = new URL("./project/page1.ts", import.meta.url);
@@ -49,29 +49,17 @@ await test("inte/watch: files are regenerated if page code changes", async () =>
 
 	// moduleHash of path1.ts changed, cache result is regenerated
 	assert.notEqual(watchCache1["/page1/1"].hash, watchCache2["/page1/1"].hash);
-	assert.notEqual(
-		Object.fromEntries(watchCache1["/page1/1"].headers)["x-frugal-generation-date"],
-		Object.fromEntries(watchCache2["/page1/1"].headers)["x-frugal-generation-date"],
-	);
+	assert.notEqual(watchCache1["/page1/1"].date, watchCache2["/page1/1"].date);
 
 	assert.notEqual(watchCache1["/page1/2"].hash, watchCache2["/page1/2"].hash);
-	assert.notEqual(
-		Object.fromEntries(watchCache1["/page1/2"].headers)["x-frugal-generation-date"],
-		Object.fromEntries(watchCache2["/page1/2"].headers)["x-frugal-generation-date"],
-	);
+	assert.notEqual(watchCache1["/page1/2"].date, watchCache2["/page1/2"].date);
 
 	// moduleHash of path2.ts did not changed, cache result is not changed
 	assert.equal(watchCache1["/page2/1"].hash, watchCache2["/page2/1"].hash);
-	assert.equal(
-		Object.fromEntries(watchCache1["/page2/1"].headers)["x-frugal-generation-date"],
-		Object.fromEntries(watchCache2["/page2/1"].headers)["x-frugal-generation-date"],
-	);
+	assert.equal(watchCache1["/page2/1"].date, watchCache2["/page2/1"].date);
 
 	assert.equal(watchCache1["/page2/2"].hash, watchCache2["/page2/2"].hash);
-	assert.equal(
-		Object.fromEntries(watchCache1["/page2/2"].headers)["x-frugal-generation-date"],
-		Object.fromEntries(watchCache2["/page2/2"].headers)["x-frugal-generation-date"],
-	);
+	assert.equal(watchCache1["/page2/2"].date, watchCache2["/page2/2"].date);
 
 	await fs.promises.writeFile(page1ModuleURL, originalData, { encoding: "utf-8" });
 
@@ -85,7 +73,7 @@ await test("inte/watch: files are regenerated if dependency code changes", async
 
 	const watchCache1 = await getData();
 
-	await new Promise((res) => setTimeout(res, 1000));
+	await new Promise((res) => setTimeout(res, 1500));
 
 	// add a comment at the top of store.ts
 	const storeModuleURL = new URL("./project/store.ts", import.meta.url);
@@ -100,29 +88,17 @@ await test("inte/watch: files are regenerated if dependency code changes", async
 
 	// moduleHash of path1.ts changed because of store.ts, cache result is regenerated
 	assert.notEqual(watchCache1["/page1/1"].hash, watchCache2["/page1/1"].hash);
-	assert.notEqual(
-		Object.fromEntries(watchCache1["/page1/1"].headers)["x-frugal-generation-date"],
-		Object.fromEntries(watchCache2["/page1/1"].headers)["x-frugal-generation-date"],
-	);
+	assert.notEqual(watchCache1["/page1/1"].date, watchCache2["/page1/1"].date);
 
 	assert.notEqual(watchCache1["/page1/2"].hash, watchCache2["/page1/2"].hash);
-	assert.notEqual(
-		Object.fromEntries(watchCache1["/page1/2"].headers)["x-frugal-generation-date"],
-		Object.fromEntries(watchCache2["/page1/2"].headers)["x-frugal-generation-date"],
-	);
+	assert.notEqual(watchCache1["/page1/2"].date, watchCache2["/page1/2"].date);
 
 	// moduleHash of path2.ts changed because of store.ts, cache result is regenerated
 	assert.notEqual(watchCache1["/page2/1"].hash, watchCache2["/page2/1"].hash);
-	assert.notEqual(
-		Object.fromEntries(watchCache1["/page2/1"].headers)["x-frugal-generation-date"],
-		Object.fromEntries(watchCache2["/page2/1"].headers)["x-frugal-generation-date"],
-	);
+	assert.notEqual(watchCache1["/page2/1"].date, watchCache2["/page2/1"].date);
 
 	assert.notEqual(watchCache1["/page2/2"].hash, watchCache2["/page2/2"].hash);
-	assert.notEqual(
-		Object.fromEntries(watchCache1["/page2/2"].headers)["x-frugal-generation-date"],
-		Object.fromEntries(watchCache2["/page2/2"].headers)["x-frugal-generation-date"],
-	);
+	assert.notEqual(watchCache1["/page2/2"].date, watchCache2["/page2/2"].date);
 
 	await fs.promises.writeFile(storeModuleURL, originalData, { encoding: "utf-8" });
 
@@ -136,7 +112,7 @@ await test("inte/watch: files are regenerated on demand if data changes", async 
 
 	const watchCache1 = await getData();
 
-	await new Promise((res) => setTimeout(res, 1000));
+	await new Promise((res) => setTimeout(res, 1500));
 
 	// modify data.json but only data used by page1/1
 	const dataURL = new URL("./project/data.json", import.meta.url);
@@ -158,30 +134,18 @@ await test("inte/watch: files are regenerated on demand if data changes", async 
 
 	// dataHash at /page1/1 changed and /page1/1 was visited, cache result is regenerated
 	assert.notEqual(watchCache1["/page1/1"].hash, watchCache2["/page1/1"].hash);
-	assert.notEqual(
-		Object.fromEntries(watchCache1["/page1/1"].headers)["x-frugal-generation-date"],
-		Object.fromEntries(watchCache2["/page1/1"].headers)["x-frugal-generation-date"],
-	);
+	assert.notEqual(watchCache1["/page1/1"].date, watchCache2["/page1/1"].date);
 
 	// dataHash for any other page did not change (wether the page was visited
 	// or not), cache result is not changed
 	assert.equal(watchCache1["/page1/2"].hash, watchCache2["/page1/2"].hash);
-	assert.equal(
-		Object.fromEntries(watchCache1["/page1/2"].headers)["x-frugal-generation-date"],
-		Object.fromEntries(watchCache2["/page1/2"].headers)["x-frugal-generation-date"],
-	);
+	assert.equal(watchCache1["/page1/2"].date, watchCache2["/page1/2"].date);
 
 	assert.equal(watchCache1["/page2/1"].hash, watchCache2["/page2/1"].hash);
-	assert.equal(
-		Object.fromEntries(watchCache1["/page2/1"].headers)["x-frugal-generation-date"],
-		Object.fromEntries(watchCache2["/page2/1"].headers)["x-frugal-generation-date"],
-	);
+	assert.equal(watchCache1["/page2/1"].date, watchCache2["/page2/1"].date);
 
 	assert.equal(watchCache1["/page2/2"].hash, watchCache2["/page2/2"].hash);
-	assert.equal(
-		Object.fromEntries(watchCache1["/page2/2"].headers)["x-frugal-generation-date"],
-		Object.fromEntries(watchCache2["/page2/2"].headers)["x-frugal-generation-date"],
-	);
+	assert.equal(watchCache1["/page2/2"].date, watchCache2["/page2/2"].date);
 
 	await fs.promises.writeFile(dataURL, originalData, { encoding: "utf-8" });
 

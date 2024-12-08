@@ -22,7 +22,7 @@ function create(cookie = {}) {
 				expires,
 			});
 
-			return "";
+			return "cookie";
 		},
 
 		get(_id, { headers }) {

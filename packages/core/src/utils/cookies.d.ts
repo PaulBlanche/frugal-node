@@ -15,3 +15,5 @@ export type CookieConfig = Omit<Cookie, "value">;
 export function setCookie(headers: Headers, cookie: Cookie): void;
 
 export function getCookies(headers: Headers): Record<string, string | undefined>;
+
+export function cookieToString(cookie: Cookie): string;

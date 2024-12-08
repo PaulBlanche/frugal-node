@@ -44,22 +44,24 @@ export function ensureFile(filePath: string): Promise<void>;
 
 export function readDir(path: string): Promise<AsyncIterable<DirEntry>>;
 
-export function readFile(path: string): Promise<Uint8Array>;
+export function readFile(path: string | URL): Promise<Uint8Array>;
 
-export function readTextFile(path: string): Promise<string>;
+export function readTextFile(path: string | URL): Promise<string>;
 
-export function remove(path: string, options?: RemoveOptions): Promise<void>;
+export function remove(path: string | URL, options?: RemoveOptions): Promise<void>;
 
-export function stat(path: string): Promise<FileInfo>;
+export function stat(path: string | URL): Promise<FileInfo>;
+
+export function symlink(target: string | URL, path: string | URL): Promise<void>;
 
 export function writeFile(
-	path: string,
+	path: string | URL,
 	data: Uint8Array | webStream.ReadableStream<Uint8Array>,
 	options?: WriteFileOptions,
 ): Promise<void>;
 
 export function writeTextFile(
-	path: string,
+	path: string | URL,
 	data: string | webStream.ReadableStream<string>,
 	options?: WriteFileOptions,
 ): Promise<void>;

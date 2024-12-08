@@ -8,6 +8,8 @@ type BasePage<PATH extends string = string, DATA extends ServerData = ServerData
 	readonly moduleHash: string;
 	readonly entrypoint: string;
 	readonly route: PATH;
+	readonly regexpRoute: RegExp;
+	readonly hasGenerate: boolean;
 
 	render(context: descriptor.RenderContext<PATH, DATA>): string;
 
