@@ -2,6 +2,7 @@
 /** @import { Page } from "../page/Page.js"; */
 
 import * as path from "node:path";
+import { RuntimeConfig } from "../RuntimeConfig.js";
 import { PageAssets } from "../page/PageAssets.js";
 import { Producer } from "../page/Producer.js";
 import { parse } from "../page/parse.js";
@@ -18,6 +19,13 @@ export function buildPlugin(buildCache) {
 				if (errors.length > 0) {
 					return;
 				}
+
+				const runtimeConfig = (
+					await import(
+						path.resolve(context.buildConfig.rootDir, context.manifest.runtimeConfig)
+					)
+				).default;
+				const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig);
 
 				await Promise.all(
 					context.manifest.pages.map(async (manifestPage) => {
@@ -47,7 +55,7 @@ export function buildPlugin(buildCache) {
 							pageAssets,
 							page,
 							context.manifest.hash,
-							undefined,
+							await internalRuntimeConfig.cryptoKey,
 						);
 
 						const pathParams = await pageProducer.getPathParams();

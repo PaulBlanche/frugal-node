@@ -45,7 +45,7 @@ test("inte/build/pages: build with trivial static page", async () => {
 		"/": {
 			path: "/",
 			body: "Hello world",
-			headers: [],
+			headers: [["cache-control", "s-maxage=31536000, stale-while-revalidate"]],
 			status: 200,
 			date: new Date(now).toUTCString(),
 			maxAge: -1,
@@ -70,7 +70,10 @@ test("inte/build/pages: build with trivial static page with build", async () => 
 		"/": {
 			path: "/",
 			body: "bar",
-			headers: [["my-header", "quux"]],
+			headers: [
+				["cache-control", "s-maxage=10, stale-while-revalidate"],
+				["my-header", "quux"],
+			],
 			status: 204,
 			date: new Date(now).toUTCString(),
 			maxAge: 10,
@@ -95,7 +98,7 @@ test("inte/build/pages: build with trivial static page with getBuildPath", async
 		"/foo/baz": {
 			path: "/foo/baz",
 			body: "baz",
-			headers: [],
+			headers: [["cache-control", "s-maxage=31536000, stale-while-revalidate"]],
 			status: 200,
 			date: new Date(now).toUTCString(),
 			maxAge: -1,
@@ -103,7 +106,7 @@ test("inte/build/pages: build with trivial static page with getBuildPath", async
 		"/foo/quux": {
 			path: "/foo/quux",
 			body: "quux",
-			headers: [],
+			headers: [["cache-control", "s-maxage=31536000, stale-while-revalidate"]],
 			status: 200,
 			date: new Date(now).toUTCString(),
 			maxAge: -1,
@@ -128,7 +131,10 @@ test("inte/build/pages: build with complete static page", async () => {
 		"/bar": {
 			path: "/bar",
 			body: "Hello bar",
-			headers: [["my-header-bar", "bar"]],
+			headers: [
+				["cache-control", "s-maxage=31536000, stale-while-revalidate"],
+				["my-header-bar", "bar"],
+			],
 			status: 201,
 			date: new Date(now).toUTCString(),
 			maxAge: -1,
@@ -136,7 +142,10 @@ test("inte/build/pages: build with complete static page", async () => {
 		"/quux": {
 			path: "/quux",
 			body: "Hello quux",
-			headers: [["my-header-quux", "quux"]],
+			headers: [
+				["cache-control", "s-maxage=31536000, stale-while-revalidate"],
+				["my-header-quux", "quux"],
+			],
 			status: 405,
 			date: new Date(now).toUTCString(),
 			maxAge: -1,
@@ -171,7 +180,10 @@ test("inte/build/pages: build static page with empty response", async () => {
 	await cacheExplorer.assertContent({
 		"/": {
 			path: "/",
-			headers: [["my-header", "quux"]],
+			headers: [
+				["cache-control", "private, no-cache, no-store, max-age=0, must-revalidate"],
+				["my-header", "quux"],
+			],
 			status: 204,
 			body: undefined,
 			date: new Date(now).toUTCString(),

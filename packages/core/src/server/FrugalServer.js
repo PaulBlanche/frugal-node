@@ -10,6 +10,7 @@ import { parse } from "../page/parse.js";
 import { Server } from "./Server.js";
 import { composeMiddleware } from "./middleware.js";
 import { compress } from "./middleware/compress.js";
+import { error } from "./middleware/error.js";
 import { etag } from "./middleware/etag.js";
 import { router } from "./middleware/router.js";
 import { staticFile } from "./middleware/staticFile.js";
@@ -23,7 +24,7 @@ export const FrugalServer = {
 };
 
 /** @type {self.FrugalServerCreator['create']} */
-function create({ config, manifest, watch, publicDir, cacheOverride }) {
+async function create({ config, manifest, watch, publicDir, cacheOverride }) {
 	/** @type {Route[]} */
 	const routes = [];
 
@@ -35,7 +36,7 @@ function create({ config, manifest, watch, publicDir, cacheOverride }) {
 				pageAssets,
 				page,
 				manifest.static.hash,
-				config.cryptoKey,
+				await config.cryptoKey,
 			);
 			routes.push({
 				page,
@@ -53,7 +54,7 @@ function create({ config, manifest, watch, publicDir, cacheOverride }) {
 				pageAssets,
 				page,
 				manifest.dynamic.hash,
-				config.cryptoKey,
+				await config.cryptoKey,
 			);
 			routes.push({
 				page,
@@ -65,9 +66,9 @@ function create({ config, manifest, watch, publicDir, cacheOverride }) {
 	const availableEncodings = _getAvailableEncoding(config.compress.method);
 
 	const serverMiddleware = composeMiddleware([
-		//custom error pages
-		//csrf,
 		etag,
+		error({}),
+		//csrf,
 		trailingSlashRedirect,
 		compress,
 		...config.middlewares,

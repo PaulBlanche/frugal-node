@@ -9,8 +9,8 @@ export function isForceGenerateTokenValid(
 	token: string,
 	msTimeout?: number,
 ): Promise<boolean>;
-export function refreshToken(cryptoKey: CryptoKey): Promise<string>;
-export function isRefreshTokenValid(
+export function forceRefreshToken(cryptoKey: CryptoKey): Promise<string>;
+export function isForceRefreshTokenValid(
 	cryptoKey: CryptoKey,
 	token: string,
 	msTimeout?: number,

@@ -14,14 +14,14 @@ import nodeFetch from "node-fetch";
 export function getFrugalHandler(manifest, runtimeConfig) {
 	const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig);
 
-	const frugalServer = FrugalServer.create({
+	const frugalHandlerPromise = FrugalServer.create({
 		manifest,
 		publicDir: undefined,
 		config: internalRuntimeConfig,
 		watch: false,
-	}).handler(true);
+	}).then((server) => server.handler(true));
 
-	return Server.create((request, serverContext) => {
+	return Server.create(async (request, serverContext) => {
 		const url = new URL(request.url);
 
 		if (url.pathname.endsWith("/index")) {
@@ -29,9 +29,9 @@ export function getFrugalHandler(manifest, runtimeConfig) {
 			url.pathname = rewritePath === "" ? "/" : rewritePath;
 
 			const rewriteRequest = new Request(url, request);
-			return frugalServer(rewriteRequest, serverContext.info);
+			return (await frugalHandlerPromise)(rewriteRequest, serverContext.info);
 		}
-		return frugalServer(request, serverContext.info);
+		return (await frugalHandlerPromise)(request, serverContext.info);
 	}).nativeHandler(true);
 }
 
@@ -93,13 +93,7 @@ export function getProxyRefreshHandler(bypassToken) {
 
 			const headers = new Headers(request.headers);
 
-			headers.append(
-				"cookie",
-				cookies.cookieToString({
-					name: "__prerender_bypass",
-					value: bypassToken,
-				}),
-			);
+			headers.set("x-prerender-revalidate", bypassToken);
 
 			await nodeFetch(url, {
 				headers,

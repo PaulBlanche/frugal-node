@@ -5,6 +5,7 @@ import * as cookies from "../utils/cookies.js";
 import { forceGenerateToken } from "../utils/crypto.js";
 
 export const FORCE_GENERATE_COOKIE = "__frugal_force_generate";
+export const FORCE_REFRESH_HEADER = "x-frugal-force-refresh";
 
 /** @type {self.FrugalResponseCreator} */
 export const FrugalResponse = {
@@ -91,12 +92,11 @@ async function create(response, init) {
 		);
 	}
 
-	const cryptoKey = await init.cryptoKey;
-	if (response.forceDynamic === true && cryptoKey !== undefined) {
+	if (response.forceDynamic && init.cryptoKey) {
 		cookies.setCookie(headers, {
 			httpOnly: true,
 			name: FORCE_GENERATE_COOKIE,
-			value: await forceGenerateToken(cryptoKey),
+			value: await forceGenerateToken(init.cryptoKey),
 		});
 	}
 

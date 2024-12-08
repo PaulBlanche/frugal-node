@@ -1,11 +1,10 @@
-/** @import * as self from "./refreshStaticPage.js" */
+/** @import * as self from "./forceRefreshStaticPage.js" */
 
-import { isRefreshTokenValid } from "../../utils/crypto.js";
+import { FORCE_REFRESH_HEADER } from "../../page/FrugalResponse.js";
+import { isForceRefreshTokenValid } from "../../utils/crypto.js";
 
-export const REFRESH_TOKEN_QUERY_PARAM = "frugal_refresh_token";
-
-/** @type {self.refreshStaticPage} */
-export async function refreshStaticPage(context, next) {
+/** @type {self.forceRefreshStaticPage} */
+export async function forceRefreshStaticPage(context, next) {
 	if (context.request.method !== "GET") {
 		return next(context);
 	}
@@ -18,9 +17,9 @@ export async function refreshStaticPage(context, next) {
 		return next(context);
 	}
 
-	const token = context.url.searchParams.get(REFRESH_TOKEN_QUERY_PARAM);
+	const token = context.request.headers.get(FORCE_REFRESH_HEADER);
 	const isValid =
-		token === null ? false : await isRefreshTokenValid(await context.cryptoKey, token);
+		token === null ? false : await isForceRefreshTokenValid(await context.cryptoKey, token);
 	if (!isValid) {
 		context.log("Invalid token. Yield.", {
 			level: "debug",

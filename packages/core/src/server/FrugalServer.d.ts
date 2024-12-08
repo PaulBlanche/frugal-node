@@ -15,7 +15,7 @@ export type FrugalServerConfig = {
 };
 
 interface FrugalServerCreator {
-	create(config: FrugalServerConfig): Server;
+	create(config: FrugalServerConfig): Promise<Server>;
 }
 
 export let FrugalServer: FrugalServerCreator;

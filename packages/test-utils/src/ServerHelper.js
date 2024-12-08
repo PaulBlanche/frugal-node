@@ -86,7 +86,7 @@ export class ServerHelper {
 			}),
 		};
 
-		const server = FrugalServer.create({
+		const server = await FrugalServer.create({
 			config: this.#internalRuntimeConfig,
 			watch: false,
 			manifest,

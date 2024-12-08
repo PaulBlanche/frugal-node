@@ -7,6 +7,16 @@ import * as pageData from "../utils/serverData.js";
 export const PageResponse = {
 	data,
 	empty,
+	redirect(init) {
+		const headers = new Headers(init?.headers);
+		headers.set("Location", init.location);
+
+		return PageResponse.empty({
+			forceDynamic: init?.forceDynamic,
+			status: init?.status ?? 307, // default to Temprary Redirect
+			headers: headers,
+		});
+	},
 };
 
 /** @type {self.PageResponseCreator['data']} */

@@ -18,12 +18,7 @@ export interface Producer {
 }
 
 interface ProducerCreator {
-	create(
-		assets: PageAssets,
-		page: Page,
-		configHash: string,
-		cryptoKey: Promise<CryptoKey | undefined> | undefined,
-	): Producer;
+	create(assets: PageAssets, page: Page, configHash: string, cryptoKey: CryptoKey): Producer;
 }
 
 export let Producer: ProducerCreator;

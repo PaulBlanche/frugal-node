@@ -8,7 +8,7 @@ import { script } from "@frugal-node/plugin-script";
 import { googleFonts } from "./src/plugins/googleFonts/googleFonts.js";
 import { svg } from "./src/plugins/svg/svg.js";
 
-const args = parseArgs({
+const parsedArgs = parseArgs({
 	options: {
 		local: {
 			type: "boolean",
@@ -19,10 +19,13 @@ const args = parseArgs({
 	allowPositionals: true,
 });
 
+const command = parsedArgs.positionals[0];
+const args = parsedArgs.values;
+
 /** @type {BuildConfig} */
 const config = {
 	self: import.meta.url,
-	pages: ["./src/pages/home/page.ts", "./src/pages/doc/page.ts"],
+	pages: ["./src/pages/home/page.ts", "./src/pages/doc/page.ts", "./src/pages/test/page.ts"],
 	log: {
 		level: "verbose",
 	},
@@ -39,17 +42,17 @@ const config = {
 	],
 };
 
-if (args.values.local) {
+if (args.local || command === "dev") {
 	const dotenvx = await import("@dotenvx/dotenvx");
 	dotenvx.config({
 		path: ["./.env.local"],
 	});
 }
 
-if (args.positionals[0] === "build") {
+if (command === "build") {
 	await build(config);
 }
 
-if (args.positionals[0] === "dev") {
+if (command === "dev") {
 	(await context(config)).watch();
 }

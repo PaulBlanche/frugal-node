@@ -1,9 +1,17 @@
 import type { ServerData } from "../utils/serverData.js";
 
-export type ResponseInit = {
+type BaseInit = {
 	headers?: HeadersInit;
-	status?: number;
 	forceDynamic?: boolean;
+};
+
+export type ResponseInit = BaseInit & {
+	status?: number;
+};
+
+export type RedirectInit = BaseInit & {
+	location: string;
+	status?: 301 | 302 | 303 | 307 | 308;
 };
 
 interface BaseResponse {
@@ -34,6 +42,7 @@ interface PageResponseCreator {
 		init?: ResponseInit & { maxAge?: number },
 	): DataResponse<DATA>;
 	empty(init?: ResponseInit): EmptyResponse;
+	redirect(init: RedirectInit): EmptyResponse;
 }
 
 export function isPageResponse<DATA extends ServerData>(

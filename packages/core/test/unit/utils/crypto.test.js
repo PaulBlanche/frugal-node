@@ -37,13 +37,13 @@ test("unit/crypto.js: refresh token", async () => {
 	const key = await crypto.exportKey();
 	const cryptoKey = await crypto.importKey(key);
 
-	const token = await crypto.refreshToken(cryptoKey);
+	const token = await crypto.forceRefreshToken(cryptoKey);
 
-	assert.ok(await crypto.isRefreshTokenValid(cryptoKey, token));
+	assert.ok(await crypto.isForceRefreshTokenValid(cryptoKey, token));
 
 	mock.timers.tick(10 * 1000 + 1);
 
-	assert.ok(!(await crypto.isRefreshTokenValid(cryptoKey, token)));
+	assert.ok(!(await crypto.isForceRefreshTokenValid(cryptoKey, token)));
 
 	mock.timers.reset();
 });

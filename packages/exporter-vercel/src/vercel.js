@@ -12,7 +12,7 @@ import { parse } from "@frugal-node/core/page";
 import { token } from "@frugal-node/core/utils/crypto";
 import * as fs from "@frugal-node/core/utils/fs";
 import * as esbuild from "esbuild";
-import { FORCE_GENERATE_COOKIE } from "../../core/src/page/FrugalResponse.js";
+import { FORCE_GENERATE_COOKIE, FORCE_REFRESH_HEADER } from "../../core/src/page/FrugalResponse.js";
 
 /** @type {import("./vercel.ts").vercel} */
 export function vercel({ outdir = undefined } = {}) {
@@ -124,7 +124,7 @@ async function createRootConfig(outputDir, staticManifest) {
 					}, // proxy force generate to /index with the missing cookie __prerender_bypass
 					{
 						methods: ["GET"],
-						has: [{ type: "query", key: "frugal-refresh-token" }],
+						has: [{ type: "header", key: FORCE_REFRESH_HEADER }],
 						missing: [{ type: "header", key: "x-prerender-revalidate" }],
 						src: "^(?:/(.*))$",
 						dest: "/proxy-refresh",

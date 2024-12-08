@@ -88,7 +88,7 @@ function create(buildConfig, watchCache) {
 		).default;
 		const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig);
 
-		const instance = FrugalServer.create({
+		const instance = await FrugalServer.create({
 			config: internalRuntimeConfig,
 			publicDir: buildConfig.publicDir,
 			manifest: { static: staticManifest, dynamic: dynamicManifest },

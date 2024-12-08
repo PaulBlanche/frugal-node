@@ -59,13 +59,13 @@ export async function isForceGenerateTokenValid(cryptoKey, token, msTimeout) {
 	return payload !== undefined && payload["__fg"] === "true";
 }
 
-/** @type {self.refreshToken} */
-export function refreshToken(cryptoKey) {
+/** @type {self.forceRefreshToken} */
+export function forceRefreshToken(cryptoKey) {
 	return token(cryptoKey, { __rf: "true" });
 }
 
-/** @type {self.isRefreshTokenValid} */
-export async function isRefreshTokenValid(cryptoKey, token, msTimeout) {
+/** @type {self.isForceRefreshTokenValid} */
+export async function isForceRefreshTokenValid(cryptoKey, token, msTimeout) {
 	const payload = await parseToken(cryptoKey, token, msTimeout);
 	return payload !== undefined && payload["__rf"] === "true";
 }

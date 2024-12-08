@@ -1,7 +1,8 @@
 /** @import * as self from "./Producer.js" */
 
+import { forceRefreshToken } from "../utils/crypto.js";
 import { log } from "../utils/log.js";
-import { FrugalResponse } from "./FrugalResponse.js";
+import { FORCE_REFRESH_HEADER, FrugalResponse } from "./FrugalResponse.js";
 
 /**@type {self.ProducerCreator} */
 export const Producer = {
@@ -89,6 +90,7 @@ function create(assets, page, configHash, cryptoKey) {
 						state: state,
 						request: request,
 						session: session,
+						forceRefresh: (path) => forceRefresh(request, path ?? "", cryptoKey),
 					})
 				: await page.generate({
 						params,
@@ -96,6 +98,7 @@ function create(assets, page, configHash, cryptoKey) {
 						state: state,
 						request: request,
 						session: session,
+						forceRefresh: (path) => forceRefresh(request, path ?? "", cryptoKey),
 					});
 
 		if (response === undefined) {
@@ -124,6 +127,23 @@ function create(assets, page, configHash, cryptoKey) {
 			cryptoKey,
 		});
 	}
+}
+
+/**
+ * @param {Request} request
+ * @param {string} path
+ * @param {CryptoKey} cryptoKey
+ */
+async function forceRefresh(request, path, cryptoKey) {
+	const url = new URL(path, request.url);
+	const response = await fetch(url, {
+		headers: {
+			[FORCE_REFRESH_HEADER]: await forceRefreshToken(cryptoKey),
+		},
+		redirect: "manual",
+	});
+
+	return response.ok;
 }
 
 class ProducerError extends Error {}
