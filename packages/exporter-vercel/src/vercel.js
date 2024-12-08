@@ -37,9 +37,9 @@ export function vercel({ outdir = undefined } = {}) {
 
 			await createRootConfig(outputDir, staticManifest);
 
-			const indexFuncDir = await createServerlessFunction(outputDir, "index");
-			const generateFuncDir = await createServerlessFunction(outputDir, "generate");
-			const refreshFuncDir = await createServerlessFunction(outputDir, "refresh");
+			const handleFuncDir = await createServerlessFunction(outputDir, "__handle");
+			const generateFuncDir = await createServerlessFunction(outputDir, "__generate");
+			const refreshFuncDir = await createServerlessFunction(outputDir, "__refresh");
 
 			const runtimeConfigPath = path.resolve(
 				context.config.outDir,
@@ -53,7 +53,7 @@ export function vercel({ outdir = undefined } = {}) {
 			const bypassToken = await token(await internalRuntimeConfig.cryptoKey, { t: "bypass" });
 
 			await bundleFunctions(
-				{ index: indexFuncDir, generate: generateFuncDir, refresh: refreshFuncDir },
+				{ handle: handleFuncDir, generate: generateFuncDir, refresh: refreshFuncDir },
 				bypassToken,
 				outputDir,
 				runtimeConfigPath,
@@ -70,11 +70,11 @@ export function vercel({ outdir = undefined } = {}) {
 
 					const absolutePath = path.join(entry.path, "index");
 					const fallbackPath = path.resolve(
-						path.dirname(indexFuncDir),
+						path.dirname(handleFuncDir),
 						`.${absolutePath}.prerender-fallback.html`,
 					);
 					const configPath = path.resolve(
-						path.dirname(indexFuncDir),
+						path.dirname(handleFuncDir),
 						`.${absolutePath}.prerender-config.json`,
 					);
 
@@ -91,10 +91,10 @@ export function vercel({ outdir = undefined } = {}) {
 
 					try {
 						const absoluteLinkPath = path.resolve(
-							path.dirname(indexFuncDir),
+							path.dirname(handleFuncDir),
 							`.${absolutePath}.func`,
 						);
-						const absoluteTarget = indexFuncDir;
+						const absoluteTarget = handleFuncDir;
 						const relativeTarget = path.relative(
 							path.dirname(absoluteLinkPath),
 							absoluteTarget,
@@ -131,23 +131,23 @@ async function createRootConfig(outputDir, staticManifest) {
 						has: [{ type: "cookie", key: FORCE_GENERATE_COOKIE }],
 						missing: [{ type: "cookie", key: "__prerender_bypass" }],
 						src: "^(?:/(.*))$",
-						dest: "/proxy-generate",
+						dest: "/__generate",
 					}, // redirect force generate request without vercel __prerender_bypass cookie to a proxy that will add the cookie
 					{
 						methods: ["GET"],
 						has: [{ type: "header", key: FORCE_REFRESH_HEADER }],
 						missing: [{ type: "header", key: "x-prerender-revalidate" }],
 						src: "^(?:/(.*))$",
-						dest: "/proxy-refresh",
+						dest: "/__refresh",
 					}, // redirect force refresh request without vercel x-prerender-revalidate header to a proxy that will add the header
 					...staticManifest.pages.map((entry) => ({
 						methods: ["GET"],
 						src: parse(entry).regexpRoute.toString(),
-						dest: "/index",
+						dest: "/__handle",
 					})), // handle static page as prerender functions
 					{
 						src: "^(?:/(.*))$",
-						dest: "/index",
+						dest: "/__handle",
 					}, // handle everything else as normal function (dynamic)
 				],
 				framework: {
@@ -201,7 +201,7 @@ async function output(path, content) {
 }
 
 /**
- * @param {{ index:string, generate:string, refresh:string}} functionsDir
+ * @param {{ handle:string, generate:string, refresh:string}} functionsDir
  * @param {string} bypassToken
  * @param {string} outputDir
  * @param {string} runtimeConfigPath
@@ -213,7 +213,7 @@ async function bundleFunctions(functionsDir, bypassToken, outputDir, runtimeConf
 
 	const result = await esbuild.build({
 		entryPoints: [
-			{ in: "vercel://index.js", out: path.resolve(functionsDir.index, "index") },
+			{ in: "vercel://handle.js", out: path.resolve(functionsDir.handle, "index") },
 			{ in: "vercel://generate.js", out: path.resolve(functionsDir.generate, "index") },
 			{ in: "vercel://refresh.js", out: path.resolve(functionsDir.refresh, "index") },
 		],
@@ -225,7 +225,7 @@ async function bundleFunctions(functionsDir, bypassToken, outputDir, runtimeConf
 		},
 		plugins: [
 			virtual({
-				"vercel://index.js": `
+				"vercel://handle.js": `
 					import * as staticManifest from "${staticManifestPath}";
 					import * as dynamicManifest from "${dynamicManifestPath}";
 					import runtimeConfig from "${runtimeConfigPath}";
@@ -256,7 +256,7 @@ async function bundleFunctions(functionsDir, bypassToken, outputDir, runtimeConf
 			copy([
 				{
 					from: path.resolve(config.buildDir, "assets"),
-					to: path.resolve(functionsDir.index, "assets"),
+					to: path.resolve(functionsDir.handle, "assets"),
 					recursive: true,
 					forgiveNotFound: true,
 				},
