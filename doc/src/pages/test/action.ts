@@ -1,5 +1,7 @@
 import { type GenerateContext, PageResponse } from "@frugal-node/core/page";
 
+export const type = "dynamic";
+
 export const route = "/test/:id/_action";
 
 export async function generate(context: GenerateContext<typeof route>) {

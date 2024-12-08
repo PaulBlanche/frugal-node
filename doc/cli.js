@@ -25,7 +25,12 @@ const args = parsedArgs.values;
 /** @type {BuildConfig} */
 const config = {
 	self: import.meta.url,
-	pages: ["./src/pages/home/page.ts", "./src/pages/doc/page.ts", "./src/pages/test/page.ts"],
+	pages: [
+		"./src/pages/home/page.ts",
+		"./src/pages/doc/page.ts",
+		"./src/pages/test/action.ts",
+		"./src/pages/test/page.ts",
+	],
 	log: {
 		level: "verbose",
 	},
