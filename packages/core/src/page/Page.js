@@ -146,6 +146,10 @@ function basePage(page) {
 			return pathToRegexp.pathToRegexp(page.descriptor.route).regexp;
 		},
 
+		get hasGenerate() {
+			return page.descriptor.generate !== undefined;
+		},
+
 		render(context) {
 			log(
 				`Rendering page "${this.entrypoint}" (${this.moduleHash}) with route "${

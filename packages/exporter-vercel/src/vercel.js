@@ -1,7 +1,9 @@
 /** @import { InternalBuildConfig } from "@frugal-node/core/config/build" */
-/** @import { BuildSnapshot, StaticManifest, DynamicManifest } from "@frugal-node/core/exporter" */
+/** @import { StaticManifest } from "@frugal-node/core/exporter" */
+/** @import { PageDescriptor } from "@frugal-node/core/page" */
 
 import * as path from "node:path";
+import { BuildConfigError } from "@frugal-node/core/config/build";
 import { RuntimeConfig } from "@frugal-node/core/config/runtime";
 import {
 	getDynamicManifestPath,
@@ -18,6 +20,15 @@ import { FORCE_GENERATE_COOKIE, FORCE_REFRESH_HEADER } from "../../core/src/page
 export function vercel({ outdir = undefined } = {}) {
 	return {
 		name: "vercel",
+		validate(pages) {
+			for (const page of pages) {
+				if (page.type === "static" && page.hasGenerate) {
+					throw new BuildConfigError(
+						'Vercel exporter does not support static pages with "generate" methods',
+					);
+				}
+			}
+		},
 		async export(context) {
 			const vercelDir = path.resolve(outdir ?? context.config.rootDir, ".vercel");
 			const outputDir = path.resolve(vercelDir, "output");
@@ -114,12 +125,12 @@ async function createRootConfig(outputDir, staticManifest) {
 			{
 				version: 3,
 				routes: [
+					{ handle: "filesystem" }, // static files
 					{
 						methods: ["POST", "PUT", "HEAD", "DELETE", "CONNECT", "PATCH", "TRACE"],
 						src: "^(?:/(.*))$",
 						dest: "/index",
 					}, // handle non GET requests as normal function (dynamic)
-					{ handle: "filesystem" }, // static files
 					{
 						methods: ["GET"],
 						has: [{ type: "cookie", key: FORCE_GENERATE_COOKIE }],

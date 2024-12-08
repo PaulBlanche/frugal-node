@@ -8,6 +8,7 @@
 		"test": "node  ./packages/test-utils/src/runner.js",
 		"lint": "npx biome check .",
 		"typecheck": "tsc -p . && tsc -p ./doc",
+		"health": "npm run lint && npm run typecheck && npm run test",
 		"doc:dev": "npm -w @frugal-node/doc run dev",
 		"doc:build": "NODE_ENV=${NODE_ENV:=production} npm -w @frugal-node/doc run build"
 	},

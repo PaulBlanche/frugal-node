@@ -27,7 +27,7 @@ export function buildPlugin(buildCache) {
 				).default;
 				const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig);
 
-				await Promise.all(
+				const pages = await Promise.all(
 					context.manifest.pages.map(async (manifestPage) => {
 						const pagePath = path.resolve(
 							context.buildConfig.rootDir,
@@ -35,12 +35,21 @@ export function buildPlugin(buildCache) {
 						);
 						const descriptor = await import(pagePath);
 
-						const page = parse({
-							descriptor,
-							entrypoint: manifestPage.entrypoint,
-							moduleHash: manifestPage.moduleHash,
-						});
+						return {
+							manifestPage,
+							page: parse({
+								descriptor,
+								entrypoint: manifestPage.entrypoint,
+								moduleHash: manifestPage.moduleHash,
+							}),
+						};
+					}),
+				);
 
+				await context.buildConfig.exporter?.validate?.(pages.map((entry) => entry.page));
+
+				await Promise.all(
+					pages.map(async ({ page, manifestPage }) => {
 						if (page.type === "dynamic") {
 							manifestPage.type = "dynamic";
 							return;
