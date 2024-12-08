@@ -20,11 +20,11 @@ export function render(context: RenderContext<typeof route, Data>) {
 	return `<html><body>
     <div>time:${context.data.time}</div>
     <div>id:${context.data.id}</div>
-    <form method="POST" action="${context.params.id}/_action" enctype="multipart/form-data">
+    <form method="POST" action="/_action/test/${context.params.id}" enctype="multipart/form-data">
         <input type="hidden" name="type" value="force_generate" />
         <input type="submit" value="Force Generate" />
     </form>
-    <form method="POST" action="${context.params.id}/_action" enctype="multipart/form-data">
+    <form method="POST" action="/_action/test/${context.params.id}" enctype="multipart/form-data">
         <input type="hidden" name="type" value="force_refresh" />
         <input type="submit" value="Force Refresh" />
     </form>

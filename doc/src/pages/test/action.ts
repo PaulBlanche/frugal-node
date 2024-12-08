@@ -2,7 +2,7 @@ import { type GenerateContext, PageResponse } from "@frugal-node/core/page";
 
 export const type = "dynamic";
 
-export const route = "/test/:id/_action";
+export const route = "/_action/test/:id";
 
 export async function generate(context: GenerateContext<typeof route>) {
 	if (context.request.method === "POST") {
