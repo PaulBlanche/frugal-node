@@ -116,28 +116,33 @@ async function createRootConfig(outputDir, staticManifest) {
 				routes: [
 					{ handle: "filesystem" }, // static files
 					{
+						methods: ["POST", "PUT", "HEAD", "DELETE", "CONNECT", "PATCH", "TRACE"],
+						src: "^(?:/(.*))$",
+						dest: "/index",
+					}, // handle non GET requests as normal function (dynamic)
+					{
 						methods: ["GET"],
 						has: [{ type: "cookie", key: FORCE_GENERATE_COOKIE }],
 						missing: [{ type: "cookie", key: "__prerender_bypass" }],
 						src: "^(?:/(.*))$",
 						dest: "/proxy-generate",
-					}, // proxy force generate to /index with the missing cookie __prerender_bypass
+					}, // redirect force generate request without vercel __prerender_bypass cookie to a proxy that will add the cookie
 					{
 						methods: ["GET"],
 						has: [{ type: "header", key: FORCE_REFRESH_HEADER }],
 						missing: [{ type: "header", key: "x-prerender-revalidate" }],
 						src: "^(?:/(.*))$",
 						dest: "/proxy-refresh",
-					}, // fetch HEAD path with refresh_token and missing header + redirect to path without token
+					}, // redirect force refresh request without vercel x-prerender-revalidate header to a proxy that will add the header
 					...staticManifest.pages.map((entry) => ({
 						methods: ["GET"],
 						src: parse(entry).regexpRoute.toString(),
 						dest: "/index",
-					})), // static server: middleware, router static (force generate if cookie, refresh if token, serve static ...)
+					})), // handle static page as prerender functions
 					{
 						src: "^(?:/(.*))$",
 						dest: "/index",
-					}, // true server: middleware, router static (force generate if cookie, refresh if token, serve static, generate dynamic ...)
+					}, // handle everything else as normal function (dynamic)
 				],
 				framework: {
 					slug: "frugal",
