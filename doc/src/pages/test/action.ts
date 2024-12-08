@@ -7,19 +7,18 @@ export const route = "/_action/test/:id";
 export async function generate(context: GenerateContext<typeof route>) {
 	if (context.request.method === "POST") {
 		const formData = await context.request.formData();
-		console.log(Array.from(formData.entries()));
 		if (formData.get("type") === "force_generate") {
 			return PageResponse.redirect({
 				forceDynamic: true,
 				status: 303, // See Other
-				location: context.request.url,
+				location: `/test/${context.params.id}`,
 			});
 		}
 		if (formData.get("type") === "force_refresh") {
 			await context.forceRefresh();
 			return PageResponse.redirect({
 				status: 303, // See Other
-				location: context.request.url,
+				location: `/test/${context.params.id}`,
 			});
 		}
 	}

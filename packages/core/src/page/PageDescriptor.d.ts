@@ -38,7 +38,7 @@ export type DynamicPageDescriptor<
 
 type BasePageDescriptor<PATH extends string, DATA extends ServerData> = {
 	route: PATH;
-	render: Render<PATH, DATA>;
+	render?: Render<PATH, DATA>;
 	generate?: Generate<PATH, DATA>;
 };
 

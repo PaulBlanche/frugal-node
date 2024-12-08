@@ -161,6 +161,10 @@ function basePage(page) {
 				},
 			);
 
+			if (page.descriptor.render === undefined) {
+				return "";
+			}
+
 			try {
 				return page.descriptor.render(context);
 			} catch (/** @type {any} */ error) {
