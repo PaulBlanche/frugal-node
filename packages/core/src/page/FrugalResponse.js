@@ -97,6 +97,7 @@ async function create(response, init) {
 			httpOnly: true,
 			name: FORCE_GENERATE_COOKIE,
 			value: await forceGenerateToken(init.cryptoKey),
+			path: "/",
 		});
 	}
 
