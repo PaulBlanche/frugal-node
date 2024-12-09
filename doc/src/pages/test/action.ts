@@ -15,7 +15,7 @@ export async function generate(context: GenerateContext<typeof route>) {
 			});
 		}
 		if (formData.get("type") === "force_refresh") {
-			await context.forceRefresh();
+			await context.forceRefresh(`/test/${context.params.id}`);
 			return PageResponse.redirect({
 				status: 303, // See Other
 				location: `/test/${context.params.id}`,

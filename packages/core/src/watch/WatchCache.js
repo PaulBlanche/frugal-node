@@ -38,7 +38,6 @@ function create(config) {
 			},
 
 			get(path) {
-				console.log(data, path);
 				const serializedResponse = data[path];
 
 				if (serializedResponse === undefined) {
