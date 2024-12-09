@@ -16,5 +16,9 @@ function create() {
 		get(path) {
 			return store.get(path);
 		},
+
+		delete(path) {
+			store.delete(path);
+		},
 	};
 }

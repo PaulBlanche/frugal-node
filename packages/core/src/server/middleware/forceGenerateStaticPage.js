@@ -1,22 +1,14 @@
 /** @import * as self from "./forceGenerateStaticPage.js" */
 
-import { FORCE_GENERATE_COOKIE, toResponse } from "../../page/FrugalResponse.js";
-import { getCookies, setCookie } from "../../utils/cookies.js";
-import { isForceGenerateTokenValid } from "../../utils/crypto.js";
+import { toResponse } from "../../page/FrugalResponse.js";
 
 /** @type {self.forceGenerateStaticPage} */
 export async function forceGenerateStaticPage(context, next) {
-	const cookies = getCookies(context.request.headers);
-	const token = cookies[FORCE_GENERATE_COOKIE];
+	const shouldForceGenerate = await context.cacheHandler.shouldForceGenerate(context.request);
 
 	if (context.request.method === "GET") {
-		const isValid =
-			token === undefined
-				? false
-				: await isForceGenerateTokenValid(await context.cryptoKey, token);
-
-		if (!isValid) {
-			context.log("Invalid token. Yield.", {
+		if (!shouldForceGenerate) {
+			context.log("Should not force generate. Yield.", {
 				level: "debug",
 				scope: "forceGenerateStaticPage",
 			});
@@ -49,14 +41,15 @@ export async function forceGenerateStaticPage(context, next) {
 
 	const response = toResponse(frugalResponse);
 
-	if (token !== undefined) {
-		setCookie(response.headers, {
+	if (shouldForceGenerate) {
+		await context.cacheHandler.cleanupForceGenerate(response);
+		/*setCookie(response.headers, {
 			httpOnly: true,
 			name: FORCE_GENERATE_COOKIE,
 			value: "",
 			expires: new Date(0),
 			maxAge: 0,
-		});
+		});*/
 	}
 
 	return response;

@@ -60,12 +60,12 @@ export function buildPlugin(buildCache) {
 							page.entrypoint,
 						);
 
-						const pageProducer = Producer.create(
-							pageAssets,
+						const pageProducer = Producer.create({
+							assets: pageAssets,
 							page,
-							context.manifest.hash,
-							await internalRuntimeConfig.cryptoKey,
-						);
+							configHash: context.manifest.hash,
+							runtimeConfig: internalRuntimeConfig,
+						});
 
 						const pathParams = await pageProducer.getPathParams();
 						if (page.strictPaths) {

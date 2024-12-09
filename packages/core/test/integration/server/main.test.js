@@ -3,9 +3,7 @@ import * as fs from "node:fs";
 import { mock, test } from "node:test";
 import * as url from "node:url";
 import { BuildHelper, ServerHelper } from "@frugal-node/test-utils";
-import { crypto, CookieSessionStorage } from "../../../exports/server/index.js";
-import { FORCE_REFRESH_HEADER } from "../../../src/page/FrugalResponse.js";
-import { forceRefreshToken } from "../../../src/utils/crypto.js";
+import { CookieSessionStorage } from "../../../exports/server/index.js";
 
 const helper = await BuildHelper.setupFixtures(import.meta.dirname);
 const serverHelper = new ServerHelper(helper.runtimeConfig, helper.internalBuildConfig);
@@ -48,12 +46,6 @@ await serverHelper.withServer(async () => {
 	});
 
 	await test("inte/server: serving basic static page with force refresh", async () => {
-		const token = await forceRefreshToken(
-			await crypto.importKey(
-				"eyJrdHkiOiJvY3QiLCJrIjoieENtNHc2TDNmZDBrTm8wN3FLckFnZUg4OWhYQldzWkhsalZJYjc2YkpkWjdja2ZPWXpub1gwbXE3aHZFMlZGbHlPOHlVNGhaS29FQUo4cmY3WmstMjF4SjNTRTZ3RDRURF8wdHVvQm9TM2VNZThuUy1pOFA4QVQxcnVFT05tNVJ3N01FaUtJX0xMOWZWaEkyN1BCRTJrbmUxcm80M19wZ2tZWXdSREZ6NFhNIiwiYWxnIjoiSFM1MTIiLCJrZXlfb3BzIjpbInNpZ24iLCJ2ZXJpZnkiXSwiZXh0Ijp0cnVlfQ==",
-			),
-		);
-
 		// modify data.json but only data used by page1/1
 		const dataURL = import.meta.resolve("./project/data.json");
 		const originalData = await fs.promises.readFile(url.fileURLToPath(dataURL), {
@@ -63,91 +55,17 @@ await serverHelper.withServer(async () => {
 			encoding: "utf-8",
 		});
 
-		const response = await fetch("http://localhost:8000/static/1", {
+		const response = await fetch("http://localhost:8000/static/1?force_refresh", {
+			method: "POST",
 			redirect: "manual",
-			headers: {
-				[FORCE_REFRESH_HEADER]: token,
-			},
 		});
 
-		assert.strictEqual(response.status, 307);
+		assert.strictEqual(response.status, 303);
 		assert.strictEqual(response.headers.get("location"), "/static/1");
 		const revalidatedResponse = await fetch("http://localhost:8000/static/1");
 
 		assert.strictEqual(revalidatedResponse.headers.get("content-type"), "application/json");
 		const body = await revalidatedResponse.json();
-		assert.deepEqual(body, {
-			params: { slug: "1" },
-			count: 0,
-			store: "bar",
-			searchParams: {},
-		});
-
-		await fs.promises.writeFile(url.fileURLToPath(dataURL), originalData, {
-			encoding: "utf-8",
-		});
-	});
-
-	await test("inte/server: fail force refresh (timestamp too old)", async () => {
-		// modify data.json but only data used by page1/1
-		const dataURL = import.meta.resolve("./project/data.json");
-		const originalData = await fs.promises.readFile(url.fileURLToPath(dataURL), {
-			encoding: "utf-8",
-		});
-		await fs.promises.writeFile(url.fileURLToPath(dataURL), '"foobar"', {
-			encoding: "utf-8",
-		});
-
-		const token = await forceRefreshToken(
-			await crypto.importKey(
-				"eyJrdHkiOiJvY3QiLCJrIjoieENtNHc2TDNmZDBrTm8wN3FLckFnZUg4OWhYQldzWkhsalZJYjc2YkpkWjdja2ZPWXpub1gwbXE3aHZFMlZGbHlPOHlVNGhaS29FQUo4cmY3WmstMjF4SjNTRTZ3RDRURF8wdHVvQm9TM2VNZThuUy1pOFA4QVQxcnVFT05tNVJ3N01FaUtJX0xMOWZWaEkyN1BCRTJrbmUxcm80M19wZ2tZWXdSREZ6NFhNIiwiYWxnIjoiSFM1MTIiLCJrZXlfb3BzIjpbInNpZ24iLCJ2ZXJpZnkiXSwiZXh0Ijp0cnVlfQ==",
-			),
-		);
-
-		mock.timers.tick(10 * 1000 + 1);
-
-		const response = await fetch("http://localhost:8000/static/1", {
-			headers: {
-				[FORCE_REFRESH_HEADER]: token,
-			},
-		});
-
-		assert.strictEqual(response.headers.get("content-type"), "application/json");
-		const body = await response.json();
-		assert.deepEqual(body, {
-			params: { slug: "1" },
-			count: 0,
-			store: "bar",
-			searchParams: {},
-		});
-
-		await fs.promises.writeFile(url.fileURLToPath(dataURL), originalData, {
-			encoding: "utf-8",
-		});
-
-		mock.timers.setTime(now);
-	});
-
-	await test("inte/server: fail force refresh (invalid key)", async () => {
-		// modify data.json but only data used by page1/1
-		const dataURL = import.meta.resolve("./project/data.json");
-		const originalData = await fs.promises.readFile(url.fileURLToPath(dataURL), {
-			encoding: "utf-8",
-		});
-		await fs.promises.writeFile(url.fileURLToPath(dataURL), '"foobar"', {
-			encoding: "utf-8",
-		});
-
-		const token = await forceRefreshToken(await crypto.importKey(await crypto.exportKey()));
-
-		const response = await fetch("http://localhost:8000/static/1", {
-			headers: {
-				[FORCE_REFRESH_HEADER]: token,
-			},
-		});
-
-		assert.strictEqual(response.headers.get("content-type"), "application/json");
-		const body = await response.json();
 		assert.deepEqual(body, {
 			params: { slug: "1" },
 			count: 0,

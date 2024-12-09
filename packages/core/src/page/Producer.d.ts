@@ -1,3 +1,5 @@
+import type { InternalRuntimeConfig } from "../RuntimeConfig.js";
+import type { ServerCache } from "../server/ServerCache.js";
 import type { FrugalResponse } from "./FrugalResponse.js";
 import type { Page } from "./Page.js";
 import type { PageAssets } from "./PageAssets.js";
@@ -17,8 +19,16 @@ export interface Producer {
 	}): Promise<FrugalResponse | undefined>;
 }
 
+export type ProducerConfig = {
+	assets: PageAssets;
+	runtimeConfig: InternalRuntimeConfig;
+	page: Page;
+	configHash: string;
+	cache?: ServerCache;
+};
+
 interface ProducerCreator {
-	create(assets: PageAssets, page: Page, configHash: string, cryptoKey: CryptoKey): Producer;
+	create(config: ProducerConfig): Producer;
 }
 
 export let Producer: ProducerCreator;

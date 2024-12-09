@@ -17,7 +17,7 @@ export async function watchModeStaticPage(context, next) {
 		level: "debug",
 	});
 
-	const cachedResponse = await context.cache?.get(context.request.url);
+	const cachedResponse = await context.cache?.get(context.url.pathname);
 
 	const frugalResponse = await context.route.producer.generate({
 		request: context.request,

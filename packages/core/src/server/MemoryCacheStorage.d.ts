@@ -1,7 +1,7 @@
-import type { CacheStorage } from "./ServerCache.js";
+import type { ServerCacheStorage } from "./ServerCache.js";
 
 interface MemoryCacheStorageCreator {
-	create(): CacheStorage;
+	create(): ServerCacheStorage;
 }
 
 export let MemoryCacheStorage: MemoryCacheStorageCreator;

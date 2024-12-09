@@ -1,6 +1,5 @@
 import * as path from "node:path";
 import { BuildConfig } from "@frugal-node/core/config/build";
-import { toResponse } from "../../../../src/page/FrugalResponse.js";
 import * as fs from "../../../../src/utils/fs.js";
 import { WatchCache } from "../../../../src/watch/WatchCache.js";
 import { WatchContext } from "../../../../src/watch/WatchContext.js";

@@ -3,7 +3,7 @@
 import { composeMiddleware } from "../middleware.js";
 import { buildJitStaticPage } from "./buildJitStaticPage.js";
 import { forceGenerateStaticPage } from "./forceGenerateStaticPage.js";
-import { forceRefreshStaticPage } from "./forceRefreshStaticPage.js";
+//import { forceRefreshStaticPage } from "./forceRefreshStaticPage.js";
 import { generateDynamicPage } from "./generateDynamicPage.js";
 import { serveFromCacheStaticPage } from "./serveFromCacheStaticPage.js";
 import { watchModeStaticPage } from "./watchModeStaticPage.js";
@@ -71,7 +71,7 @@ export function router(routes) {
 
 const staticPageMiddleware = composeMiddleware([
 	forceGenerateStaticPage,
-	forceRefreshStaticPage,
+	//forceRefreshStaticPage,
 	watchModeStaticPage,
 	serveFromCacheStaticPage,
 	buildJitStaticPage,

@@ -2,7 +2,8 @@
 
 import * as url from "node:url";
 import { ServerCache } from "./server/ServerCache.js";
-import { importKey } from "./utils/crypto.js";
+import * as cookies from "./utils/cookies.js";
+import * as crypto from "./utils/crypto.js";
 import { config as configLog } from "./utils/log.js";
 
 /** @type {self.RuntimeConfigCreator} */
@@ -19,7 +20,7 @@ const DEFAULT_COMPRESS_OPTIONS =
 	});
 
 /** @type {self.RuntimeConfigCreator['create']} */
-function create(config) {
+function create(config, cacheHandler) {
 	configLog(config.log);
 
 	const self = url.fileURLToPath(config.self);
@@ -28,6 +29,11 @@ function create(config) {
 		/** @type {Promise<CryptoKey>|undefined} */
 		cryptoKey: undefined,
 	};
+
+	const serverCache =
+		config.cacheStorage === undefined ? undefined : ServerCache.create(config.cacheStorage);
+
+	const defaultCacheHandler = createDefaultCacheHandler(_getCryptoKey());
 
 	return {
 		get self() {
@@ -42,10 +48,7 @@ function create(config) {
 		},
 
 		get cryptoKey() {
-			if (state.cryptoKey === undefined) {
-				state.cryptoKey = Promise.resolve(importKey(config.cryptoKey));
-			}
-			return state.cryptoKey;
+			return _getCryptoKey();
 		},
 
 		get session() {
@@ -66,11 +69,7 @@ function create(config) {
 		},
 
 		get serverCache() {
-			if (config.cacheStorage === undefined) {
-				return undefined;
-			}
-
-			return ServerCache.create(config.cacheStorage);
+			return serverCache;
 		},
 
 		get compress() {
@@ -87,6 +86,69 @@ function create(config) {
 								}
 							: { ...DEFAULT_COMPRESS_OPTIONS, ...config.compress },
 			};
+		},
+
+		get cacheHandler() {
+			return cacheHandler ?? defaultCacheHandler;
+		},
+	};
+
+	function _getCryptoKey() {
+		if (state.cryptoKey === undefined) {
+			state.cryptoKey = crypto.importKey(config.cryptoKey);
+		}
+		return state.cryptoKey;
+	}
+}
+
+const FORCE_GENERATE_COOKIE = "__frugal_force_generate";
+
+/**
+ *
+ * @param {Promise<CryptoKey>} cryptoKey
+ * @returns {self.CacheHandler}
+ */
+function createDefaultCacheHandler(cryptoKey) {
+	return {
+		async forceRefresh({ url, cache }) {
+			try {
+				if (cache === undefined) {
+					return true;
+				}
+
+				await cache.invalidate(url.pathname);
+				return true;
+			} catch {
+				return false;
+			}
+		},
+
+		async setupForceGenerate(response) {
+			cookies.setCookie(response.headers, {
+				httpOnly: true,
+				name: FORCE_GENERATE_COOKIE,
+				value: await crypto.forceGenerateToken(await cryptoKey),
+				path: "/",
+			});
+		},
+
+		async shouldForceGenerate(request) {
+			const cookis = cookies.getCookies(request.headers);
+			const forceGenerateToken = cookis[FORCE_GENERATE_COOKIE];
+			if (forceGenerateToken === undefined) {
+				return false;
+			}
+			return await crypto.isForceGenerateTokenValid(await cryptoKey, forceGenerateToken);
+		},
+
+		cleanupForceGenerate(response) {
+			cookies.setCookie(response.headers, {
+				httpOnly: true,
+				name: FORCE_GENERATE_COOKIE,
+				value: "",
+				expires: new Date(0),
+				maxAge: 0,
+			});
 		},
 	};
 }

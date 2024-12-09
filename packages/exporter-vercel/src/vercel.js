@@ -1,6 +1,5 @@
 /** @import { InternalBuildConfig } from "@frugal-node/core/config/build" */
 /** @import { StaticManifest } from "@frugal-node/core/exporter" */
-/** @import { PageDescriptor } from "@frugal-node/core/page" */
 
 import * as path from "node:path";
 import { BuildConfigError } from "@frugal-node/core/config/build";
@@ -14,7 +13,6 @@ import { parse } from "@frugal-node/core/page";
 import { token } from "@frugal-node/core/utils/crypto";
 import * as fs from "@frugal-node/core/utils/fs";
 import * as esbuild from "esbuild";
-import { FORCE_GENERATE_COOKIE, FORCE_REFRESH_HEADER } from "../../core/src/page/FrugalResponse.js";
 
 /** @type {import("./vercel.ts").vercel} */
 export function vercel({ outdir = undefined } = {}) {
@@ -37,9 +35,7 @@ export function vercel({ outdir = undefined } = {}) {
 
 			await createRootConfig(outputDir, staticManifest);
 
-			const handleFuncDir = await createServerlessFunction(outputDir, "__handle");
-			const generateFuncDir = await createServerlessFunction(outputDir, "__generate");
-			const refreshFuncDir = await createServerlessFunction(outputDir, "__refresh");
+			const handlerFuncDir = await createServerlessFunction(outputDir, "__handler");
 
 			const runtimeConfigPath = path.resolve(
 				context.config.outDir,
@@ -53,7 +49,7 @@ export function vercel({ outdir = undefined } = {}) {
 			const bypassToken = await token(await internalRuntimeConfig.cryptoKey, { t: "bypass" });
 
 			await bundleFunctions(
-				{ handle: handleFuncDir, generate: generateFuncDir, refresh: refreshFuncDir },
+				{ handler: handlerFuncDir },
 				bypassToken,
 				outputDir,
 				runtimeConfigPath,
@@ -70,11 +66,11 @@ export function vercel({ outdir = undefined } = {}) {
 
 					const absolutePath = path.join(entry.path, "index");
 					const fallbackPath = path.resolve(
-						path.dirname(handleFuncDir),
+						path.dirname(handlerFuncDir),
 						`.${absolutePath}.prerender-fallback.html`,
 					);
 					const configPath = path.resolve(
-						path.dirname(handleFuncDir),
+						path.dirname(handlerFuncDir),
 						`.${absolutePath}.prerender-config.json`,
 					);
 
@@ -91,10 +87,10 @@ export function vercel({ outdir = undefined } = {}) {
 
 					try {
 						const absoluteLinkPath = path.resolve(
-							path.dirname(handleFuncDir),
+							path.dirname(handlerFuncDir),
 							`.${absolutePath}.func`,
 						);
-						const absoluteTarget = handleFuncDir;
+						const absoluteTarget = handlerFuncDir;
 						const relativeTarget = path.relative(
 							path.dirname(absoluteLinkPath),
 							absoluteTarget,
@@ -126,20 +122,6 @@ async function createRootConfig(outputDir, staticManifest) {
 				version: 3,
 				routes: [
 					{ handle: "filesystem" }, // static files
-					{
-						methods: ["GET"],
-						has: [{ type: "cookie", key: FORCE_GENERATE_COOKIE }],
-						missing: [{ type: "cookie", key: "__prerender_bypass" }],
-						src: "^(?:/(.*))$",
-						dest: "/__generate",
-					}, // redirect force generate request without vercel __prerender_bypass cookie to a proxy that will add the cookie
-					{
-						methods: ["GET"],
-						has: [{ type: "header", key: FORCE_REFRESH_HEADER }],
-						missing: [{ type: "header", key: "x-prerender-revalidate" }],
-						src: "^(?:/(.*))$",
-						dest: "/__refresh",
-					}, // redirect force refresh request without vercel x-prerender-revalidate header to a proxy that will add the header
 					...staticManifest.pages.map((entry) => ({
 						methods: ["GET"],
 						src: parse(entry).regexpRoute.toString(),
@@ -201,7 +183,7 @@ async function output(path, content) {
 }
 
 /**
- * @param {{ handle:string, generate:string, refresh:string}} functionsDir
+ * @param {{ handler:string, }} functionsDir
  * @param {string} bypassToken
  * @param {string} outputDir
  * @param {string} runtimeConfigPath
@@ -213,9 +195,7 @@ async function bundleFunctions(functionsDir, bypassToken, outputDir, runtimeConf
 
 	const result = await esbuild.build({
 		entryPoints: [
-			{ in: "vercel://handle.js", out: path.resolve(functionsDir.handle, "index") },
-			{ in: "vercel://generate.js", out: path.resolve(functionsDir.generate, "index") },
-			{ in: "vercel://refresh.js", out: path.resolve(functionsDir.refresh, "index") },
+			{ in: "vercel://handle.js", out: path.resolve(functionsDir.handler, "index") },
 		],
 		bundle: true,
 		metafile: true,
@@ -231,21 +211,7 @@ async function bundleFunctions(functionsDir, bypassToken, outputDir, runtimeConf
 					import runtimeConfig from "${runtimeConfigPath}";
 					import { getFrugalHandler } from "vercel://utils.js"
 
-					const handler = getFrugalHandler({ static:staticManifest, dynamic:dynamicManifest }, runtimeConfig)
-
-					export default handler
-				`,
-				"vercel://generate.js": `
-					import { getProxyGenerateHandler } from "vercel://utils.js"
-
-					const handler = getProxyGenerateHandler("${bypassToken}")
-
-					export default handler
-				`,
-				"vercel://refresh.js": `
-					import { getProxyRefreshHandler } from "vercel://utils.js"
-
-					const handler = getProxyRefreshHandler("${bypassToken}")
+					const handler = getFrugalHandler({ static:staticManifest, dynamic:dynamicManifest }, runtimeConfig, "${bypassToken}")
 
 					export default handler
 				`,
@@ -256,7 +222,7 @@ async function bundleFunctions(functionsDir, bypassToken, outputDir, runtimeConf
 			copy([
 				{
 					from: path.resolve(config.buildDir, "assets"),
-					to: path.resolve(functionsDir.handle, "assets"),
+					to: path.resolve(functionsDir.handler, "assets"),
 					recursive: true,
 					forgiveNotFound: true,
 				},

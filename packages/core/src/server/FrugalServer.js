@@ -24,7 +24,9 @@ export const FrugalServer = {
 };
 
 /** @type {self.FrugalServerCreator['create']} */
-async function create({ config, manifest, watch, publicDir, cacheOverride }) {
+function create({ config, manifest, watch, publicDir, cacheOverride }) {
+	const cache = cacheOverride ?? config.serverCache;
+
 	/** @type {Route[]} */
 	const routes = [];
 
@@ -32,12 +34,13 @@ async function create({ config, manifest, watch, publicDir, cacheOverride }) {
 		for (const { moduleHash, entrypoint, descriptor, params } of manifest.static.pages) {
 			const page = parse({ moduleHash, entrypoint, descriptor });
 			const pageAssets = PageAssets.create(manifest.static.assets, page.entrypoint);
-			const producer = Producer.create(
-				pageAssets,
+			const producer = Producer.create({
+				assets: pageAssets,
 				page,
-				manifest.static.hash,
-				await config.cryptoKey,
-			);
+				configHash: manifest.static.hash,
+				runtimeConfig: config,
+				cache,
+			});
 			routes.push({
 				page,
 				producer,
@@ -50,12 +53,13 @@ async function create({ config, manifest, watch, publicDir, cacheOverride }) {
 		for (const { moduleHash, entrypoint, descriptor } of manifest.dynamic.pages) {
 			const page = parse({ moduleHash, entrypoint, descriptor });
 			const pageAssets = PageAssets.create(manifest.dynamic.assets, page.entrypoint);
-			const producer = Producer.create(
-				pageAssets,
+			const producer = Producer.create({
+				assets: pageAssets,
 				page,
-				manifest.dynamic.hash,
-				await config.cryptoKey,
-			);
+				configHash: manifest.dynamic.hash,
+				runtimeConfig: config,
+				cache,
+			});
 			routes.push({
 				page,
 				producer,
@@ -95,7 +99,7 @@ async function create({ config, manifest, watch, publicDir, cacheOverride }) {
 				url,
 				watch,
 				request,
-				cache: cacheOverride ?? config.serverCache,
+				cache,
 				state: {},
 				session,
 				cryptoKey: config.cryptoKey,
@@ -103,6 +107,7 @@ async function create({ config, manifest, watch, publicDir, cacheOverride }) {
 					encodings,
 					threshold: config.compress.threshold,
 				},
+				cacheHandler: config.cacheHandler,
 			};
 
 			const response = await serverMiddleware(context, _mostInternalMiddleware);

@@ -1,3 +1,4 @@
+import type { CacheHandler } from "../RuntimeConfig.js";
 import type { ServerData } from "../utils/serverData.js";
 import type { PageResponse } from "./PageResponse.js";
 
@@ -6,6 +7,7 @@ export type Init<DATA extends ServerData> = {
 	moduleHash: string;
 	configHash: string;
 	cryptoKey: CryptoKey;
+	cacheHandler: CacheHandler;
 	render: (data: DATA) => string;
 };
 
@@ -39,8 +41,8 @@ interface FrugalResponseCreator {
 	from(serialized: SerializedFrugalResponse): FrugalResponse;
 }
 
-export let FORCE_GENERATE_COOKIE: string;
-export let FORCE_REFRESH_HEADER: string;
+//export let FORCE_GENERATE_COOKIE: string;
+//export let FORCE_REFRESH_HEADER: string;
 
 export let FrugalResponse: FrugalResponseCreator;
 

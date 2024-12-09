@@ -1,8 +1,7 @@
 /** @import * as self from "./Producer.js" */
 
-import { forceRefreshToken } from "../utils/crypto.js";
 import { log } from "../utils/log.js";
-import { FORCE_REFRESH_HEADER, FrugalResponse } from "./FrugalResponse.js";
+import { FrugalResponse } from "./FrugalResponse.js";
 
 /**@type {self.ProducerCreator} */
 export const Producer = {
@@ -10,7 +9,7 @@ export const Producer = {
 };
 
 /**@type {self.ProducerCreator['create']} */
-function create(assets, page, configHash, cryptoKey) {
+function create({ assets, runtimeConfig, page, configHash, cache }) {
 	return {
 		getPathParams,
 		build,
@@ -73,7 +72,8 @@ function create(assets, page, configHash, cryptoKey) {
 			path,
 			moduleHash: page.moduleHash,
 			configHash: configHash,
-			cryptoKey,
+			cryptoKey: await runtimeConfig.cryptoKey,
+			cacheHandler: runtimeConfig.cacheHandler,
 		});
 	}
 
@@ -90,7 +90,11 @@ function create(assets, page, configHash, cryptoKey) {
 						state: state,
 						request: request,
 						session: session,
-						forceRefresh: (path) => forceRefresh(request, path ?? "", cryptoKey),
+						forceRefresh: async (path) =>
+							runtimeConfig.cacheHandler.forceRefresh({
+								url: new URL(path ?? "", request.url),
+								cache,
+							}),
 					})
 				: await page.generate({
 						params,
@@ -98,7 +102,11 @@ function create(assets, page, configHash, cryptoKey) {
 						state: state,
 						request: request,
 						session: session,
-						forceRefresh: (path) => forceRefresh(request, path ?? "", cryptoKey),
+						forceRefresh: async (path) =>
+							runtimeConfig.cacheHandler.forceRefresh({
+								url: new URL(path ?? "", request.url),
+								cache,
+							}),
 					});
 
 		if (response === undefined) {
@@ -124,17 +132,13 @@ function create(assets, page, configHash, cryptoKey) {
 			path,
 			moduleHash: page.moduleHash,
 			configHash: configHash,
-			cryptoKey,
+			cryptoKey: await runtimeConfig.cryptoKey,
+			cacheHandler: runtimeConfig.cacheHandler,
 		});
 	}
 }
 
-/**
- * @param {Request} request
- * @param {string} path
- * @param {CryptoKey} cryptoKey
- */
-async function forceRefresh(request, path, cryptoKey) {
+/*async function forceRefresh(request, path, cryptoKey) {
 	const url = new URL(path, request.url);
 	const response = await fetch(url, {
 		headers: {
@@ -144,6 +148,6 @@ async function forceRefresh(request, path, cryptoKey) {
 	});
 
 	return response.ok;
-}
+}*/
 
 class ProducerError extends Error {}

@@ -1,4 +1,5 @@
-import type { CacheStorage, ServerCache } from "./server/ServerCache.js";
+import type { FrugalResponse } from "./page/FrugalResponse.js";
+import type { ServerCache, ServerCacheStorage } from "./server/ServerCache.js";
 import type { Context } from "./server/context.js";
 import type { Middleware } from "./server/middleware.js";
 import type { SessionStorage } from "./server/session/SessionStorage.js";
@@ -13,6 +14,13 @@ export type CompressMethodsObject = {
 
 type CompressMethods = boolean | Partial<CompressMethodsObject>;
 
+type CacheHandler = {
+	forceRefresh: (params: { url: URL; cache?: ServerCache }) => Promise<boolean> | boolean;
+	setupForceGenerate: (response: FrugalResponse) => Promise<void> | void;
+	shouldForceGenerate: (request: Request) => Promise<boolean> | boolean;
+	cleanupForceGenerate: (response: Response) => Promise<void> | void;
+};
+
 export type RuntimeConfig = {
 	self: string;
 	secure?: boolean;
@@ -24,7 +32,7 @@ export type RuntimeConfig = {
 	};
 	log?: Partial<LogConfig>;
 	middlewares?: Middleware<Context>[];
-	cacheStorage?: CacheStorage;
+	cacheStorage?: ServerCacheStorage;
 	compress?: { method?: CompressMethods; threshold?: number };
 };
 
@@ -40,10 +48,11 @@ export type InternalRuntimeConfig = {
 	readonly serverCache?: ServerCache;
 	readonly compress: { threshold: number; method: CompressMethodsObject };
 	readonly self: string;
+	readonly cacheHandler: CacheHandler;
 };
 
 interface RuntimeConfigCreator {
-	create(config: RuntimeConfig): InternalRuntimeConfig;
+	create(config: RuntimeConfig, cacheHandler?: CacheHandler): InternalRuntimeConfig;
 }
 
 export let RuntimeConfig: RuntimeConfigCreator;

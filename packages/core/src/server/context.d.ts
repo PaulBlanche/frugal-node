@@ -1,3 +1,4 @@
+import type { CacheHandler } from "../RuntimeConfig.js";
 import type * as server from "./Server.js";
 import type { ServerCache } from "./ServerCache.js";
 import type { Session } from "./session/Session.js";
@@ -15,5 +16,6 @@ export type Context = server.ServerContext & {
 		encodings: string[];
 		threshold: number;
 	};
+	cacheHandler: CacheHandler;
 	//internal: Internal;
 };

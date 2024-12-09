@@ -1,11 +1,9 @@
 /** @import * as self from "./FrugalResponse.js" */
 
 import { Hash } from "../utils/Hash.js";
-import * as cookies from "../utils/cookies.js";
-import { forceGenerateToken } from "../utils/crypto.js";
 
-export const FORCE_GENERATE_COOKIE = "__frugal_force_generate";
-export const FORCE_REFRESH_HEADER = "x-frugal-force-refresh";
+//export const FORCE_GENERATE_COOKIE = "__frugal_force_generate";
+//export const FORCE_REFRESH_HEADER = "x-frugal-force-refresh";
 
 /** @type {self.FrugalResponseCreator} */
 export const FrugalResponse = {
@@ -92,16 +90,7 @@ async function create(response, init) {
 		);
 	}
 
-	if (response.forceDynamic && init.cryptoKey) {
-		cookies.setCookie(headers, {
-			httpOnly: true,
-			name: FORCE_GENERATE_COOKIE,
-			value: await forceGenerateToken(init.cryptoKey),
-			path: "/",
-		});
-	}
-
-	return {
+	const frugalResponse = {
 		get path() {
 			return init.path;
 		},
@@ -133,6 +122,12 @@ async function create(response, init) {
 		setDateFrom,
 		serialize,
 	};
+
+	if (response.forceDynamic) {
+		await init.cacheHandler.setupForceGenerate(frugalResponse);
+	}
+
+	return frugalResponse;
 
 	/** @type {self.FrugalResponse['setDateFrom']} */
 	function setDateFrom(response) {

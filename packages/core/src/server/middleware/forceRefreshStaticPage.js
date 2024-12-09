@@ -1,6 +1,5 @@
 /** @import * as self from "./forceRefreshStaticPage.js" */
 
-import { FORCE_REFRESH_HEADER } from "../../page/FrugalResponse.js";
 import { isForceRefreshTokenValid } from "../../utils/crypto.js";
 
 /** @type {self.forceRefreshStaticPage} */
@@ -17,7 +16,7 @@ export async function forceRefreshStaticPage(context, next) {
 		return next(context);
 	}
 
-	const token = context.request.headers.get(FORCE_REFRESH_HEADER);
+	const token = context.request.headers.get("FORCE_REFRESH_HEADER");
 	const isValid =
 		token === null ? false : await isForceRefreshTokenValid(await context.cryptoKey, token);
 	if (!isValid) {

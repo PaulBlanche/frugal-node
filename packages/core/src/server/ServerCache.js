@@ -22,5 +22,9 @@ function create(storage) {
 
 			return FrugalResponse.from(serializedResponse);
 		},
+
+		invalidate(path) {
+			return Promise.resolve(storage.delete(path));
+		},
 	};
 }

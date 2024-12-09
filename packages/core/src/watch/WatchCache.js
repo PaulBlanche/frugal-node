@@ -37,11 +37,21 @@ function create(config) {
 				await _save();
 			},
 
-			get(url) {
-				const path = new URL(url).pathname;
+			get(path) {
+				console.log(data, path);
 				const serializedResponse = data[path];
 
+				if (serializedResponse === undefined) {
+					return Promise.resolve(undefined);
+				}
+
 				return Promise.resolve(FrugalResponse.from(serializedResponse));
+			},
+
+			invalidate(path) {
+				delete data[path];
+
+				return Promise.resolve();
 			},
 		},
 	};
