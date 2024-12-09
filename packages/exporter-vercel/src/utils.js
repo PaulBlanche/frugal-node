@@ -13,6 +13,7 @@ import nodeFetch from "node-fetch";
 export function getFrugalHandler(manifest, runtimeConfig, bypassToken) {
 	const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig, {
 		async forceRefresh({ url }) {
+			console.log(url.toString());
 			const response = await nodeFetch(url, {
 				method: "HEAD",
 				redirect: "manual",
@@ -21,6 +22,7 @@ export function getFrugalHandler(manifest, runtimeConfig, bypassToken) {
 				},
 				compress: false,
 			});
+			console.log(response);
 			return response.ok;
 		},
 		setupForceGenerate(response) {
