@@ -125,11 +125,11 @@ async function createRootConfig(outputDir, staticManifest) {
 					...staticManifest.pages.map((entry) => ({
 						methods: ["GET"],
 						src: parse(entry).regexpRoute.toString(),
-						dest: "/__handle",
+						dest: "/__handler",
 					})), // handle static page as prerender functions
 					{
 						src: "^(?:/(.*))$",
-						dest: "/__handle",
+						dest: "/__handler",
 					}, // handle everything else as normal function (dynamic)
 				],
 				framework: {
