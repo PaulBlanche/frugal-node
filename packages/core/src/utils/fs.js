@@ -96,6 +96,15 @@ export async function stat(path) {
 	}
 }
 
+/** @type {self.symlink} */
+export async function symlink(target, path) {
+	try {
+		return await fs.promises.symlink(target, path);
+	} catch (error) {
+		throw mapError(error);
+	}
+}
+
 /** @type {self.writeFile} */
 export async function writeFile(path, data, { append = false, createNew = false } = {}) {
 	try {

@@ -46,10 +46,22 @@ export async function build({
 	);
 }
 
-export function generate({
+export async function generate({
 	session,
 	request,
-}: GenerateContext<typeof route>): PageResponse<Data> | undefined {
+	forceRefresh,
+}: GenerateContext<typeof route>): Promise<PageResponse<Data> | undefined> {
+	const url = new URL(request.url);
+	if (url.searchParams.get("force_refresh") !== null) {
+		await forceRefresh();
+		return PageResponse.empty({
+			status: 303,
+			headers: {
+				Location: url.pathname,
+			},
+		});
+	}
+
 	if (request?.method === "POST") {
 		const count = session?.get<number>("counter") ?? 0;
 		session?.set("counter", count + 1);

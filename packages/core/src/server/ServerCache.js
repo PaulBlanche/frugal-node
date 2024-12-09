@@ -1,6 +1,6 @@
 /** @import * as self from "./ServerCache.js" */
 
-import { toResponse } from "../page/FrugalResponse.js";
+import { FrugalResponse } from "../page/FrugalResponse.js";
 
 /** @type {self.ServerCacheCreator} */
 export const ServerCache = {
@@ -10,25 +10,21 @@ export const ServerCache = {
 /** @type {self.ServerCacheCreator['create']} */
 function create(storage) {
 	return {
-		async add(response) {
-			return storage.set(response.path, await response.serialize());
-		},
-
-		async has(path) {
-			const data = await storage.get(path);
-			if (data === undefined) {
-				return false;
-			}
-			return true;
+		add(response) {
+			return Promise.resolve(storage.set(response.path, response.serialize()));
 		},
 
 		async get(path) {
-			const serializedCacheableResponse = await storage.get(path);
-			if (serializedCacheableResponse === undefined) {
+			const serializedResponse = await storage.get(path);
+			if (serializedResponse === undefined) {
 				return undefined;
 			}
 
-			return toResponse(serializedCacheableResponse);
+			return FrugalResponse.from(serializedResponse);
+		},
+
+		invalidate(path) {
+			return Promise.resolve(storage.delete(path));
 		},
 	};
 }

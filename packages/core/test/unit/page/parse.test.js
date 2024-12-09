@@ -13,7 +13,7 @@ test("unit/parse: empty descriptor", () => {
 });
 
 test("unit/parse: descriptor with just a route", () => {
-	assert.throws(() => {
+	assert.doesNotThrow(() => {
 		parse({
 			entrypoint: "foo",
 			moduleHash: "bar",

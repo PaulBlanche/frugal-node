@@ -15,13 +15,15 @@ const baseDescriptorSchema = /* @__PURE__ */ zod.object(
 				invalid_type_error: 'A page descriptor "route" must be a string',
 			})
 			.startsWith("/", 'A "route" must start with a "/"'),
-		render: /* @__PURE__ */ zod.function(
-			/* @__PURE__ */ zod.tuple([/* @__PURE__ */ zod.any()]),
-			/* @__PURE__ */ zod.any(),
-			{
-				required_error: 'A page descriptor must have a "render" function',
-				invalid_type_error: 'A page descriptor "render" must be a function',
-			},
+		render: /* @__PURE__ */ zod.optional(
+			/* @__PURE__ */ zod.function(
+				/* @__PURE__ */ zod.tuple([/* @__PURE__ */ zod.any()]),
+				/* @__PURE__ */ zod.any(),
+				{
+					required_error: 'A page descriptor must have a "render" function',
+					invalid_type_error: 'A page descriptor "render" must be a function',
+				},
+			),
 		),
 		generate: /* @__PURE__ */ zod.optional(
 			/* @__PURE__ */ zod.function(

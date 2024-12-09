@@ -9,4 +9,5 @@ export default {
 	session: {
 		storage: MemorySessionStorage.create(),
 	},
+	log: { level: "silent" },
 };
