@@ -5,7 +5,10 @@ type Event = { type: "suspend" | "reload" | "connected" };
 export interface LiveReloadServer {
 	dispatch(event: Event): void;
 
-	serve(options: ServeOptions): Promise<void>;
+	serve(options: ServeOptions): {
+		listening: Promise<{ hostname: string; port: number }>;
+		finished: Promise<void>;
+	};
 }
 
 interface LiveReloadServerCreator {

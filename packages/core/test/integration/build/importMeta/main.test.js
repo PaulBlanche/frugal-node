@@ -13,7 +13,7 @@ test("inte/build/importMeta: transform 'new URL(..., import.meta.url)' to point 
 	}));
 	await helper.build();
 
-	const manifest = await helper.manifest;
+	const manifest = await helper.manifest.static;
 	const bundledDescriptor = /** @type {any} */ (manifest.pages[0].descriptor);
 	const pageResponse = await bundledDescriptor.build({});
 
@@ -59,7 +59,7 @@ test("inte/build/importMeta: detect fake dynamic 'new URL(..., import.meta.url)'
 	}));
 	await helper.build();
 
-	const manifest = await helper.manifest;
+	const manifest = await helper.manifest.static;
 	const bundledDescriptor = /** @type {any} */ (manifest.pages[0].descriptor);
 	const pageResponse = await bundledDescriptor.build({});
 
@@ -79,7 +79,7 @@ test("inte/build/importMeta: dynamic 'new URL(..., import.meta.url)' glob copy a
 	}));
 	await helper.build();
 
-	const manifest = await helper.manifest;
+	const manifest = await helper.manifest.static;
 	const bundledDescriptor = /** @type {any} */ (manifest.pages[0].descriptor);
 	const pageResponse = await bundledDescriptor.build({});
 

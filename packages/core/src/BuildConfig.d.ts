@@ -1,4 +1,5 @@
 import type * as esbuild from "esbuild";
+import type { InternalRuntimeConfig } from "./RuntimeConfig.js";
 import type { Plugin } from "./esbuild/Plugin.js";
 import type { Exporter } from "./exporter/Exporter.js";
 import type { LogConfig } from "./utils/log.js";
@@ -16,6 +17,7 @@ export type BuildConfig = {
 };
 
 export type InternalBuildConfig = {
+	readonly runtimeConfig: Promise<InternalRuntimeConfig>;
 	readonly runtimeConfigPath: string;
 	readonly pages: string[];
 	readonly outDir: string;

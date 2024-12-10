@@ -62,6 +62,8 @@ export class BuildCacheExplorer {
 							body: await this.#loadDocument(path),
 							headers: entry.headers,
 							status: entry.status,
+							date: entry.date,
+							maxAge: entry.maxAge,
 						},
 					];
 				}),
@@ -79,9 +81,7 @@ export class BuildCacheExplorer {
 				key,
 				{
 					...value,
-					headers: value.headers.filter(
-						([key]) => !["last-modified", "x-frugal-generation-date"].includes(key),
-					),
+					headers: value.headers.filter(([key]) => !["last-modified"].includes(key)),
 				},
 			]),
 			Object.entries(expected),

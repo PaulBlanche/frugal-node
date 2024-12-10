@@ -33,37 +33,80 @@ const ENCODER = new TextEncoder();
 /** @type {self.sign} */
 export async function sign(cryptoKey, data) {
 	const signature = await crypto.subtle.sign(KEY_ALGORITHM, cryptoKey, ENCODER.encode(data));
-	return toHexString(new Uint8Array(signature));
+	return new Uint8Array(signature);
 }
 
 /** @type {self.verify} */
 export async function verify(cryptoKey, signature, data) {
-	return await crypto.subtle.verify(
-		KEY_ALGORITHM,
-		cryptoKey,
-		fromHexString(signature),
-		ENCODER.encode(data),
-	);
+	return await crypto.subtle.verify(KEY_ALGORITHM, cryptoKey, signature, ENCODER.encode(data));
 }
 
-/**
- *
- * @param {Uint8Array} bytes
- * @returns {string}
- */
-function toHexString(bytes) {
-	return bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, "0"), "");
+/** @type {self.token} */
+export async function token(cryptoKey, data) {
+	const payload = JSON.stringify([Date.now(), data]);
+
+	return `${Buffer.from(payload, "utf8").toString("base64url")}.${Buffer.from(await sign(cryptoKey, payload)).toString("base64url")}`;
 }
 
-/**
- *
- * @param {string} string
- * @returns {Uint8Array}
- */
-function fromHexString(string) {
-	const bytes =
-		string.match(/.{1,2}/g)?.map((byte) => {
-			return Number.parseInt(byte, 16);
-		}) ?? [];
-	return new Uint8Array(bytes);
+/** @type {self.forceGenerateToken} */
+export function forceGenerateToken(cryptoKey) {
+	return token(cryptoKey, { __fg: "true" });
+}
+
+/** @type {self.isForceGenerateTokenValid} */
+export async function isForceGenerateTokenValid(cryptoKey, token, msTimeout) {
+	const payload = await parseToken(cryptoKey, token, msTimeout);
+	return payload !== undefined && payload["__fg"] === "true";
+}
+
+/** @type {self.forceRefreshToken} */
+export function forceRefreshToken(cryptoKey) {
+	return token(cryptoKey, { __rf: "true" });
+}
+
+/** @type {self.isForceRefreshTokenValid} */
+export async function isForceRefreshTokenValid(cryptoKey, token, msTimeout) {
+	const payload = await parseToken(cryptoKey, token, msTimeout);
+	return payload !== undefined && payload["__rf"] === "true";
+}
+
+/** @type {self.decode} */
+export function decode(token) {
+	try {
+		const [payloadB64, signatureB64] = token.split(".");
+
+		const signature = new Uint8Array(Buffer.from(signatureB64, "base64url"));
+		const payload = Buffer.from(payloadB64, "base64url").toString("utf8");
+		const [timestamp, data] = JSON.parse(payload);
+
+		return { signature, data, timestamp, payload };
+	} catch {
+		return undefined;
+	}
+}
+
+/** @type {self.parseToken} */
+export async function parseToken(cryptoKey, token, msTimeout = 10 * 1000) {
+	try {
+		const result = decode(token);
+		if (result === undefined) {
+			return undefined;
+		}
+
+		const verified = await verify(cryptoKey, result.signature, result.payload);
+
+		if (!verified) {
+			return undefined;
+		}
+
+		const delta = Math.abs(Date.now() - Number(result.timestamp));
+
+		if (delta > msTimeout) {
+			return undefined;
+		}
+
+		return result.data;
+	} catch {
+		return undefined;
+	}
 }

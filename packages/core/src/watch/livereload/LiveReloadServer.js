@@ -19,17 +19,19 @@ function create() {
 	return {
 		dispatch,
 
-		serve({ onListen, signal, port = 4075 } = {}) {
-			return serve(_handler(), {
+		serve({ signal, port = 4075 } = {}) {
+			const { listening, finished } = serve(_handler(), {
 				port,
 				signal,
-				onListen(args) {
-					onListen?.(args);
-					log(`Live reload server listening at http://${args.hostname}:${args.port}`, {
-						scope: "LiveReloadServer",
-					});
-				},
 			});
+
+			listening.then(({ hostname, port }) => {
+				log(`Live reload server listening at http://${hostname}:${port}`, {
+					scope: "LiveReloadServer",
+				});
+			});
+
+			return { listening, finished };
 		},
 	};
 

@@ -16,33 +16,49 @@ export function serve(handler, options = {}) {
 					cert: options.cert,
 					key: options.key,
 				},
-				nativeHandler(handler),
+				nativeHandler(handler, true),
 			)
-		: http.createServer(nativeHandler(handler));
+		: http.createServer(nativeHandler(handler, options.secure));
+
+	options.signal?.addEventListener("abort", () => {
+		server.close();
+	});
 
 	const port = options.port ?? 8000;
 	const hostname = options.hostname ?? "0.0.0.0";
 
-	server.listen(port, hostname, () => {
-		options.onListen?.({ hostname, port });
+	/** @type {PromiseWithResolvers<{ hostname:string, port:number }>} */
+	const listeningDeferred = Promise.withResolvers();
+	/** @type {PromiseWithResolvers<void>} */
+	const finishedDeferred = Promise.withResolvers();
+
+	server.on("close", () => {
+		finishedDeferred.resolve();
 	});
 
-	return new Promise((res) => {
-		options.signal?.addEventListener("abort", () => {
-			server.close(() => setTimeout(res, 100));
+	try {
+		server.listen(port, hostname, () => {
+			listeningDeferred.resolve({ hostname, port });
 		});
-	});
+	} catch (error) {
+		listeningDeferred.reject(error);
+		finishedDeferred.resolve();
+	}
+
+	return { listening: listeningDeferred.promise, finished: finishedDeferred.promise };
 }
 
 /** @type {self.nativeHandler} */
-export function nativeHandler(handler) {
+export function nativeHandler(handler, secure) {
 	return async (req, res) => {
 		const host = req.headers.host ?? "localhost";
 
 		/** Socket might come from an https connection and have the `encrypted` property  */
-		const protocol = /** @type {net.Socket & { encrypted?: boolean }} */ (req.socket).encrypted
+		const protocol = secure
 			? "https:"
-			: "http:";
+			: /** @type {net.Socket & { encrypted?: boolean }} */ (req.socket).encrypted
+				? "https:"
+				: "http:";
 
 		const origin = `${protocol}//${host}`;
 
