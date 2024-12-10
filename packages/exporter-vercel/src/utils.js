@@ -43,6 +43,7 @@ export function getFrugalHandler(manifest, runtimeConfig, bypassToken) {
 				value: "",
 				expires: new Date(0),
 				maxAge: 0,
+				path: "/",
 			});
 		},
 	});
