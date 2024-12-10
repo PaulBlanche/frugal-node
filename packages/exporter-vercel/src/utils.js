@@ -29,6 +29,7 @@ export function getFrugalHandler(manifest, runtimeConfig, bypassToken) {
 			cookies.setCookie(response.headers, {
 				name: "__prerender_bypass",
 				value: bypassToken,
+				path: "/",
 			});
 		},
 		shouldForceGenerate(request) {
