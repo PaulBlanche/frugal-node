@@ -14,7 +14,7 @@ export function create(handler, serverConfig) {
 
 	return {
 		nativeHandler(secure) {
-			return nativeHandler(internalHandler(secure));
+			return nativeHandler(internalHandler(secure), secure);
 		},
 
 		handler: internalHandler,
@@ -23,6 +23,7 @@ export function create(handler, serverConfig) {
 			const server = serve(internalHandler(secure), {
 				port,
 				signal,
+				secure,
 			});
 
 			server.listening.then(({ hostname, port }) => {

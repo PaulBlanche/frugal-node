@@ -16,9 +16,9 @@ export function serve(handler, options = {}) {
 					cert: options.cert,
 					key: options.key,
 				},
-				nativeHandler(handler),
+				nativeHandler(handler, true),
 			)
-		: http.createServer(nativeHandler(handler));
+		: http.createServer(nativeHandler(handler, options.secure));
 
 	options.signal?.addEventListener("abort", () => {
 		server.close();
@@ -49,14 +49,16 @@ export function serve(handler, options = {}) {
 }
 
 /** @type {self.nativeHandler} */
-export function nativeHandler(handler) {
+export function nativeHandler(handler, secure) {
 	return async (req, res) => {
 		const host = req.headers.host ?? "localhost";
 
 		/** Socket might come from an https connection and have the `encrypted` property  */
-		const protocol = /** @type {net.Socket & { encrypted?: boolean }} */ (req.socket).encrypted
+		const protocol = secure
 			? "https:"
-			: "http:";
+			: /** @type {net.Socket & { encrypted?: boolean }} */ (req.socket).encrypted
+				? "https:"
+				: "http:";
 
 		const origin = `${protocol}//${host}`;
 

@@ -17,6 +17,7 @@ export type ServeOptions = {
 	signal?: AbortSignal;
 	port?: number;
 	hostname?: string;
+	secure?: boolean;
 } & ({ cert?: undefined; key?: undefined } | { cert: string; key: string });
 
 export function serve(
@@ -24,4 +25,4 @@ export function serve(
 	options?: ServeOptions,
 ): { listening: Promise<{ hostname: string; port: number }>; finished: Promise<void> };
 
-export function nativeHandler(handler: Handler): http.RequestListener;
+export function nativeHandler(handler: Handler, secure?: boolean): http.RequestListener;
