@@ -8,4 +8,6 @@ dist
 playground
 TODO.md
 lcov.info
+lcov.unit.info
+lcov.inte.info
 *.tsbuildinfo

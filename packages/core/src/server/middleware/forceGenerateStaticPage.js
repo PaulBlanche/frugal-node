@@ -43,13 +43,6 @@ export async function forceGenerateStaticPage(context, next) {
 
 	if (shouldForceGenerate) {
 		await context.cacheHandler.cleanupForceGenerate(response);
-		/*setCookie(response.headers, {
-			httpOnly: true,
-			name: FORCE_GENERATE_COOKIE,
-			value: "",
-			expires: new Date(0),
-			maxAge: 0,
-		});*/
 	}
 
 	return response;

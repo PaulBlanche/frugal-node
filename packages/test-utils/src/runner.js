@@ -26,10 +26,10 @@ const options = parseArgs({
 			short: "o",
 		},
 		coverage: {
-			type: "boolean",
+			type: "string",
 			multiple: false,
 			short: "c",
-			default: false,
+			default: undefined,
 		},
 	},
 });
@@ -40,7 +40,7 @@ const args = [
 		? [
 				"--experimental-test-coverage",
 				"--test-reporter=lcov",
-				"--test-reporter-destination=lcov.info",
+				`--test-reporter-destination=${options.values.coverage}`,
 				"--test-coverage-exclude=**/test-utils/**/*",
 				"--test-coverage-exclude=**/test/**/*",
 			]
