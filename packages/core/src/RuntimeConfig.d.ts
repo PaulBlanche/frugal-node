@@ -33,7 +33,7 @@ export type RuntimeConfig = {
 	log?: Partial<LogConfig>;
 	middlewares?: Middleware<Context>[];
 	cacheStorage?: ServerCacheStorage;
-	compress?: { method?: CompressMethods; threshold?: number };
+	compress?: { method?: CompressMethods; threshold?: number } | false;
 };
 
 export type InternalRuntimeConfig = {

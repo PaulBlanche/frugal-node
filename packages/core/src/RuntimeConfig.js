@@ -73,6 +73,16 @@ function create(config, cacheHandler) {
 		},
 
 		get compress() {
+			if (config.compress === false) {
+				return {
+					threshold: Number.POSITIVE_INFINITY,
+					method: {
+						brotli: false,
+						gzip: false,
+						deflate: false,
+					},
+				};
+			}
 			return {
 				threshold: config.compress?.threshold ?? 1024,
 				method:

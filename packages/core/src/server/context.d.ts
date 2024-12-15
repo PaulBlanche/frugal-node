@@ -2,7 +2,6 @@ import type { CacheHandler } from "../RuntimeConfig.js";
 import type * as server from "./Server.js";
 import type { ServerCache } from "./ServerCache.js";
 import type { Session } from "./session/Session.js";
-//import type { ServerCache } from "./ServerCache.js";
 
 export type Context = server.ServerContext & {
 	url: URL;
@@ -17,5 +16,4 @@ export type Context = server.ServerContext & {
 		threshold: number;
 	};
 	cacheHandler: CacheHandler;
-	//internal: Internal;
 };

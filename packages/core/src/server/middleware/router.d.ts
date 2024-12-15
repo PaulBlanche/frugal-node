@@ -14,4 +14,7 @@ export type RouterContext = Context & {
 	params: Partial<Record<string, string | string[]>>;
 };
 
-export function router(routes: Route[]): Middleware<Context>;
+export function router(
+	routes: Route[],
+	middlewares: Middleware<RouterContext>[],
+): Middleware<Context>;

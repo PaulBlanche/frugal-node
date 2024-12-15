@@ -1,15 +1,10 @@
 /** @import * as self from "./router.js" */
 
 import { composeMiddleware } from "../middleware.js";
-import { buildJitStaticPage } from "./buildJitStaticPage.js";
-import { forceGenerateStaticPage } from "./forceGenerateStaticPage.js";
-//import { forceRefreshStaticPage } from "./forceRefreshStaticPage.js";
-import { generateDynamicPage } from "./generateDynamicPage.js";
-import { serveFromCacheStaticPage } from "./serveFromCacheStaticPage.js";
-import { watchModeStaticPage } from "./watchModeStaticPage.js";
 
 /** @type {self.router} */
-export function router(routes) {
+export function router(routes, middlewares) {
+	const routerMiddlewares = composeMiddleware(middlewares);
 	return (context, next) => {
 		for (const route of routes) {
 			const match = route.page.match(context.url.pathname);
@@ -34,29 +29,7 @@ export function router(routes) {
 					params: { ...match.params },
 				};
 
-				if (route.page.type === "dynamic") {
-					return generateDynamicPage(routerContext, next);
-				}
-				if (route.page.type === "static") {
-					if (route.page.strictPaths && route.paramList !== undefined) {
-						const isValidPath = route.paramList.some(
-							(params) => route.page.compile(params) === context.url.pathname,
-						);
-
-						if (!isValidPath) {
-							context.log(
-								`Page "${route.page.entrypoint}" did not have "${context.url.pathname}" in its generated path list . Yield.`,
-								{
-									level: "debug",
-									scope: "router",
-								},
-							);
-							return next(context);
-						}
-					}
-
-					return staticPageMiddleware(routerContext, next);
-				}
+				return routerMiddlewares(routerContext, next);
 			}
 		}
 
@@ -68,11 +41,3 @@ export function router(routes) {
 		return next(context);
 	};
 }
-
-const staticPageMiddleware = composeMiddleware([
-	forceGenerateStaticPage,
-	//forceRefreshStaticPage,
-	watchModeStaticPage,
-	serveFromCacheStaticPage,
-	buildJitStaticPage,
-]);

@@ -9,13 +9,19 @@ import { Producer } from "../page/Producer.js";
 import { parse } from "../page/parse.js";
 import { Server } from "./Server.js";
 import { composeMiddleware } from "./middleware.js";
+import { buildJitStaticPage } from "./middleware/buildJitStaticPage.js";
 import { compress } from "./middleware/compress.js";
 import { error } from "./middleware/error.js";
 import { etag } from "./middleware/etag.js";
+import { forceGenerateStaticPage } from "./middleware/forceGenerateStaticPage.js";
+import { generateDynamicPage } from "./middleware/generateDynamicPage.js";
 import { router } from "./middleware/router.js";
+import { serveFromCacheStaticPage } from "./middleware/serveFromCacheStaticPage.js";
 import { staticFile } from "./middleware/staticFile.js";
+import { strictPathCheck } from "./middleware/strictPathCheck.js";
 import { trailingSlashRedirect } from "./middleware/trailingSlashRedirect.js";
 import { watchModeResponseModification } from "./middleware/watchModeResponseModification.js";
+import { watchModeStaticPage } from "./middleware/watchModeStaticPage.js";
 import { SessionManager } from "./session/SessionManager.js";
 
 /** @type {self.FrugalServerCreator} */
@@ -78,7 +84,15 @@ function create({ config, manifest, watch, publicDir, cacheOverride }) {
 		...config.middlewares,
 		staticFile({ rootDir: publicDir }),
 		watchModeResponseModification,
-		router(routes),
+		router(routes, [
+			generateDynamicPage,
+			strictPathCheck([
+				forceGenerateStaticPage,
+				watchModeStaticPage,
+				serveFromCacheStaticPage,
+				buildJitStaticPage,
+			]),
+		]),
 	]);
 
 	const sessionManager = config.session ? SessionManager.create(config.session) : undefined;
