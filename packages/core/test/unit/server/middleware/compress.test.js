@@ -5,7 +5,7 @@
 /** @import { FrugalResponse } from "../../../../src/page/FrugalResponse.js"; */
 
 import * as assert from "node:assert/strict";
-import { mock, test } from "node:test";
+import { test } from "node:test";
 import { compress } from "../../../../src/server/middleware/compress.js";
 import * as readableStream from "../../../../src/utils/readableStream.js";
 import * as fixtures from "./fixtures.js";
@@ -165,7 +165,6 @@ test("unit/server/compress: fallthrough first supported encoding", async () => {
 			"Content-Length": "10",
 		}),
 	});
-	
 
 	const response = await compress(context, () => Promise.resolve(nextResponse));
 
@@ -189,10 +188,8 @@ test("unit/server/compress: skip ifno supported encoding", async () => {
 			"Content-Length": "10",
 		}),
 	});
-	
 
 	const response = await compress(context, () => Promise.resolve(nextResponse));
 
 	assert.strictEqual(response, nextResponse);
 });
-

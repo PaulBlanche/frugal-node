@@ -115,7 +115,9 @@ test("unit/server/forceGenerateStaticPage: force generation with response", asyn
 		url: new URL("http://example.com/foo"),
 		cacheHandler: fixtures.makeCacheHandler({
 			shouldForceGenerate: () => true,
-			cleanupForceGenerate: () => {},
+			cleanupForceGenerate: () => {
+				// empty
+			},
 		}),
 		route: fixtures.makeRoute({
 			producer: fixtures.makeProducer({
@@ -144,7 +146,9 @@ test("unit/server/forceGenerateStaticPage: no cleanup on non GET", async () => {
 		headers: new Headers(),
 		date: new Date().toUTCString(),
 	});
-	const cleanup = mock.fn(() => {});
+	const cleanup = mock.fn(() => {
+		// empty
+	});
 	const context = fixtures.makeRouterContext({
 		request: fixtures.makeRequest({
 			method: "POST",
@@ -182,7 +186,9 @@ test("unit/server/forceGenerateStaticPage: no cleanup on GET whith no shouldForc
 		headers: new Headers(),
 		date: new Date().toUTCString(),
 	});
-	const cleanup = mock.fn(() => {});
+	const cleanup = mock.fn(() => {
+		// empty
+	});
 	const context = fixtures.makeRouterContext({
 		request: fixtures.makeRequest({
 			method: "GET",
@@ -213,7 +219,9 @@ test("unit/server/forceGenerateStaticPage: cleanup on GET and shouldForceGenerat
 		headers: new Headers(),
 		date: new Date().toUTCString(),
 	});
-	const cleanup = mock.fn(() => {});
+	const cleanup = mock.fn(() => {
+		// empty
+	});
 	const context = fixtures.makeRouterContext({
 		request: fixtures.makeRequest({
 			method: "GET",
