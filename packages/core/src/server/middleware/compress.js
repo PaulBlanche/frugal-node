@@ -26,7 +26,7 @@ export async function compress(context, next) {
 		return response;
 	}
 
-	const contentLength = context.request.headers.get("Content-Length");
+	const contentLength = response.headers.get("Content-Length");
 	const length = Number(contentLength);
 	if (!Number.isNaN(length) && length < context.compress.threshold) {
 		return response;
@@ -37,14 +37,17 @@ export async function compress(context, next) {
 		switch (encoding) {
 			case "gzip": {
 				nodeCompressionTransformer = zlib.createGzip();
+				response.headers.set("Content-Encoding", "gzip");
 				break;
 			}
 			case "br": {
 				nodeCompressionTransformer = zlib.createBrotliCompress();
+				response.headers.set("Content-Encoding", "br");
 				break;
 			}
 			case "deflate": {
 				nodeCompressionTransformer = zlib.createDeflate();
+				response.headers.set("Content-Encoding", "deflate");
 				break;
 			}
 		}
@@ -59,10 +62,17 @@ export async function compress(context, next) {
 
 		return new Response(
 			new ReadableStream({
-				pull(controller) {
-					controller.enqueue(reader.read());
+				async pull(controller) {
+					const result = await reader.read();
+					if (result.value) {
+						controller.enqueue(result.value);
+					}
+					if (result.done) {
+						controller.close();
+					}
 				},
 			}),
+			response,
 		);
 	}
 

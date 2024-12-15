@@ -5,6 +5,7 @@ import { toResponse } from "../../page/FrugalResponse.js";
 /** @type {self.forceGenerateStaticPage} */
 export async function forceGenerateStaticPage(context, next) {
 	const shouldForceGenerate = await context.cacheHandler.shouldForceGenerate(context.request);
+	let shouldCleanForceGenerate = false;
 
 	if (context.request.method === "GET") {
 		if (!shouldForceGenerate) {
@@ -15,6 +16,8 @@ export async function forceGenerateStaticPage(context, next) {
 
 			return next(context);
 		}
+
+		shouldCleanForceGenerate = true;
 	}
 
 	context.log("Force dynamic generation of static page.", {
@@ -41,7 +44,7 @@ export async function forceGenerateStaticPage(context, next) {
 
 	const response = toResponse(frugalResponse);
 
-	if (shouldForceGenerate) {
+	if (shouldCleanForceGenerate) {
 		await context.cacheHandler.cleanupForceGenerate(response);
 	}
 

@@ -22,7 +22,6 @@ export function error(pages) {
 		const body = pages[response.status] ?? defaultErrorPage(response.status);
 
 		const headers = new Headers(response.headers);
-		headers.set("Content-Type", "text/html; charset=utf-8");
 		headers.set("Etag", `W/"${Hash.create().update(body).digest()}"`);
 
 		return new Response(body, {

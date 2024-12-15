@@ -3,7 +3,7 @@ import { mock, test } from "node:test";
 import { MemorySessionStorage } from "../../../src/server/session/MemorySessionStorage.js";
 import { SessionManager } from "../../../src/server/session/SessionManager.js";
 
-test("unit/SessionManager: load session", async () => {
+test("unit/server/SessionManager: load session", async () => {
 	const storage = MemorySessionStorage.create();
 	const sessionData = { foo: { bar: 1 } };
 	storage.update("sessionId", sessionData, { headers: new Headers() });
@@ -20,7 +20,7 @@ test("unit/SessionManager: load session", async () => {
 	assert.deepEqual(session.data, sessionData);
 });
 
-test("unit/SessionManager: load session with no data in storage", async () => {
+test("unit/server/SessionManager: load session with no data in storage", async () => {
 	const storage = MemorySessionStorage.create();
 
 	const manager = SessionManager.create({
@@ -35,7 +35,7 @@ test("unit/SessionManager: load session with no data in storage", async () => {
 	assert.deepEqual(session.data, {});
 });
 
-test("unit/SessionManager: load session with no session cookie", async () => {
+test("unit/server/SessionManager: load session with no session cookie", async () => {
 	const storage = MemorySessionStorage.create();
 	storage.update("sessionId", { foo: { bar: 1 } }, { headers: new Headers() });
 
@@ -51,7 +51,7 @@ test("unit/SessionManager: load session with no session cookie", async () => {
 	assert.deepEqual(session.data, {});
 });
 
-test("unit/SessionManager: presist new session", async () => {
+test("unit/server/SessionManager: presist new session", async () => {
 	const memoryStorage = MemorySessionStorage.create();
 	const storage = {
 		create: mock.fn(memoryStorage.create),
@@ -81,7 +81,7 @@ test("unit/SessionManager: presist new session", async () => {
 	assert.match(headers.getSetCookie()[0], /session_cookie=[^=]+/);
 });
 
-test("unit/SessionManager: presist existing session", async () => {
+test("unit/server/SessionManager: presist existing session", async () => {
 	const memoryStorage = MemorySessionStorage.create();
 	memoryStorage.update("sessionId", { foo: { bar: 1 } }, { headers: new Headers() });
 

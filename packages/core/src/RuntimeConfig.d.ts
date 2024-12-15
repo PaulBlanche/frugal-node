@@ -2,7 +2,7 @@ import type { FrugalResponse } from "./page/FrugalResponse.js";
 import type { ServerCache, ServerCacheStorage } from "./server/ServerCache.js";
 import type { Context } from "./server/context.js";
 import type { Middleware } from "./server/middleware.js";
-import type { SessionStorage } from "./server/session/SessionStorage.js";
+import type { SessionStorage } from "./server/session/SessionManager.js";
 import type { CookieConfig } from "./utils/cookies.js";
 import type { LogConfig } from "./utils/log.js";
 

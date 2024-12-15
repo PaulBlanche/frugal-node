@@ -7,4 +7,4 @@ export * from "../../src/server/FrugalServer.js";
 export * as crypto from "../../src/utils/crypto.js";
 
 export * from "../../src/server/context.js";
-export * from "../../src/server/session/SessionStorage.js";
+export { SessionStorage } from "../../src/server/session/SessionManager.js";
