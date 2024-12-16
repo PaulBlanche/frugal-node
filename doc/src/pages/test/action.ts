@@ -1,3 +1,4 @@
+import * as fs from "node:fs/promises";
 import { type GenerateContext, PageResponse } from "@frugal-node/core/page";
 
 export const type = "dynamic";
@@ -5,6 +6,19 @@ export const type = "dynamic";
 export const route = "/_action/test/:id";
 
 export async function generate(context: GenerateContext<typeof route>) {
+	try {
+		try {
+			try {
+				await fs.readFile("foo");
+			} catch (e) {
+				throw new Error("moo", { cause: e });
+			}
+		} catch (e) {
+			throw new Error("moo", { cause: e });
+		}
+	} catch (e) {
+		throw new Error("moo", { cause: e });
+	}
 	if (context.request.method === "POST") {
 		const formData = await context.request.formData();
 		if (formData.get("type") === "force_generate") {

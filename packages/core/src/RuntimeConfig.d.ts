@@ -22,7 +22,6 @@ type CacheHandler = {
 };
 
 export type RuntimeConfig = {
-	self: string;
 	secure?: boolean;
 	port?: number;
 	cryptoKey: string;
@@ -47,7 +46,7 @@ export type InternalRuntimeConfig = {
 	readonly middlewares: Middleware<Context>[];
 	readonly serverCache?: ServerCache;
 	readonly compress: { threshold: number; method: CompressMethodsObject };
-	readonly self: string;
+	//readonly self: string;
 	readonly cacheHandler: CacheHandler;
 };
 

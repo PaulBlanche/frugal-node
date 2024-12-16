@@ -94,6 +94,7 @@ function create(buildConfig, watchCache) {
 			manifest: { static: staticManifest, dynamic: dynamicManifest },
 			watch: true,
 			cacheOverride: watchCache.server,
+			rootDir: buildConfig.rootDir,
 		});
 
 		state.serverController.abort();

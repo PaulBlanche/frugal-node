@@ -3,6 +3,7 @@
 
 import * as readableStream from "../../utils/readableStream.js";
 import livereloadScript from "../../watch/livereload/livereload.min.js";
+import { appendToBody } from "../utils.js";
 
 /** @type {self.watchModeResponseModification} */
 export async function watchModeResponseModification(context, next) {
@@ -40,18 +41,7 @@ const DECODER = new TextDecoder();
  * @param {webStream.ReadableStream<Uint8Array>} responseBody
  */
 async function injectLivereloadScript(responseBody) {
-	const body = DECODER.decode(await readableStream.readStream(responseBody));
+	const document = DECODER.decode(await readableStream.readStream(responseBody));
 
-	// try to put script at the end of `<body>`
-	if (body.indexOf("</body>") !== -1) {
-		return body.replace("</body>", `<script>${livereloadScript}</script></body>`);
-	}
-
-	// try to put script at the end of `<html>` if body is absent
-	if (body.indexOf("</html>") !== -1) {
-		return body.replace("</html>", `<script>${livereloadScript}</script></html>`);
-	}
-
-	// put script at the end of document if no `<body>` or `<html>
-	return `${body}<script>${livereloadScript}</script>`;
+	return appendToBody(document, `<script>${livereloadScript}</script>`);
 }

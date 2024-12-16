@@ -63,10 +63,9 @@ export async function send(request, options) {
 				headers,
 			});
 		} catch (/** @type {any} */ error) {
-			if (error instanceof fs.NotFound) {
-				continue;
+			if (!(error instanceof fs.NotFound)) {
+				throw error;
 			}
-			return new Response(error.message, { status: 500 });
 		}
 	}
 

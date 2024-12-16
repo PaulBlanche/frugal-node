@@ -1,6 +1,6 @@
 /** @import { Context } from "../../../../src/server/context.js" */
 /** @import { RouterContext, Route } from "../../../../src/server/middleware/router.js" */
-/** @import { Page } from "../../../../src/page/Page.js"; */
+/** @import { Page, StaticPage } from "../../../../src/page/Page.js"; */
 /** @import { Producer } from "../../../../src/page/Producer.js"; */
 /** @import { ServerCache } from "../../../../src/server/ServerCache.js"; */
 /** @import { FrugalResponse } from "../../../../src/page/FrugalResponse.js"; */
@@ -67,6 +67,13 @@ export function makeRoute(config) {
  */
 export function makePage(config) {
 	return /** @type {Page} */ (/** @type {unknown} */ (config));
+}
+
+/**
+ * @param {Partial<StaticPage>} config
+ */
+export function makeStaticPage(config) {
+	return /** @type {StaticPage} */ (/** @type {unknown} */ (config));
 }
 
 /**

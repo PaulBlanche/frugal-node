@@ -24,7 +24,7 @@ async function create(entrypoint, options) {
 
 			state.process = RestartableChildProcess.spawn(process.execPath, {
 				env: options.env,
-				args: [entrypoint, ...(options.args ?? [])],
+				args: ["--enable-source-maps", entrypoint, ...(options.args ?? [])],
 			});
 
 			state.process.addEventListener("exit", () => {

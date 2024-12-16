@@ -1,6 +1,6 @@
 /** @import * as self from "./RuntimeConfig.js" */
 
-import * as url from "node:url";
+//import * as url from "node:url";
 import { ServerCache } from "./server/ServerCache.js";
 import * as cookies from "./utils/cookies.js";
 import * as crypto from "./utils/crypto.js";
@@ -23,8 +23,6 @@ const DEFAULT_COMPRESS_OPTIONS =
 function create(config, cacheHandler) {
 	configLog(config.log);
 
-	const self = url.fileURLToPath(config.self);
-
 	const state = {
 		/** @type {Promise<CryptoKey>|undefined} */
 		cryptoKey: undefined,
@@ -36,9 +34,6 @@ function create(config, cacheHandler) {
 	const defaultCacheHandler = createDefaultCacheHandler(_getCryptoKey());
 
 	return {
-		get self() {
-			return self;
-		},
 		get secure() {
 			return config?.secure ?? false;
 		},

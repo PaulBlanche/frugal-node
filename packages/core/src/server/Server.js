@@ -62,7 +62,7 @@ export function create(handler, serverConfig) {
 
 				return response;
 			} catch (/** @type {any} */ error) {
-				identifiedLog(error, { scope: logScope });
+				identifiedLog(error, { scope: logScope, level: "error" });
 				return new Response(null, {
 					status: 500,
 				});

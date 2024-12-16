@@ -211,7 +211,7 @@ async function bundleFunctions(functionsDir, bypassToken, outputDir, runtimeConf
 					import runtimeConfig from "${runtimeConfigPath}";
 					import { getFrugalHandler } from "vercel://utils.js"
 
-					const handler = getFrugalHandler({ static:staticManifest, dynamic:dynamicManifest }, runtimeConfig, "${bypassToken}")
+					const handler = getFrugalHandler({ static:staticManifest, dynamic:dynamicManifest }, runtimeConfig, "${config.rootDir}", "${bypassToken}")
 
 					export default handler
 				`,

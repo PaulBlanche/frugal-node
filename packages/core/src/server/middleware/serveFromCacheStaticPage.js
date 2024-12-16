@@ -17,7 +17,6 @@ export async function serveFromCacheStaticPage(context, next) {
 	}
 
 	const response = await context.cache.get(context.url.pathname);
-
 	if (response === undefined) {
 		context.log("No response found in cache. Yield.", {
 			scope: "serveFromCacheStaticPage",

@@ -8,9 +8,10 @@ import nodeFetch from "node-fetch";
 /**
  * @param {FrugalServerConfig['manifest']} manifest
  * @param {RuntimeConfig} runtimeConfig
+ * @param {string} rootDir
  * @param {string} bypassToken
  */
-export function getFrugalHandler(manifest, runtimeConfig, bypassToken) {
+export function getFrugalHandler(manifest, runtimeConfig, rootDir, bypassToken) {
 	const internalRuntimeConfig = RuntimeConfig.create(runtimeConfig, {
 		async forceRefresh({ url }) {
 			console.log(url.toString());
@@ -53,6 +54,7 @@ export function getFrugalHandler(manifest, runtimeConfig, bypassToken) {
 		publicDir: undefined,
 		config: internalRuntimeConfig,
 		watch: false,
+		rootDir,
 	}).handler(true);
 
 	return Server.create((request, serverContext) => {

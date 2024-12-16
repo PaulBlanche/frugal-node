@@ -11,6 +11,7 @@ export type FrugalServerConfig = {
 	publicDir?: string;
 	watch: boolean;
 	config: InternalRuntimeConfig;
+	rootDir: string;
 	cacheOverride?: ServerCache;
 };
 

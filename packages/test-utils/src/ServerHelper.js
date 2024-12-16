@@ -96,6 +96,7 @@ export class ServerHelper {
 			watch: false,
 			manifest,
 			publicDir: this.#internalBuildConfig.publicDir,
+			rootDir: this.#internalBuildConfig.rootDir,
 		});
 
 		const controller = new AbortController();

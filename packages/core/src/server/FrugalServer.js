@@ -11,7 +11,7 @@ import { Server } from "./Server.js";
 import { composeMiddleware } from "./middleware.js";
 import { buildJitStaticPage } from "./middleware/buildJitStaticPage.js";
 import { compress } from "./middleware/compress.js";
-import { error } from "./middleware/error.js";
+import { errorPage } from "./middleware/errorPage.js";
 import { etag } from "./middleware/etag.js";
 import { forceGenerateStaticPage } from "./middleware/forceGenerateStaticPage.js";
 import { generateDynamicPage } from "./middleware/generateDynamicPage.js";
@@ -30,7 +30,7 @@ export const FrugalServer = {
 };
 
 /** @type {self.FrugalServerCreator['create']} */
-function create({ config, manifest, watch, publicDir, cacheOverride }) {
+function create({ config, manifest, watch, publicDir, cacheOverride, rootDir }) {
 	const cache = cacheOverride ?? config.serverCache;
 
 	/** @type {Route[]} */
@@ -76,8 +76,8 @@ function create({ config, manifest, watch, publicDir, cacheOverride }) {
 	const availableEncodings = _getAvailableEncoding(config.compress.method);
 
 	const serverMiddleware = composeMiddleware([
+		errorPage({}, rootDir),
 		etag,
-		error({}),
 		//csrf,
 		trailingSlashRedirect,
 		compress,
