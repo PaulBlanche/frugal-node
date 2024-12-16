@@ -39,6 +39,19 @@ export function errorPage(pages, rootDir) {
 				level: "error",
 			});
 
+			if (!context.watch) {
+				const body = pages[500] ?? defaultErrorPage(500);
+				const headers = new Headers();
+				headers.set("Etag", `W/"${Hash.create().update(body).digest()}"`);
+				headers.set("Content-Type", "text/html; charset=utf-8");
+
+				return new Response(body, {
+					status: 500,
+					statusText: STATUS_TEXT[500],
+					headers: headers,
+				});
+			}
+
 			const normalizedError = err.normalize(error, rootDir);
 
 			const body = pages[500] ?? defaultErrorPage(500, _standardErrorHtml(normalizedError));
