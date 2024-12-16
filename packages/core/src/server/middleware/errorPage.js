@@ -18,7 +18,7 @@ export function errorPage(pages, rootDir) {
 		try {
 			const response = await next(context);
 
-			if (response.ok || response.body !== null) {
+			if (response.status < 400 || response.body !== null) {
 				return response;
 			}
 
