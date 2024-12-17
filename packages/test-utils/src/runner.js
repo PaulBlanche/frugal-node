@@ -38,8 +38,8 @@ const options = parseArgs({
 const c8Args = [
 	"--all",
 	"--src=./packages",
-	`--reports-dir=${url.fileURLToPath(import.meta.resolve(`../../coverage/${options.values.type}`))}`,
-	`--temp-directory=${url.fileURLToPath(import.meta.resolve(`../../coverage/.tmp/${options.values.type}`))}`,
+	`--reports-dir=./coverage/${options.values.type}`,
+	`--temp-directory=./coverage/.tmp/${options.values.type}`,
 	"--experimental-monocart",
 	"--reporter=v8",
 	"--reporter=lcovonly",
@@ -79,11 +79,12 @@ const c8BinPath = url.fileURLToPath(
 	),
 );
 
-const spawnBin = options.values.coverage ? c8BinPath : process.execPath;
-const spawnArgs = options.values.coverage ? [...c8Args, process.execPath, ...args] : args;
+const spawnArgs = options.values.coverage
+	? [c8BinPath, ...c8Args, process.execPath, ...args]
+	: args;
 
-const nodeCommandLog = `${process.execPath}\n  ${args.join("\n  ")}`;
-const c8CommandLog = `${c8BinPath}\n  ${c8Args.join("\n  ")}`;
+const nodeCommandLog = `node\n  ${args.join("\n  ")}`;
+const c8CommandLog = `node ${c8BinPath}\n  ${c8Args.join("\n  ")}`;
 
 console.log(
 	chalk.gray(
@@ -91,7 +92,7 @@ console.log(
 	),
 );
 
-spawn(spawnBin, spawnArgs, {
+spawn(process.execPath, spawnArgs, {
 	env: {
 		FORCE_COLOR: "true",
 	},
