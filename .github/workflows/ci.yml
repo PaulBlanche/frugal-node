@@ -39,18 +39,26 @@ jobs:
         if: ${{ false }}
         run: npm run typecheck
 
-      - name: Run unit tests (with coverage)
-        run: npm run test -- -t unit -c lcov.unit.info
+      - name: Run unit tests
+        run: npm run test -- -t unit -c
 
-      - name: Run integration tests
-        # no coverage for integration test because of this : https://github.com/nodejs/node/issues/55054
-        run: npm run test -- -t inte 
-
-      - name: Codecov
+      - name: upload unit tests coverage to Codecov
         if: matrix.coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with: 
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./lcov.unit.info
+          files: ./coverage/unit/lcov.info
           flags: unit
+          fail_ci_if_error: true
+
+      - name: Run integration tests
+        run: npm run test -- -t inte -c
+
+      - name: upload integration tests coverage to Codecov
+        if: matrix.coverage
+        uses: codecov/codecov-action@v5
+        with: 
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/inte/lcov.info
+          flags: inte
           fail_ci_if_error: true

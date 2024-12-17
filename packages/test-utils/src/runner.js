@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process";
+import * as url from "node:url";
 import { parseArgs } from "node:util";
 import chalk from "chalk";
 
@@ -26,25 +27,29 @@ const options = parseArgs({
 			short: "o",
 		},
 		coverage: {
-			type: "string",
+			type: "boolean",
 			multiple: false,
 			short: "c",
-			default: undefined,
+			default: false,
 		},
 	},
 });
 
+const c8Args = [
+	"--all",
+	"--src=./packages",
+	`--reports-dir=./coverage/${options.values.type}`,
+	`--temp-directory=./coverage/.tmp/${options.values.type}`,
+	"--experimental-monocart",
+	"--reporter=v8",
+	"--reporter=lcovonly",
+	"--exclude=**/test-utils/**",
+	"--exclude=**/test/**",
+	"--exclude=**/exports/**",
+];
+
 const args = [
 	"--test",
-	...(options.values.coverage
-		? [
-				"--experimental-test-coverage",
-				"--test-reporter=lcov",
-				`--test-reporter-destination=${options.values.coverage}`,
-				"--test-coverage-exclude=**/test-utils/**/*",
-				"--test-coverage-exclude=**/test/**/*",
-			]
-		: []),
 	"--test-concurrency=1",
 	"--test-reporter=spec",
 	"--test-reporter-destination=stdout",
@@ -63,11 +68,30 @@ const args = [
 	).join(" "),
 ].filter(/** @return {flag is string} */ (flag) => flag !== undefined);
 
-console.log(
-	chalk.gray(`${chalk.bold("Running tests with command")}\nnode\n  ${args.join("\n  ")}`),
+const c8BinPath = url.fileURLToPath(
+	new URL(
+		(
+			await import(new URL("./package.json", import.meta.resolve("c8")).toString(), {
+				with: { type: "json" },
+			})
+		).default.bin,
+		import.meta.resolve("c8"),
+	),
 );
 
-spawn(process.execPath, args, {
+const spawnBin = options.values.coverage ? c8BinPath : process.execPath;
+const spawnArgs = options.values.coverage ? [...c8Args, process.execPath, ...args] : args;
+
+const nodeCommandLog = `${process.execPath}\n  ${args.join("\n  ")}`;
+const c8CommandLog = `${c8BinPath}\n  ${c8Args.join("\n  ")}`;
+
+console.log(
+	chalk.gray(
+		`${chalk.bold("Running tests with command")}\n${options.values.coverage ? `${c8CommandLog}\n${nodeCommandLog}` : `${nodeCommandLog}`}`,
+	),
+);
+
+spawn(spawnBin, spawnArgs, {
 	env: {
 		FORCE_COLOR: "true",
 	},
