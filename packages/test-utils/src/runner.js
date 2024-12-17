@@ -38,8 +38,8 @@ const options = parseArgs({
 const c8Args = [
 	"--all",
 	"--src=./packages",
-	`--reports-dir=./coverage/${options.values.type}`,
-	`--temp-directory=./coverage/.tmp/${options.values.type}`,
+	`--reports-dir=${url.fileURLToPath(import.meta.resolve(`../../coverage/${options.values.type}`))}`,
+	`--temp-directory=${url.fileURLToPath(import.meta.resolve(`../../coverage/.tmp/${options.values.type}`))}`,
 	"--experimental-monocart",
 	"--reporter=v8",
 	"--reporter=lcovonly",
