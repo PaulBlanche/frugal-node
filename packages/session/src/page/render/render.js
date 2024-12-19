@@ -37,6 +37,8 @@ export async function render(nextDocument) {
 	const bodyPatch = diff(document.body, nextDocument.body);
 	const headPatch = diff(document.head, nextDocument.head);
 
+	console.dir(bodyPatch, { depth: null });
+
 	await Promise.all(assetPromises);
 
 	const clone = document.body.cloneNode(true);

@@ -35,7 +35,32 @@ export function diff(actual, target) {
 		}
 	}
 
-	return patchList[0];
+	return compress(patchList[0]);
+}
+
+/**
+ *
+ * @param {import("./types.js").NodePatch} patch
+ * @returns {import("./types.js").NodePatch}
+ */
+function compress(patch) {
+	if (patch.type !== PatchType.UPDATE_ELEMENT) {
+		return patch;
+	}
+
+	if (patch.attributes.length > 0) {
+		return patch;
+	}
+
+	for (let i = 0; i < patch.children.length; i++) {
+		patch.children[i] = compress(patch.children[i]);
+	}
+
+	if (patch.children.every((patch) => patch.type === PatchType.PRESERVE_NODE)) {
+		return preserveNode();
+	}
+
+	return patch;
 }
 
 /**

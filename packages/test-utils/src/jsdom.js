@@ -1,39 +1,32 @@
-import * as jsdom from "jsdom";
+/** @import { JSDOM } from "jsdom"; */
+
+/** @type {string[]} */
+const DOM_KEYS = ["_jsdom", "_restore", "DOMParser"];
 
 /**
- *
- * @param {string} html
- * @param {(dom: jsdom.JSDOM) => Promise<void>|void} callback
- * @param {jsdom.ConstructorOptions} options
- * @returns {Promise<void>}
+ * @param {JSDOM} instance
  */
-export async function withDom(html, callback, options = {}) {
-	const dom = new jsdom.JSDOM(html, options);
+export function setup(instance) {
+	const window = instance.window;
 
-	const restore = mockGlobal(dom);
-
-	await callback(dom);
-
-	restore();
-}
-
-/**
- * @param {jsdom.JSDOM} dom
- */
-function mockGlobal(dom) {
-	const properties = ["document", "HTMLElement", "Node", "NodeFilter", "DocumentFragment"];
-
-	/** @type {Record<string, any>} */
-	const original = {};
-
-	for (const property of properties) {
-		original[property] = /** @type {any} */ (globalThis)[property];
-		/** @type {any} */ (globalThis)[property] = dom.window[property];
-	}
-
-	return () => {
-		for (const property of properties) {
-			/** @type {any} */ (globalThis)[property] = original[property];
+	for (const key of DOM_KEYS) {
+		if (key === "_jsdom") {
+			/** @type {any} */ (globalThis)["_jsdom"] = instance;
+		} else {
+			/** @type {any} */ (globalThis)[key] = window[key];
 		}
-	};
+	}
+	globalThis.document = window.document;
+	globalThis.window = /** @type {any} */ (window);
+	window["console"] = /** @type {any} */ (globalThis.console);
+
+	/** @type {any} */ (globalThis)["_restore"] = restore;
+
+	return restore;
+
+	function restore() {
+		for (const key of DOM_KEYS) {
+			delete (/** @type {any} */ (globalThis)[key]);
+		}
+	}
 }
