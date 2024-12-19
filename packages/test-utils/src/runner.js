@@ -1,7 +1,9 @@
 import { spawn } from "node:child_process";
-import * as url from "node:url";
+import * as path from "node:path";
 import { parseArgs } from "node:util";
+import * as fs from "@frugal-node/core/utils/fs";
 import chalk from "chalk";
+import { CoverageReport } from "monocart-coverage-reports";
 
 const options = parseArgs({
 	strict: true,
@@ -35,18 +37,24 @@ const options = parseArgs({
 	},
 });
 
-const c8Args = [
-	"--all",
-	"--src=./packages",
-	`--reports-dir=./coverage/${options.values.type}`,
-	`--temp-directory=./coverage/.tmp/${options.values.type}`,
-	"--experimental-monocart",
-	"--reporter=v8",
-	"--reporter=lcovonly",
-	"--exclude=**/test-utils/**",
-	"--exclude=**/test/**",
-	"--exclude=**/exports/**",
-];
+/** @type {Record<string, string|undefined>} */
+const testRunnerEnv = {
+	FORCE_COLOR: "true",
+};
+
+const coverageTempDir = "./coverage/.tmp";
+if (options.values.coverage) {
+	// clean previous coverage
+	try {
+		await fs.remove(coverageTempDir, { recursive: true });
+	} catch (error) {
+		if (!(error instanceof fs.NotFound)) {
+			throw error;
+		}
+	}
+
+	process.env["NODE_V8_COVERAGE"] = coverageTempDir;
+}
 
 const args = [
 	"--test",
@@ -68,35 +76,71 @@ const args = [
 	).join(" "),
 ].filter(/** @return {flag is string} */ (flag) => flag !== undefined);
 
-const c8BinPath = url.fileURLToPath(
-	new URL(
-		(
-			await import(new URL("./package.json", import.meta.resolve("c8")).toString(), {
-				with: { type: "json" },
-			})
-		).default.bin,
-		import.meta.resolve("c8"),
-	),
-);
-
-const spawnArgs = options.values.coverage
-	? [c8BinPath, ...c8Args, process.execPath, ...args]
-	: args;
-
-const nodeCommandLog = `node\n  ${args.join("\n  ")}`;
-const c8CommandLog = `node ${c8BinPath}\n  ${c8Args.join("\n  ")}`;
-
 console.log(
-	chalk.gray(
-		`${chalk.bold("Running tests with command")}\n${options.values.coverage ? `${c8CommandLog}\n${nodeCommandLog}` : `${nodeCommandLog}`}`,
-	),
+	chalk.gray(`${chalk.bold("Running tests with command")}\nnode\n  ${args.join("\n  ")}`),
 );
 
-spawn(process.execPath, spawnArgs, {
-	env: {
-		FORCE_COLOR: "true",
-	},
+const testProcess = spawn(process.execPath, args, {
+	env: testRunnerEnv,
 	stdio: "inherit",
+});
+
+testProcess.on("exit", async () => {
+	let report = undefined;
+	if (options.values.coverage) {
+		if (options.values.type === "unit") {
+			report = new CoverageReport({
+				cleanCache: true,
+				dataDir: coverageTempDir,
+				name: "Frugal unit test coverage",
+				reports: ["v8", "lcovonly"],
+				outputDir: "./coverage/unit/",
+				filter: {
+					"**/test-utils/**": false,
+					"**/test/**": false,
+					"**/exports/**": false,
+					"**/node_modules/**": false,
+					"**/package.json": false,
+					"**/*.d.jts": false,
+					"**/packages/**": true,
+				},
+				all: {
+					dir: "./packages",
+				},
+			});
+		}
+
+		if (options.values.type === "inte") {
+			report = new CoverageReport({
+				cleanCache: true,
+				dataDir: coverageTempDir,
+				name: "Frugal backend integration test coverage",
+				reports: ["v8", "lcovonly"],
+				outputDir: "./coverage/inte",
+				filter: {
+					"**/test-utils/**": false,
+					"**/test/**": false,
+					"**/exports/**": false,
+					"**/node_modules/**": false,
+					"**/package.json": false,
+					"**/*.d.ts": false,
+					"**/packages/**": true,
+				},
+				all: {
+					dir: "./packages",
+				},
+			});
+
+			for await (const entry of await fs.readDir(coverageTempDir)) {
+				if (entry.isFile() && !entry.name.startsWith("coverage")) {
+					const a = await fs.readTextFile(path.resolve(coverageTempDir, entry.name));
+					report.add(JSON.parse(a).result);
+				}
+			}
+		}
+	}
+	console.log("generating coverage");
+	await report?.generate();
 });
 
 /**

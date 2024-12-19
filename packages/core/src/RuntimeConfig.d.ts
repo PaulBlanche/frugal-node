@@ -45,7 +45,7 @@ export type InternalRuntimeConfig = {
 	};
 	readonly middlewares: Middleware<Context>[];
 	readonly serverCache?: ServerCache;
-	readonly compress: { threshold: number; method: CompressMethodsObject };
+	readonly compress: { disabled: boolean; threshold: number; method: CompressMethodsObject };
 	//readonly self: string;
 	readonly cacheHandler: CacheHandler;
 };

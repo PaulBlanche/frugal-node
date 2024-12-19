@@ -117,10 +117,12 @@ function create({ config, manifest, watch, publicDir, cacheOverride, rootDir }) 
 				state: {},
 				session,
 				cryptoKey: config.cryptoKey,
-				compress: {
-					encodings,
-					threshold: config.compress.threshold,
-				},
+				compress: config.compress.disabled
+					? undefined
+					: {
+							encodings,
+							threshold: config.compress.threshold,
+						},
 				cacheHandler: config.cacheHandler,
 			};
 

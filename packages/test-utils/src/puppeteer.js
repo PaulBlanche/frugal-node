@@ -1,4 +1,5 @@
 import * as puppeteer from "puppeteer";
+import { withCoverage } from "./puppeteer-coverage.js";
 
 /** @typedef {{ onClose?: () => Promise<void> | void, browser?: puppeteer.Browser }} WithBrowserOptions */
 
@@ -22,7 +23,7 @@ export async function withBrowser(callback, options = {}) {
 /**
  *
  * @param {({ browser, page }: WithPageCallbackParams) => Promise<void>|void} callback
- * @param {WithBrowserOptions & { debug?: boolean, disableJavascript?: boolean }} [options]
+ * @param {WithBrowserOptions & { debug?: boolean, disableJavascript?: boolean, coverage?:boolean }} [options]
  * @returns
  */
 export async function withPage(callback, options = {}) {
@@ -38,6 +39,7 @@ export async function withPage(callback, options = {}) {
 	 * @param {puppeteer.Browser} browser
 	 */
 	async function setupPage(browser) {
+		const coverage = options.coverage ?? true;
 		const page = await browser.newPage();
 
 		if (options.disableJavascript) {
@@ -49,7 +51,11 @@ export async function withPage(callback, options = {}) {
 		}
 
 		try {
-			await callback({ browser, page });
+			if (coverage && !options.disableJavascript) {
+				await withCoverage(() => callback({ browser, page }), { page });
+			} else {
+				await callback({ browser, page });
+			}
 		} finally {
 			await page.close();
 		}
@@ -95,4 +101,60 @@ addEventListener("${config.event}", (event) => {
 	} else {
 		await page.evaluate(toEvaluate);
 	}
+}
+
+import { SourceMapConsumer } from "source-map";
+import * as vfilLocation from "vfile-location";
+
+const INLINE_SOURCEMAP_REGEX = /^data:application\/json[^,]+base64,/;
+const SOURCEMAP_REGEX =
+	/(?:\/\/[@#][ \t]+sourceMappingURL=([^\s'"]+?)[ \t]*$)|(?:\/\*[@#][ \t]+sourceMappingURL=([^*]+?)[ \t]*(?:\*\/)[ \t]*$)/;
+
+/**
+ * @param {string} source
+ */
+function loadSourceMap(source) {
+	const sourceMapURL = getSourceMapURL(source);
+
+	if (sourceMapURL === undefined) {
+		return undefined;
+	}
+
+	return new SourceMapConsumer(decodeInlineMap(sourceMapURL));
+}
+
+/**
+ *
+ * @param {string} base64Data
+ * @returns {string}
+ */
+function decodeInlineMap(base64Data) {
+	const rawData = base64Data.slice(base64Data.indexOf(",") + 1);
+	return Buffer.from(rawData, "base64").toString();
+}
+/**
+ * @param {string} source
+ * @returns
+ */
+function getSourceMapURL(source) {
+	const lines = source.split(/\r?\n/);
+	let sourceMapUrl = null;
+	for (let i = lines.length - 1; i >= 0 && !sourceMapUrl; i--) {
+		sourceMapUrl = lines[i].match(SOURCEMAP_REGEX);
+	}
+
+	if (!sourceMapUrl) {
+		return undefined;
+	}
+
+	return isInlineMap(sourceMapUrl[1]) ? sourceMapUrl[1] : undefined;
+}
+
+/**
+ *
+ * @param {string} sourceMappingURL
+ * @returns
+ */
+function isInlineMap(sourceMappingURL) {
+	return INLINE_SOURCEMAP_REGEX.test(sourceMappingURL);
 }

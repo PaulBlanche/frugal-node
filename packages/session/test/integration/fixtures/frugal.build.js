@@ -14,4 +14,7 @@ export default {
 	],
 	log: { level: "silent" },
 	plugins: [script()],
+	esbuildOptions: {
+		sourcemap: "inline",
+	},
 };

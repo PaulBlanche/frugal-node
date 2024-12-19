@@ -70,6 +70,7 @@ function create(config, cacheHandler) {
 		get compress() {
 			if (config.compress === false) {
 				return {
+					disabled: true,
 					threshold: Number.POSITIVE_INFINITY,
 					method: {
 						brotli: false,
@@ -78,18 +79,22 @@ function create(config, cacheHandler) {
 					},
 				};
 			}
+
+			const methods =
+				config.compress?.method === undefined || config.compress?.method === true
+					? { ...DEFAULT_COMPRESS_OPTIONS }
+					: config.compress?.method === false
+						? {
+								brotli: false,
+								gzip: false,
+								deflate: false,
+							}
+						: { ...DEFAULT_COMPRESS_OPTIONS, ...config.compress.method };
+
 			return {
+				disabled: Object.values(methods).every((active) => !active),
 				threshold: config.compress?.threshold ?? 1024,
-				method:
-					config.compress?.method === undefined || config.compress?.method === true
-						? { ...DEFAULT_COMPRESS_OPTIONS }
-						: config.compress?.method === false
-							? {
-									brotli: false,
-									gzip: false,
-									deflate: false,
-								}
-							: { ...DEFAULT_COMPRESS_OPTIONS, ...config.compress },
+				method: methods,
 			};
 		},
 

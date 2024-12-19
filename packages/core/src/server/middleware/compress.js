@@ -9,26 +9,51 @@ export async function compress(context, next) {
 	const response = await next(context);
 
 	if (context.compress === undefined) {
+		context.log("Compression disabled. Yield.", {
+			scope: "compress",
+			level: "debug",
+		});
+
 		return response;
 	}
 
 	if (context.request.method === "HEAD") {
+		context.log("No compression for HEAD request. Yield.", {
+			scope: "compress",
+			level: "debug",
+		});
+
 		return response;
 	}
 
 	const body = /** @type {webstream.ReadableStream<Uint8Array>}*/ (response.body);
 	if (body === null) {
+		context.log("No body in response. Yield.", {
+			scope: "compress",
+			level: "debug",
+		});
+
 		return response;
 	}
 
 	const contentEncoding = response.headers.get("Content-Encoding");
 	if (contentEncoding !== null) {
+		context.log("Response already compressed. Yield.", {
+			scope: "compress",
+			level: "debug",
+		});
+
 		return response;
 	}
 
 	const contentLength = response.headers.get("Content-Length");
 	const length = Number(contentLength);
 	if (!Number.isNaN(length) && length < context.compress.threshold) {
+		context.log("Response too small to be worth compressing. Yield.", {
+			scope: "compress",
+			level: "debug",
+		});
+
 		return response;
 	}
 
@@ -59,6 +84,11 @@ export async function compress(context, next) {
 		const compressionTransformer = Transform.toWeb(nodeCompressionTransformer);
 		body.pipeThrough(compressionTransformer);
 		const reader = compressionTransformer.readable.getReader();
+
+		context.log(`Compress with ${encoding}`, {
+			scope: "compress",
+			level: "debug",
+		});
 
 		return new Response(
 			new ReadableStream({

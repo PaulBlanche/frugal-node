@@ -5,6 +5,9 @@ export default {
 	self: import.meta.url,
 	pages: ["./page1.ts", "./page2.ts", "./slot/page.ts"],
 	log: { level: "silent" },
+	esbuildOptions: {
+		sourcemap: "inline",
+	},
 	plugins: [
 		script({
 			esbuildOptions: {
