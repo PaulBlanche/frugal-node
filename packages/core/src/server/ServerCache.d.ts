@@ -1,6 +1,6 @@
 import type { FrugalResponse, SerializedFrugalResponse } from "../page/FrugalResponse.js";
 
-export type CacheStorage = {
+export type ServerCacheStorage = {
 	set(path: string, response: SerializedFrugalResponse): Promise<void> | void;
 	get(
 		path: string,
@@ -10,12 +10,12 @@ export type CacheStorage = {
 
 export interface ServerCache {
 	add(response: FrugalResponse): Promise<void>;
-	has(path: string): Promise<boolean>;
-	get(path: string): Promise<Response | undefined>;
+	get(path: string): Promise<FrugalResponse | undefined>;
+	invalidate(path: string): Promise<void>;
 }
 
 interface ServerCacheCreator {
-	create(storage: CacheStorage): ServerCache;
+	create(storage: ServerCacheStorage): ServerCache;
 }
 
 export let ServerCache: ServerCacheCreator;

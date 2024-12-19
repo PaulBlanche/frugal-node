@@ -23,6 +23,8 @@ await test("unit/BuildCache: response not in cache is generated", async () => {
 		body: "body",
 		headers: [["foo", "bar"]],
 		status: 205,
+		date: new Date().toUTCString(),
+		maxAge: 3,
 	};
 
 	const serializeSpy = mock.fn(() => serializedResponse);
@@ -32,6 +34,9 @@ await test("unit/BuildCache: response not in cache is generated", async () => {
 		body: "body",
 		headers: new Headers(serializedResponse.headers),
 		serialize: serializeSpy,
+		setDateFrom: () => {
+			/** empty */
+		},
 	};
 
 	mockFs.MOCK_FS.writeTextFile("/cache.json", JSON.stringify({ current: {} }));
@@ -47,6 +52,8 @@ await test("unit/BuildCache: response not in cache is generated", async () => {
 
 	assert.equal(serializeSpy.mock.callCount(), 1);
 	assert.deepEqual(cacheData?.current["/1"], {
+		date: serializedResponse.date,
+		maxAge: serializedResponse.maxAge,
 		path: serializedResponse.path,
 		hash: serializedResponse.hash,
 		headers: serializedResponse.headers,
@@ -66,8 +73,12 @@ await test("unit/BuildCache: response with same hash already in cache is not reg
 		body: "body",
 		headers: [["foo", "bar"]],
 		status: 205,
+		date: new Date().toUTCString(),
+		maxAge: 3,
 	};
 	const cacheEntry = {
+		date: serializedResponse.date,
+		maxAge: serializedResponse.maxAge,
 		path: serializedResponse.path,
 		hash: serializedResponse.hash,
 		headers: serializedResponse.headers,
@@ -82,6 +93,9 @@ await test("unit/BuildCache: response with same hash already in cache is not reg
 		body: "body",
 		headers: new Headers(serializedResponse.headers),
 		serialize: serializeSpy,
+		setDateFrom: () => {
+			/** empty */
+		},
 	};
 
 	mockFs.MOCK_FS.writeTextFile(
@@ -115,6 +129,8 @@ await test("unit/BuildCache: response with different hash already in cache is re
 		body: "body",
 		headers: [["foo", "bar"]],
 		status: 205,
+		date: new Date().toUTCString(),
+		maxAge: 3,
 	};
 	const cacheEntry = {
 		path: serializedResponse.path,
@@ -131,6 +147,9 @@ await test("unit/BuildCache: response with different hash already in cache is re
 		body: "body",
 		headers: new Headers(serializedResponse.headers),
 		serialize: serializeSpy,
+		setDateFrom: () => {
+			/** empty */
+		},
 	};
 
 	mockFs.MOCK_FS.writeTextFile(
@@ -149,6 +168,8 @@ await test("unit/BuildCache: response with different hash already in cache is re
 
 	assert.equal(serializeSpy.mock.callCount(), 1);
 	assert.deepEqual(cacheData?.current["/1"], {
+		date: serializedResponse.date,
+		maxAge: serializedResponse.maxAge,
 		path: serializedResponse.path,
 		hash: serializedResponse.hash,
 		headers: serializedResponse.headers,

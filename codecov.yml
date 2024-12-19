@@ -1,0 +1,32 @@
+comment:
+  layout: "header, diff, flags, components"  # show component info in the PR comment
+
+component_management:
+  individual_components:
+    - component_id: core  
+      paths:
+        - packages/core/**
+
+    - component_id: exporter-static
+      paths:
+        - packages/exporter-static/**
+
+    - component_id: exporter-vercel  
+      paths:
+        - packages/exporter-vercel/**
+
+    - component_id: plugin-css
+      paths:
+        - packages/plugin-css/**
+
+    - component_id: plugin-script
+      paths:
+        - packages/plugin-script/**
+
+    - component_id: preact
+      paths:
+        - packages/preact/**
+  
+    - component_id: session
+      paths:
+        - packages/session/**

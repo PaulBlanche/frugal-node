@@ -5,4 +5,8 @@ export default {
 	self: import.meta.url,
 	pages: ["./page1.ts", "./page2.ts"],
 	log: { level: "info" },
+	esbuildOptions: {
+		sourcemap: false,
+		minify: false,
+	},
 };

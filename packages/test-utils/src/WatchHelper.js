@@ -27,6 +27,7 @@ export class WatchHelper {
 		/*this.#process.stderr.on("data", (chunk) => {
 			console.log(new TextDecoder().decode(chunk).trim());
 		});
+
 		this.#process.stdout.on("data", (chunk) => {
 			console.log(new TextDecoder().decode(chunk).trim());
 		});*/

@@ -1,26 +1,19 @@
-import type { DynamicPage, StaticPage } from "../page/Page.js";
-import type { Collapse } from "../page/PathParams.js";
-import type { Producer } from "../page/Producer.js";
-import type { log } from "../utils/log.js";
-import type { HandlerInfo } from "../utils/serve.js";
+import type { CacheHandler } from "../RuntimeConfig.js";
+import type * as server from "./Server.js";
 import type { ServerCache } from "./ServerCache.js";
 import type { Session } from "./session/Session.js";
 
-export type BaseContext = {
+export type Context = server.ServerContext & {
 	url: URL;
-	request: Request;
-	config: { cryptoKey: Promise<CryptoKey | undefined>; publicDir?: string };
-	state: Record<string, unknown>;
-	session?: Session;
-	cache: ServerCache;
 	watch: boolean;
-	log: typeof log;
-	info: HandlerInfo;
-	secure: boolean;
-};
-
-export type RouteContext<TYPE extends "dynamic" | "static" = "dynamic" | "static"> = BaseContext & {
-	page: TYPE extends "dynamic" ? DynamicPage : StaticPage;
-	producer: Producer;
-	params: Collapse<Partial<Record<string, string | string[]>>>;
+	request: Request;
+	state: Record<string, unknown>;
+	cryptoKey: Promise<CryptoKey>;
+	session?: Session;
+	cache?: ServerCache;
+	compress?: {
+		encodings: string[];
+		threshold: number;
+	};
+	cacheHandler: CacheHandler;
 };

@@ -19,44 +19,57 @@ export async function send(request, options) {
 	const filePath = `.${decodedPathname}`;
 
 	if (!isValidPath(filePath)) {
-		return new Response("", {
-			status: 404,
-		});
+		return undefined;
 	}
 
 	const resolvedFilePath = path.resolve(options.rootDir, filePath);
 
-	try {
-		const stats = await fs.stat(resolvedFilePath);
-
-		if (stats.isDirectory()) {
-			return new Response("", {
-				status: 404,
-			});
-		}
-
-		const headers = new Headers();
-		headers.set("Content-Length", stats.size.toString());
-		if (stats.mtime) {
-			headers.set("Last-Modified", stats.mtime.toUTCString());
-		}
-		headers.set("Etag", computeWeakEtag(stats));
-		const contentType = mime.getType(path.extname(resolvedFilePath));
-		if (contentType) {
-			headers.set("Content-Type", contentType);
-		}
-
-		const body = await fs.createReadableStream(resolvedFilePath);
-
-		return new Response(/** @type {ReadableStream<any>} */ (body), {
-			headers,
-		});
-	} catch (/** @type {any} */ error) {
-		if (error instanceof fs.NotFound) {
-			return new Response(undefined, { status: 404 });
-		}
-		return new Response(error.message, { status: 500 });
+	const paths = [];
+	for (const ext of options.compressionExt) {
+		paths.push(`${resolvedFilePath}.${ext}`);
 	}
+	paths.push(resolvedFilePath);
+
+	for (const filePath of paths) {
+		try {
+			const stats = await fs.stat(filePath);
+
+			if (stats.isDirectory()) {
+				return undefined;
+			}
+
+			const headers = new Headers();
+
+			headers.set("Date", new Date().toUTCString());
+			headers.set("Content-Length", stats.size.toString());
+			if (stats.mtime) {
+				headers.set("Last-Modified", stats.mtime.toUTCString());
+			}
+			headers.set("Etag", computeWeakEtag(stats));
+			const contentType = mime.getType(path.extname(resolvedFilePath));
+			if (contentType) {
+				headers.set("Content-Type", contentType);
+			}
+			if (filePath.endsWith("br")) {
+				headers.set("Content-Encoding", "br");
+			}
+			if (filePath.endsWith("gzip") || filePath.endsWith("gz")) {
+				headers.set("Content-Encoding", "gzip");
+			}
+
+			const body = await fs.createReadableStream(filePath);
+
+			return new Response(/** @type {ReadableStream<any>} */ (body), {
+				headers,
+			});
+		} catch (/** @type {any} */ error) {
+			if (!(error instanceof fs.NotFound)) {
+				throw error;
+			}
+		}
+	}
+
+	return undefined;
 }
 
 const UP_PATH_REGEXP = /(?:^|[\\/])\.\.(?:[\\/]|$)/;

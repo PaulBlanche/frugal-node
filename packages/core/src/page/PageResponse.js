@@ -1,13 +1,22 @@
 /** @import * as self from "./PageResponse.js" */
 
 import { Hash } from "../utils/Hash.js";
-import * as cookies from "../utils/cookies.js";
 import * as pageData from "../utils/serverData.js";
 
 /** @type {self.PageResponseCreator} */
 export const PageResponse = {
 	data,
 	empty,
+	redirect(init) {
+		const headers = new Headers(init?.headers);
+		headers.set("Location", init.location);
+
+		return PageResponse.empty({
+			forceDynamic: init?.forceDynamic,
+			status: init?.status ?? 307, // default to Temprary Redirect
+			headers: headers,
+		});
+	},
 };
 
 /** @type {self.PageResponseCreator['data']} */
@@ -38,6 +47,9 @@ function data(data, init) {
 
 			return hash.digest();
 		},
+		get maxAge() {
+			return init?.maxAge ?? -1;
+		},
 	};
 }
 
@@ -67,10 +79,11 @@ function empty(init) {
 
 			return hash.digest();
 		},
+		get maxAge() {
+			return /** @type {const} */ (0);
+		},
 	};
 }
-
-export const FORCE_GENERATE_COOKIE = "__frugal_force_generate";
 
 /**
  *
@@ -80,17 +93,12 @@ export const FORCE_GENERATE_COOKIE = "__frugal_force_generate";
 function _base(init = {}) {
 	const headers = new Headers(init.headers);
 
-	if (init.forceDynamic) {
-		cookies.setCookie(headers, {
-			httpOnly: true,
-			name: FORCE_GENERATE_COOKIE,
-			value: "true",
-		});
-	}
-
 	const instance =
 		/** @type {self.BaseResponse} */
 		({
+			get forceDynamic() {
+				return init.forceDynamic ?? false;
+			},
 			get headers() {
 				return headers;
 			},

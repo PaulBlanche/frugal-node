@@ -1,4 +1,5 @@
 import * as puppeteer from "puppeteer";
+import { withCoverage } from "./puppeteer-coverage.js";
 
 /** @typedef {{ onClose?: () => Promise<void> | void, browser?: puppeteer.Browser }} WithBrowserOptions */
 
@@ -22,7 +23,7 @@ export async function withBrowser(callback, options = {}) {
 /**
  *
  * @param {({ browser, page }: WithPageCallbackParams) => Promise<void>|void} callback
- * @param {WithBrowserOptions & { debug?: boolean, disableJavascript?: boolean }} [options]
+ * @param {WithBrowserOptions & { debug?: boolean, disableJavascript?: boolean, coverage?:boolean }} [options]
  * @returns
  */
 export async function withPage(callback, options = {}) {
@@ -38,6 +39,7 @@ export async function withPage(callback, options = {}) {
 	 * @param {puppeteer.Browser} browser
 	 */
 	async function setupPage(browser) {
+		const coverage = options.coverage ?? true;
 		const page = await browser.newPage();
 
 		if (options.disableJavascript) {
@@ -49,7 +51,11 @@ export async function withPage(callback, options = {}) {
 		}
 
 		try {
-			await callback({ browser, page });
+			if (coverage && !options.disableJavascript) {
+				await withCoverage(() => callback({ browser, page }), { page });
+			} else {
+				await callback({ browser, page });
+			}
 		} finally {
 			await page.close();
 		}

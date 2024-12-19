@@ -1,5 +1,5 @@
 import type { PageSession } from "../../page/PageDescriptor.js";
-import type { SessionData } from "./SessionStorage.js";
+import type { SessionData } from "./SessionManager.js";
 
 interface Session extends PageSession {
 	readonly id: string | undefined;

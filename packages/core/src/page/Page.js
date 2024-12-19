@@ -142,6 +142,14 @@ function basePage(page) {
 			return page.descriptor.route;
 		},
 
+		get regexpRoute() {
+			return pathToRegexp.pathToRegexp(page.descriptor.route).regexp;
+		},
+
+		get hasGenerate() {
+			return page.descriptor.generate !== undefined;
+		},
+
 		render(context) {
 			log(
 				`Rendering page "${this.entrypoint}" (${this.moduleHash}) with route "${
@@ -152,6 +160,10 @@ function basePage(page) {
 					level: "verbose",
 				},
 			);
+
+			if (page.descriptor.render === undefined) {
+				return "";
+			}
 
 			try {
 				return page.descriptor.render(context);

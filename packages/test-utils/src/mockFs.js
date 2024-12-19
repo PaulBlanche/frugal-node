@@ -17,12 +17,12 @@ export const MOCK_FS = {
 	},
 	/** @type {fs.writeTextFile}*/
 	writeTextFile: (path, data) => {
-		MEMORY_FS[path] = data;
+		MEMORY_FS[path.toString()] = data;
 		return Promise.resolve();
 	},
 	/** @type {fs.readTextFile}*/
 	readTextFile: async (path) => {
-		const data = MEMORY_FS[path];
+		const data = MEMORY_FS[path.toString()];
 
 		if (typeof data === "string") {
 			return Promise.resolve(data);
@@ -36,7 +36,7 @@ export const MOCK_FS = {
 	},
 	/** @type {fs.readFile}*/
 	readFile: async (path) => {
-		const data = MEMORY_FS[path];
+		const data = MEMORY_FS[path.toString()];
 
 		if (typeof data === "string") {
 			return Promise.resolve(ENCODER.encode(data));

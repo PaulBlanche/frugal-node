@@ -31,6 +31,10 @@
 			"types": "./exports/utils/cookies/index.d.ts",
 			"import": "./exports/utils/cookies/index.js"
 		},
+		"./utils/crypto": {
+			"types": "./exports/utils/crypto/index.d.ts",
+			"import": "./exports/utils/crypto/index.js"
+		},
 		"./utils/fs": {
 			"types": "./exports/utils/fs/index.d.ts",
 			"import": "./exports/utils/fs/index.js"
@@ -62,12 +66,14 @@
 		"imurmurhash": "^0.1.4",
 		"magic-string": "^0.30.11",
 		"mime": "^4.0.4",
+		"negotiator": "^1.0.0",
 		"path-to-regexp": "^8.1.0",
 		"pretty-bytes": "^6.1.1",
 		"zod": "^3.23.8"
 	},
 	"devDependencies": {
 		"@types/cookie": "^0.6.0",
-		"@types/imurmurhash": "^0.1.4"
+		"@types/imurmurhash": "^0.1.4",
+		"@types/negotiator": "^0.6.3"
 	}
 }
