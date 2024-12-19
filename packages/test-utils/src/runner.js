@@ -88,47 +88,37 @@ const testProcess = spawn(process.execPath, args, {
 testProcess.on("exit", async () => {
 	let report = undefined;
 	if (options.values.coverage) {
+		const baseConfig = {
+			cleanCache: true,
+			dataDir: coverageTempDir,
+			reports: ["v8", "lcovonly"],
+			filter: {
+				"**/test-utils/**": false,
+				"**/test/**": false,
+				"**/exports/**": false,
+				"**/node_modules/**": false,
+				"**/package.json": false,
+				"**/*.d.ts": false,
+				"**/packages/**": true,
+			},
+			all: {
+				dir: "./packages",
+			},
+		};
+
 		if (options.values.type === "unit") {
 			report = new CoverageReport({
-				cleanCache: true,
-				dataDir: coverageTempDir,
+				...baseConfig,
 				name: "Frugal unit test coverage",
-				reports: ["v8", "lcovonly"],
 				outputDir: "./coverage/unit/",
-				filter: {
-					"**/test-utils/**": false,
-					"**/test/**": false,
-					"**/exports/**": false,
-					"**/node_modules/**": false,
-					"**/package.json": false,
-					"**/*.d.jts": false,
-					"**/packages/**": true,
-				},
-				all: {
-					dir: "./packages",
-				},
 			});
 		}
 
 		if (options.values.type === "inte") {
 			report = new CoverageReport({
-				cleanCache: true,
-				dataDir: coverageTempDir,
+				...baseConfig,
 				name: "Frugal backend integration test coverage",
-				reports: ["v8", "lcovonly"],
 				outputDir: "./coverage/inte",
-				filter: {
-					"**/test-utils/**": false,
-					"**/test/**": false,
-					"**/exports/**": false,
-					"**/node_modules/**": false,
-					"**/package.json": false,
-					"**/*.d.ts": false,
-					"**/packages/**": true,
-				},
-				all: {
-					dir: "./packages",
-				},
 			});
 
 			for await (const entry of await fs.readDir(coverageTempDir)) {
@@ -139,8 +129,11 @@ testProcess.on("exit", async () => {
 			}
 		}
 	}
-	console.log("generating coverage");
-	await report?.generate();
+
+	if (report) {
+		console.log("generating coverage");
+		await report.generate();
+	}
 });
 
 /**
