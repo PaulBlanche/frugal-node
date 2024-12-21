@@ -15,7 +15,7 @@ const config = {
 The `self` property should be the absolute path of the module (obtained with [`import.meta.url`](https://nodejs.org/docs/latest/api/esm.html#importmetaurl)). The folder where the config module resides will be the root of your project (the _dirname_ of `self`). Frugal will resolve every path in the config relative to this root.
 
 > [!warn]
-> Unless you know what you are doing, `self` should always be `import.meta.url`.
+> Unless you know what you are doing, `self` should always be `import.meta.url`, and the cli module should always be at the root of your project.
 
 The `pages` should list the paths of the page modules of your website.
 It is empty for now, but not for long.
@@ -47,7 +47,7 @@ Now you can launch frugal with either :
 > [!info]
 > The dev server has live-reload capacity. Changing the code of a page or any of its dependencies should trigger a page reload.
 >
-> However, this is limited to _staticaly analyzable imports_ (static imports or dynamic imports with paths known ahead of time). Any change in external data sources (database, API, ...) won't trigger a reload: you'll have to refresh the page manually
+> However, this is limited to _staticaly analyzable imports_ (static imports or dynamic imports with paths known ahead of time). Any change in external data sources (database, API, ...) won't trigger a reload: you'll have to refresh the page manually to see changes.
 
 ## Your first page
 

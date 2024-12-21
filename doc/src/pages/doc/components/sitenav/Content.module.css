@@ -46,6 +46,9 @@
 	composes: link from "../../../../styles/link.module.css";
 
 	background: none;
+	position: relative;
+	display: inline-block;
+	width: 100%;
 }
 
 .toc-link-active::after {

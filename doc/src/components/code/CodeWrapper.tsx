@@ -7,6 +7,7 @@ import * as sr from "../../styles/screen-reader.module.css";
 import * as code from "./CodeWrapper.module.css";
 
 export type CodeWrapperProps = {
+	id: string;
 	files: { filename: string; content: preact.ComponentChildren }[];
 	class?: string;
 	"aria-labelledby"?: string;
@@ -20,7 +21,6 @@ export function CodeWrapper(props: CodeWrapperProps) {
 
 	const [active, setActive] = hooks.useState(props.files[0].filename);
 	const [copyStatus, setCopyStatus] = hooks.useState("pristine");
-	const id = hooks.useId();
 
 	// biome-ignore lint/correctness/useHookAtTopLevel: not top level, but in a map is ok
 	const labelRefs = props.files.map(() => hooks.useRef<HTMLLabelElement>(null));
@@ -43,9 +43,9 @@ export function CodeWrapper(props: CodeWrapperProps) {
 						<preact.Fragment key={file.filename}>
 							<input
 								type="radio"
-								name={`tablist-${id}`}
+								name={`tablist-${props.id}`}
 								ref={inputRefs[index]}
-								id={`tabtoggle-${file.filename}-${id}`}
+								id={`tabtoggle-${file.filename}-${props.id}`}
 								class={clsx(sr["hidden"], code["input"])}
 								checked={active === file.filename}
 								onFocus={() => {
@@ -59,14 +59,14 @@ export function CodeWrapper(props: CodeWrapperProps) {
 							/>
 							{/* biome-ignore lint/a11y/useFocusableInteractive: label is focusable throught the matching input */}
 							<label
-								id={`tab-${file.filename}-${id}`}
+								id={`tab-${file.filename}-${props.id}`}
 								// biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: label is interactive throught the matching input
 								role="tab"
 								aria-selected={active === file.filename}
-								aria-controls={`tabpanel-${file.filename}-${id}`}
+								aria-controls={`tabpanel-${file.filename}-${props.id}`}
 								ref={labelRefs[index]}
 								class={code["tab"]}
-								for={`tabtoggle-${file.filename}-${id}`}
+								for={`tabtoggle-${file.filename}-${props.id}`}
 							>
 								<span class={code["tabfocus"]}>{file.filename}</span>
 							</label>
@@ -80,9 +80,9 @@ export function CodeWrapper(props: CodeWrapperProps) {
 						ref={panelRefs[index]}
 						class={clsx(code["tabpanel"], active === file.filename && code["active"])}
 						key={file.filename}
-						id={`tabpanel-${file.filename}-${id}`}
+						id={`tabpanel-${file.filename}-${props.id}`}
 						role="tabpanel"
-						aria-labelledby={`tab-${file.filename}-${id}`}
+						aria-labelledby={`tab-${file.filename}-${props.id}`}
 						// biome-ignore lint/a11y/noNoninteractiveTabindex: tabpanel should be focusable
 						tabIndex={0}
 					>

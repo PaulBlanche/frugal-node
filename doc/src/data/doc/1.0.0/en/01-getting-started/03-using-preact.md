@@ -17,12 +17,29 @@ First we need to update our `tsconfig.json` to handle jsx syntax. To do so, you 
 
 Frugal uses [esbuild](https://esbuild.github.io/) under the hood. Esbuild will respect the configuration inside your `tsconfig.json`. With this we have both our IDE and frugal configured to work with jsx syntax.
 
+If you don't use typescript, you can setup a `jsconfig.json` that should also be picked up by Esbuild or you IDE. 
+
+Finally if you don't want a `jsconfig.json` file you'll have to configure esbuild directly : 
+
+```ts filename=cli.js lines=[4]
+/** @type {import("@frugal-node/core/config/build").BuildConfig} */
+const config = {
+    ...
+    plugins: [],
+    esbuildOptions: {
+        jsx: 'automatic',
+		jsxImportSource: 'preact'
+    }
+};
+```
+
 ## Update the post page
 
 First, we move our markup in a jsx component inside `pages/PostPage.tsx` :
 
 ```tsx filename=pages/PostPage.tsx
-import { type PageProps, useData, Head } from "@frugal-node/react"
+import { type PageProps, Head } from "@frugal-node/preact"
+import { useData } from "@frugal-node/preact/client";
 
 export function PostPage({ assets }: PageProps) {
     const data = useData<{ title:string, content: string }>()
@@ -43,15 +60,15 @@ export function PostPage({ assets }: PageProps) {
 In this component :
 
 - `PageProps` is the standard props object passed to page components (the top-level component of your page).
-- `useData` is the hook used to access the data object. This hook can be used in any component with some caveats.
-- `Head` is the component used to modify the document's `<head>`. We use it to link to the page stylesheet.
+- `useData` is the hook used to access the data object. This hook can be used in any component with some caveats (see [](TODO/REFERENCE)).
+- `Head` is the component used to modify the document's `<head>`. We use it to add the link to the page stylesheet.
 
 Now we need to modify the page module :
 
 ```ts filename=pages/posts.ts
 ...
 
-import { getRenderFrom } from "@frugal-node/react"
+import { getRenderFrom } from "@frugal-node/preact"
 import { PostPage } from "./PostPage.tsx"
 
 ...
@@ -61,11 +78,13 @@ export const render = getRenderFrom(PostPage)
 
 And that's it. We now have a static page that can be designed with jsx components. But remember that the homepage still uses js templates to output raw HTML. This means that you can mix any UI framework you want on different pages.
 
-For now, Frugal still outputs static markup for our components. To have a client-side component, we'll have to use islands.
+For now, Frugal still outputs static markup for our components. To have a client-side component, we'll have to use _islands_.
 
 ## First client-side island
 
-We will add a counter to the homepage. To do so, we first need to migrate it to preact, like we did for the posts page (this is left as an exercise for you).
+Islands are isolated components rendered server side (like we are doing right now) and hydrated client side. To hydrate client side, we will use _scripts_.
+
+We will add a dynamic counter to the homepage. To do so, we first need to migrate it to preact, like we did for the posts page (this is left as an exercise for you).
 
 Once the page works with preact, we create our stateful counter component :
 
@@ -111,7 +130,7 @@ if (import.meta.environment === "client") {
 >[!warn]
 > Inside scripts (or inside script dependencies), always use `@frugal-node/preact/client` and not `@frugal-node/preact` to avoid pulling server code in your client bundles.
 
-Since it is a client-side script using `import.meta.environment`, the `hydrate` function will execute only client-side. The function will hydrate all instances of islands with the name `"Counter"` with the `Counter` component.
+Since it is a client-side script using `import.meta.environment`, the `hydrate` function will execute only client-side. The function will hydrate all instances of islands with the name `"Counter"`, using the `Counter` component to do so. 
 
 Now we create a `CounterIsland.tsx` component to create island instances of our `Counter` component :
 
@@ -127,7 +146,7 @@ export function CounterIsland(props: CounterProps) {
 
 The `Island` component will render the `Counter` components in the static markup outputted by Frugal and embed in that markup any data necessary to the hydration process. The name of the island is also embedded in the markup.
 
-We can now use our `CounterIsland` inside our `Page` component :
+We can now use our `CounterIsland` inside our `HomePage` component :
 
 ```tsx filename=pages/HomePage.tsx lines=[2,18]
 ...
@@ -135,7 +154,7 @@ import { CounterIsland } from "./CounterIsland.tsx"
 
 ...
 
-export function Page({ assets }: PageProps) {
+export function HomePage({ assets }: PageProps) {
     return <>
         <Head>
             {assets.get('css').map(style => {

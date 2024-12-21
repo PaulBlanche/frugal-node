@@ -1,3 +1,4 @@
+import * as hooks from "preact/hooks";
 import * as code from "./Code.module.css";
 import { CodeWrapper } from "./CodeWrapper.island.tsx";
 import type { File } from "./File.ts";
@@ -12,9 +13,11 @@ export type CodeProps = {
 };
 
 export function Code(props: CodeProps) {
+	const stableId = hooks.useId();
+
 	return (
 		<CodeWrapper
-			id={props.id}
+			id={props.id ?? stableId}
 			aria-labelledby={props["aria-labelledby"]}
 			files={props.files.map((file) => {
 				return {

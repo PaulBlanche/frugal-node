@@ -4,12 +4,10 @@
 
 Frugal is born from the frustration of loading modern websites on bad data connections. On slow connections, you have to wait for a 1Mo JS bundle to be able to interact with the page. It's double jeopardy for older devices because once the bundle is downloaded, you must wait for the JS to be parsed and executed.
 
-Frugal is a **web framework** that gives you the tools and structure **to build lighter, leaner, simpler websites** without sacrificing DX :
+Frugal is a **meta framework** that gives you the tools and structure **to build lighter, leaner, simpler websites** without sacrificing DX :
 
 - At build time, frugal generates static assets (static html, js, CSS, etc ...)
 - At runtime, frugal serves static assets and generates dynamic HTML
-
-If you are familiar with the MVC pattern, Frugal helps you define Controllers. Views and Models are your responsibility with your framework of choice (Preact for Views and Prisma for Models, for example).
 
 ## Key features
 

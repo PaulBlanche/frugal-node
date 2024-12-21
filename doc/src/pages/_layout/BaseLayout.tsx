@@ -16,7 +16,7 @@ export function BaseLayout({ assets, children }: BaseLayoutProps) {
 				<html lang="en" />
 				<meta charSet="utf-8" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
-				<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+				<link rel="icon" type="image/svg+xml" href="/favicon.ico" />
 
 				<meta
 					name="description"

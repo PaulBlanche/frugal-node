@@ -11,7 +11,8 @@ export type Context = server.ServerContext & {
 	cryptoKey: Promise<CryptoKey>;
 	session?: Session;
 	cache?: ServerCache;
-	compress?: {
+	compress: {
+		dynamic: boolean;
 		encodings: string[];
 		threshold: number;
 	};
