@@ -32,7 +32,7 @@ export type RuntimeConfig = {
 	log?: Partial<LogConfig>;
 	middlewares?: Middleware<Context>[];
 	cacheStorage?: ServerCacheStorage;
-	compress?: { method?: CompressMethods; threshold?: number } | false;
+	compress?: { dynamic?: boolean; method?: CompressMethods; threshold?: number } | false;
 };
 
 export type InternalRuntimeConfig = {
@@ -45,7 +45,7 @@ export type InternalRuntimeConfig = {
 	};
 	readonly middlewares: Middleware<Context>[];
 	readonly serverCache?: ServerCache;
-	readonly compress: { disabled: boolean; threshold: number; method: CompressMethodsObject };
+	readonly compress: { dynamic: boolean; threshold: number; method: CompressMethodsObject };
 	//readonly self: string;
 	readonly cacheHandler: CacheHandler;
 };

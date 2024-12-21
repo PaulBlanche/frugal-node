@@ -1,6 +1,6 @@
 # Blog posts
 
-For our blog, we need to have a "blog post page" that displays a given blog post. We want this page to be static and generated for each of our posts.
+For our blog, we need to have a "blog post page" that displays a given blog post. We want this page to be static and we want a page for each of our posts.
 
 ## Static page with data fetching
 
@@ -60,7 +60,7 @@ We simply have to map over an array, but any asynchronous operations can happen 
 
 Then, we define the data fetching method `build`. This method is called at build time, and this is where - given the URL parameters - we query any data needed to build the page :
 
-```ts filename=pages/posts.ts lines=[2-3,13-15]
+```ts filename=pages/posts.ts lines=[2-3,13-16]
 import { 
     type BuildContext, 
     PageResponse, 
@@ -74,7 +74,8 @@ export function getBuildPaths(): PathParamsList<typeof route> {
 }
 
 export function build({ params: { slug } }: BuildContext<typeof route>) {
-    return PageResponse.data(POSTS.find(post => post.slug === slug))
+    const post = POSTS.find(post => post.slug === slug)
+    return PageResponse.data(post)
 }
 ```
 
@@ -84,7 +85,7 @@ The consolidated data that was fetched (here a single `Post` matching the given 
 
 Finally, we define a `render` method that will output HTML markup for a given data object :
 
-```ts filename=pages/posts.ts lines=[5,14-22]
+```ts filename=pages/posts.ts lines=[5,15-23]
 import { 
     type BuildContext, 
     PageResponse,
@@ -95,7 +96,8 @@ import {
 ...
 
 export function build({ params: { slug } }: BuildContext<typeof route>) {
-    return PageResponse.data(POSTS.find(post => post.slug === slug))
+    const post = POSTS.find(post => post.slug === slug)
+    return PageResponse.data(post)
 }
 
 export function render({ data }: RenderContext<typeof route, Post> ) {
@@ -159,7 +161,8 @@ export function getBuildPaths(): PathParamsList<typeof route> {
 }
 
 export function build({ params: { slug } }: BuildContext<typeof route>) {
-    return data(POSTS.find(post => post.slug === slug))
+    const post = POSTS.find(post => post.slug === slug)
+    return PageResponse.data(post)
 }
 
 export function render({ data }: RenderContext<typeof route, Post> ) {
@@ -181,7 +184,7 @@ export function render({ data }: RenderContext<typeof route, Post> ) {
 > - You don't need `getBuildPaths` for a page with a single path.
 > - You don't need `build` for a page without any data fetching.
 >
-> However, you must always define a `route` and a `render` method.
+> However, you must always define a `route`.
 
 ## External data
 
@@ -261,7 +264,7 @@ export async function build({ params: { slug } }: BuildContext<typeof route>) {
 ```
 
 > [!tip]
-> Additionally to a `PageResponse.data` response, the `build` function can return an `PageResponse.empty` response when you wish to return a response without calling the `render` method. Here we use it to return a `404` without a body.
+> Instead of a `PageResponse.data` response, the `build` function can return an `PageResponse.empty` response when you wish to return a response without calling the `render` method. Here we use it to return a `404` without a body.
 
 Here is the whole file `pages/posts.ts` after we are done :
 
@@ -350,7 +353,7 @@ type Entry = {
 ...
 ```
 
-The `getBuildPaths` method does not change (except for a change in type to use `Entry`), since the `pages/posts.json` still contains all slugs that needs to be generated. But we need to change the `build` method to read and compile the markdown file. We will use marked for this task :
+The `getBuildPaths` method does not change (except for a change in type to use `Entry`), since the `pages/posts.json` still contains all slugs that needs to be generated. But we need to change the `build` method to read and parse the markdown file. We will use marked for this task :
 
 ```ts filename=pages/posts.ts lines=[3,10,27-30]
 ...
@@ -398,4 +401,4 @@ We now have a small markdown file-based static blog, but it could be improved (l
 - the `pages/` directory is a mess of unrelated files (`.ts` files for pages and `.json` data). We could better organise the project by separating data and source files.
 - instead of having the `posts.json` file, we could have all our markdown files in a single directory, each with a front-matter for title and slug. The `getBuildPaths` method would scan the directory, parse the front-matter of each file and output the liste of slugs
 
-Our static blog only serves raw HTML for now. In the next section, we will add assets (js scripts and CSS) to our pages.
+Our static blog only serves raw HTML for now. In the next section, we will add assets (JS scripts and CSS) to our pages.

@@ -5,7 +5,7 @@ import { composeMiddleware } from "../middleware.js";
 /** @type {self.router} */
 export function router(routes, middlewares) {
 	const routerMiddlewares = composeMiddleware(middlewares);
-	return (context, next) => {
+	return async (context, next) => {
 		for (const route of routes) {
 			const match = route.page.match(context.url.pathname);
 
@@ -29,7 +29,10 @@ export function router(routes, middlewares) {
 					params: { ...match.params },
 				};
 
-				return routerMiddlewares(routerContext, next);
+				const response = await routerMiddlewares(routerContext, next);
+				if (response.status !== 404) {
+					return response;
+				}
 			}
 		}
 

@@ -70,7 +70,7 @@ function create(config, cacheHandler) {
 		get compress() {
 			if (config.compress === false) {
 				return {
-					disabled: true,
+					dynamic: false,
 					threshold: Number.POSITIVE_INFINITY,
 					method: {
 						brotli: false,
@@ -92,7 +92,7 @@ function create(config, cacheHandler) {
 						: { ...DEFAULT_COMPRESS_OPTIONS, ...config.compress.method };
 
 			return {
-				disabled: Object.values(methods).every((active) => !active),
+				dynamic: config.compress?.dynamic ?? false,
 				threshold: config.compress?.threshold ?? 1024,
 				method: methods,
 			};

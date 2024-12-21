@@ -8,8 +8,8 @@ import * as zlib from "node:zlib";
 export async function compress(context, next) {
 	const response = await next(context);
 
-	if (context.compress === undefined) {
-		context.log("Compression disabled. Yield.", {
+	if (!context.compress.dynamic) {
+		context.log("Dynamic compression disabled. Yield.", {
 			scope: "compress",
 			level: "debug",
 		});

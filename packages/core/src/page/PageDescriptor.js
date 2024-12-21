@@ -81,6 +81,7 @@ const pathParamListSchema = /* @__PURE__ */ zod.array(
 	/* @__PURE__ */ zod.record(
 		/* @__PURE__ */ zod.string(),
 		/* @__PURE__ */ zod.union([
+			/* @__PURE__ */ zod.undefined(),
 			/* @__PURE__ */ zod.string(),
 			/* @__PURE__ */ zod.array(/* @__PURE__ */ zod.string()),
 		]),

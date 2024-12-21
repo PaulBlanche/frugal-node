@@ -1,6 +1,12 @@
-export * from "./manifest.ts";
-import type { Lang, Version } from "./config.ts";
+import { LANGS, type Lang, type Version } from "./config.ts";
+import { TOC } from "./manifest.ts";
 import type { Entry, Toc } from "./manifest.ts";
+
+export * from "./manifest.ts";
+
+export const DEFAULT_VERSION = latest(TOC);
+
+export const DEFAULT_LANG = LANGS[0];
 
 export type TocHierarchy = {
 	segment: string;

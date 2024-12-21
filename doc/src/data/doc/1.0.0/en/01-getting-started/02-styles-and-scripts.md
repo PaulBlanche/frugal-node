@@ -2,43 +2,31 @@
 
 ## Adding build plugins
 
-Styles and scripts are handled via build plugins. To configure them, we first create a `frugal.config.build.js` :
+Styles and scripts are handled via build plugins. To configure them, we must edit our `cli.js` to add the `plugins` property :
 
-```ts filename=frugal.config.build.js
-/** @type {import('frugal-node').BuildConfig} */
-export default {
+```ts filename=cli.js lines=[4]
+/** @type {import("@frugal-node/core/config/build").BuildConfig} */
+const config = {
+    ...
     plugins: []
-}
+};
 ```
-
-We have to pass this config object to our dev script :
-
-```ts filename=dev.js
-import { context } from "frugal-node"
-import config from "./frugal.config.js"
-import buildConfig from "./frugal.config.build.js"
-
-const watchContext = await context(config, buildConfig)
-
-await watchContext.watch()
-```
-
-We are now all set to add build plugins.
 
 ## Adding style to our posts
 
 Let's add some simple styles to our post page. First, we have to setup the css plugin :
 
-```ts filename=frugal.config.build.js lines=[1,5]
-import { css } from "frugal-node/plugin-css"
+```ts filename=cli.js lines=[1,6]
+import { css } from "@frugal-node/plugin-css";
 
-/** @type {import('frugal-node').BuildConfig} */
-export default {
-    plugins: [css()],
+/** @type {import("@frugal-node/core/config/build").BuildConfig} */
+const config = {
+    ...
+    plugins: [css()]
 };
 ```
 
-Now adding styles is simple: write the CSS and import it. Nothing says frugal like relying on the web platform, so Frugal makes it simple.
+Now adding styles is simple: write some CSS file and import them. Nothing says frugal like relying on the web platform, so Frugal makes it simple.
 
 We can create a `pages/post.css` file :
 
@@ -76,9 +64,9 @@ export function render({ data, assets }: RenderContext<typeof route, Data> ) {
 ```
 
 > [!info]
-> The `assets` parameters contain the assets generated for the page. They are grouped by type (`"css"`, `"js"`, ...), and can contain multiple asset for each page. The value returned by `assets.get()` will depend on the type of assets. Here for the type `"css"` you get a list of css file path.
+> The `assets` parameters contains the assets generated for the page. They are grouped by type (`"css"`, `"js"`, ...), and can contain multiple asset for each page. The value returned by `assets.get()` will depend on the type of assets. Here for the type `"css"` you get a list of css file path.
 
-We imported and applied the style in the posts page, and only this page. The title of the homepage has no style. It's because by default the css plugin creates a different CSS bundle for each page. For the posts page `assets.get()` returns one url containing `post.css`, but for the homepage since no `.css` file where imported, no stylesheet were generated and `assets.get()` returns an empty array. Let's fix that by giving it its own style with a `pages/home.css` file :
+We imported and applied the style in the posts page, and only this page. The title of the homepage has no style. It's because by default the css plugin creates a different CSS bundle for each page. For the posts page `assets.get()` returns one url containing the style in `post.css`, but for the homepage since no `.css` file where imported, no stylesheet were generated and `assets.get()` returns an empty array. Let's fix that by giving it its own style with a `pages/home.css` file :
 
 ```css filename=pages/home.css
 h1 {
@@ -115,25 +103,25 @@ export function render({ assets }: RenderContext<typeof route>) {
 Now the title on the homepage is blue with a wavy underline, while it is green with a solid underline in the posts. Each page gets its own style.
 
 > [!info]
-> If you have global styles you want applied to each pages of your project, you can set the [`globalCss`](/doc@{{version}}/reference/configuration#heading-globalcss) in your config. The compiled global stylesheet will be added to the array returned by `assets.get()` for each pages.
+> If you have global styles you want applied to each pages of your project, you can set the [`globalCss`](TODO/REFERENCE) in your config. The compiled global stylesheet will be added to the array returned by `assets.get()` for each pages.
 >
-> You can also change the [`scope`](/doc@{{version}}/reference/plugins#heading-scope) of the css plugin to have each imported `.css` file considered global.
+> You can also change the [`scope`](TODO/REFERECE) of the css plugin to have each imported `.css` file considered global.
 
-## First client-side script
+## Adding client-side script
 
 Let's add a super simple script to our homepage page. First, we have to configure Frugal to bundle _scripts_ :
 
-```ts filename=frugal.config.build.js lines=[2,6]
-import { css } from "frugal-node/plugin-css"
+```ts filename=cli.js lines=[1,6]
 import { script } from "frugal-node/plugin-script"
 
-/** @type {import('frugal-node').BuildConfig} */
-export default {
-    plugins: [css(), script()],
+/** @type {import("@frugal-node/core/config/build").BuildConfig} */
+const config = {
+    ...
+    plugins: [css(), script()]
 };
 ```
 
-Each imported module ending with `.script.ts` will be interpreted as a client-side script and bundled with other scripts from the page. Let's write our first seizure-inducing script :
+Each imported module ending with `.script.ts` will be interpreted as a client-side script and bundled with other scripts from the page importing it. Let's write our first seizure-inducing script :
 
 ```ts filename=page/hello.script.ts
 export const TITLE_ID = 'blog-title'
@@ -183,15 +171,15 @@ export function render({ assets }: RenderContext<typeof route>) {
 }
 ```
 
-Here we also assigned the id exported by the script to the `h1` tag. That way, we only ever have to define "hooks" (like id or class) for our script in one place (a unique source of truth) to keep both the scripts and the markup in sync. Changing the exported id in the script will also update the markup depending on it.
+Here we assigned the id exported by the script to the `h1` tag. That way, we only ever have to define "hooks" (like id or class) for our script in one place (a unique source of truth) to keep both the scripts and the markup in sync. Changing the exported id in the script will also update the markup depending on it.
 
 > [!warn]
-> Frugal only generates ES Modules from scripts. They need to be imported via a script tag with attribute `type="module"` to work, and won't work with [older browsers](https://caniuse.com/es6-module). 
+> Frugal only generates bundled ES Modules from scripts. They need to be imported via a script tag with attribute `type="module"` to work, and won't work with [older browsers](https://caniuse.com/es6-module). 
 >
 > If you have critical scripts that must work on older browsers, you'll have to bundle them yourself.
 >
 > **As a general rule, think of scripts as _enhancement_ of a functionning static page instead of what makes the page work.**
 
-If we load the homepage, we see that our script is executed. Scripts are scoped the same way as styles: A bundle is created for each page. This measn that our post pages won't run the script we created.
+If we load the homepage, we see that our script is executed. Scripts are scoped the same way as styles: A bundle is created for each page. This means that our post pages won't run the script we created unless we import it there.
 
 In the next section, we will use preact server side and leverage scripts to create our first island.
